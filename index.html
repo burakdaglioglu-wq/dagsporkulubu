@@ -162,6 +162,36 @@
             .skor-right-panel { margin-top: 10px; }
             .sporcu-satir { flex-direction: row; text-align: left; }
         }
+
+        /* ===== VIDEO ANALİZ SEKMESİ ===== */
+        .va-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+        .va-title { font-weight: 800; font-size: 16px; color: var(--neon-blue); display: flex; align-items: center; gap: 8px; }
+        .va-sub { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+        .va-dropzone { border: 2px dashed var(--accent-orange); border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; transition: all .2s; background: rgba(255,98,0,0.05); }
+        .va-dropzone.dragover { background: rgba(255,98,0,0.18); border-color: var(--gold); }
+        .va-dropzone .va-icon { font-size: 38px; }
+        .va-btn { border: none; border-radius: 8px; padding: 11px 16px; font-weight: 700; font-size: 13px; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+        .va-btn-orange { background: var(--accent-orange); }
+        .va-btn-blue { background: var(--neon-blue); }
+        .va-btn-red { background: var(--neon-red); }
+        .va-btn-green { background: var(--neon-green); }
+        .va-btn-grey { background: var(--accent-grey); }
+        .va-btn:disabled { opacity: .45; cursor: not-allowed; }
+        .va-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .va-video { width: 100%; max-height: 60vh; background: #000; border-radius: 12px; border: 1px solid var(--border-color); }
+        .va-input { width: 100%; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-size: 13px; }
+        .va-rec-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--neon-red); display: inline-block; animation: vaPulse 1s infinite; }
+        @keyframes vaPulse { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+        .va-spin { width: 34px; height: 34px; border: 4px solid var(--border-color); border-top-color: var(--accent-orange); border-radius: 50%; animation: vaSpin 1s linear infinite; margin: 0 auto; }
+        @keyframes vaSpin { to { transform: rotate(360deg); } }
+        .va-result-box { border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); }
+        .va-box-good { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.4); }
+        .va-box-bad { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.4); }
+        .va-box-tip { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.4); }
+        .va-box-head { font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+        .va-list-item { padding: 8px 10px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.04); font-size: 13px; line-height: 1.45; }
+        .va-score-circle { width: 84px; height: 84px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 26px; border: 4px solid var(--gold); color: var(--gold); }
+        .va-tag { display:inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: var(--accent-grey); color:#fff; margin-left: 6px; }
     </style>
 </head>
 <body>
@@ -182,7 +212,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v25</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v26</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -379,7 +409,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v25</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v26</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -395,6 +425,7 @@
             <button id="tab-liderlik" class="sekme-btn" onclick="sekmeAc('liderlik')">🏆 Liderlik</button>
             <button id="tab-egitmen" class="sekme-btn" onclick="sekmeAc('egitmen')">🎓 Eğitmen</button>
             <button id="tab-takimlar" class="sekme-btn" onclick="sekmeAc('takimlar')">🏅 Yarışmalar</button>
+            <button id="tab-video" class="sekme-btn" onclick="sekmeAc('video')">🎥 Video Analiz</button>
         </div>
     </div>
 
@@ -637,6 +668,9 @@
                 <button onclick="yedekDosyaSec()" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">📂 Geri Yükle</button>
                 <input type="file" id="yedek-dosya-input" accept="application/json,.json" style="display:none;" onchange="yedektenGeriYukle(event)">
             </div>
+            <div class="sadece-egitmen" style="margin-bottom:15px;">
+                <button onclick="acilKurtarma()" style="width:100%; background:rgba(245,158,11,0.18); border:1px solid var(--gold); color:var(--text-main); padding:9px; border-radius:6px; font-size:12px; font-weight:bold;">🛟 Acil Kurtarma (son otomatik yedek)</button>
+            </div>
             <div id="liderlik-istatistik" style="font-size:11px; text-align:center; margin-bottom:10px; color:var(--text-muted);"></div>
 
             <div style="flex: 1; overflow-y: auto; padding-right:5px; -webkit-overflow-scrolling: touch;">
@@ -655,6 +689,66 @@
             <div id="egitmen-altnav" style="display:flex; gap:6px; margin-top:10px; overflow-x:auto;"></div>
         </div>
         <div id="egitmen-liste"></div>
+    </div>
+
+    <!-- VİDEO ANALİZ SEKMESİ -->
+    <div id="icerik-video" class="sekme-icerik">
+
+        <!-- Başlık -->
+        <div class="va-card">
+            <div class="va-title">🎥 Video Analiz <span class="va-tag">YAPAY ZEKÂ</span></div>
+            <div class="va-sub">Okçunun atış formunu yapay zekâ ile analiz edin. Video yükleyin veya kameradan kayıt alın, ardından <b>Analiz Et</b> butonuna basın. Geri bildirim Türkçe olarak sunulur.</div>
+        </div>
+
+        <!-- API Anahtarı Ayarı -->
+        <div class="va-card">
+            <div style="font-weight:700; font-size:13px; margin-bottom:8px;">⚙️ Abacus.AI API Anahtarı <span class="va-sub" style="font-weight:400;">(analiz için gereklidir)</span></div>
+            <div class="va-row" style="align-items:center;">
+                <input id="va-api-key" type="password" class="va-input" style="flex:1; min-width:200px;" placeholder="Abacus.AI API anahtarınızı yapıştırın (sapps...)">
+                <button class="va-btn va-btn-grey" onclick="vaToggleKey()" id="va-key-eye" title="Göster/Gizle">👁️</button>
+                <button class="va-btn va-btn-green" onclick="vaSaveKey()">💾 Kaydet</button>
+            </div>
+            <div class="va-sub" style="margin-top:8px;">Anahtarınız yalnızca bu cihazda (tarayıcı hafızasında) saklanır, sunucuya gönderilmez. Anahtar almak için: <b>apps.abacus.ai → Profil → API Keys</b>.</div>
+        </div>
+
+        <!-- Video Yükleme / Kamera -->
+        <div class="va-card">
+            <div style="font-weight:700; font-size:13px; margin-bottom:10px;">1️⃣ Video Kaynağı</div>
+            <div id="va-dropzone" class="va-dropzone" onclick="document.getElementById('va-file-input').click()">
+                <div class="va-icon">📂</div>
+                <div style="font-weight:700; margin-top:6px;">Videoyu buraya sürükleyip bırakın</div>
+                <div class="va-sub">veya tıklayarak dosya seçin (.mp4, .mov, .webm)</div>
+            </div>
+            <input id="va-file-input" type="file" accept="video/*" style="display:none;" onchange="vaFileSelected(event)">
+
+            <div class="va-row" style="margin-top:12px;">
+                <button id="va-cam-start" class="va-btn va-btn-blue" onclick="vaStartCamera()">📷 Kamerayı Aç</button>
+                <button id="va-rec-start" class="va-btn va-btn-red" onclick="vaStartRecording()" style="display:none;">⏺ Kayda Başla</button>
+                <button id="va-rec-stop" class="va-btn va-btn-grey" onclick="vaStopRecording()" style="display:none;">⏹ Kaydı Durdur</button>
+                <button id="va-cam-stop" class="va-btn va-btn-grey" onclick="vaStopCamera()" style="display:none;">✖ Kamerayı Kapat</button>
+                <span id="va-rec-status" style="display:none; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--neon-red);"><span class="va-rec-dot"></span> Kayıt: <span id="va-rec-time">00:00</span></span>
+            </div>
+        </div>
+
+        <!-- Oynatma -->
+        <div class="va-card" id="va-player-card" style="display:none;">
+            <div style="font-weight:700; font-size:13px; margin-bottom:10px;">2️⃣ Önizleme & Oynatma</div>
+            <video id="va-camera-preview" class="va-video" autoplay muted playsinline style="display:none;"></video>
+            <video id="va-video" class="va-video" controls playsinline style="display:none;"></video>
+            <div class="va-row" style="margin-top:12px;">
+                <button id="va-analyze-btn" class="va-btn va-btn-orange" onclick="vaAnalyze()" style="flex:1; min-width:180px;" disabled>🤖 Yapay Zekâ ile Analiz Et</button>
+                <button class="va-btn va-btn-grey" onclick="vaResetVideo()">🗑️ Temizle</button>
+            </div>
+            <div class="va-sub" style="margin-top:8px;">İpucu: Okçuyu yandan, tüm vücut görünecek şekilde çeken videolar en doğru analizi verir.</div>
+        </div>
+
+        <!-- Sonuçlar -->
+        <div class="va-card" id="va-results-card" style="display:none;">
+            <div style="font-weight:700; font-size:13px; margin-bottom:10px;">3️⃣ Analiz Sonuçları</div>
+            <div id="va-results"></div>
+        </div>
+
+        <canvas id="va-canvas" style="display:none;"></canvas>
     </div>
 
     <!-- SİSTEM ÇEKİRDEĞİ JAVASCRIPT (EKSİKSİZ TAM SÜRÜM) -->
@@ -1734,11 +1828,25 @@
             appId: "1:47110781498:web:4eca58683c48143fcb1303"
         };
         let dbBulut = null, bulutHazir = false, sonBulutJSON = '';
+        let bulutIlkPullYapildi = false; // buluttan ilk okuma yapılmadan ASLA gönderme yapma
 
+        function sporcuSayisi(db) { try { return Object.keys((db && db.buyukler) || {}).length + Object.keys((db && db.kucukler) || {}).length; } catch(e) { return 0; } }
+        function jsonSporcuSayisi(j) { try { return sporcuSayisi(JSON.parse(j || '{}').turnuvaDB || {}); } catch(e) { return 0; } }
+        // Otomatik güvenlik yedeği: en son DOLU veriyi sakla (kaza ile silinirse kurtarma için)
+        function guvenlikYedegiAl() {
+            try {
+                if(sporcuSayisi(turnuvaDB) > 0) {
+                    let j = bulutVeriJSON();
+                    localStorage.setItem('okculuk_yedek_son', j);
+                    localStorage.setItem('okculuk_yedek_son_zaman', new Date().toLocaleString('tr-TR'));
+                }
+            } catch(e) {}
+        }
         function bulutDurum(txt, renk) { let el = document.getElementById('bulut-durum'); if(el) { el.innerText = txt; el.style.color = renk || 'var(--text-muted)'; } }
         function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur }); }
 
         function bulutVeriyiUygula(p) {
+            guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
             if(p.turnuvaDB) turnuvaDB = p.turnuvaDB;
             if(p.takimlarDB) takimlarDB = p.takimlarDB;
             if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
@@ -1776,31 +1884,74 @@
                 dbBulut = firebase.firestore();
                 bulutHazir = true;
                 bulutDurum('☁️ bağlanıyor...', 'var(--gold)');
-                dbBulut.collection('kulup').doc('master').onSnapshot(doc => {
-                    if(!doc.exists) { bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); return; }
-                    let d = doc.data(); if(!d || !d.veri) return;
-                    if(d.veri === sonBulutJSON) { bulutDurum('☁️ senkron', 'var(--neon-green)'); return; }
-                    try { bulutVeriyiUygula(JSON.parse(d.veri)); sonBulutJSON = d.veri; bulutDurum('☁️ güncellendi', 'var(--neon-green)'); } catch(e) {}
-                }, err => { bulutDurum('☁️ izin/kural hatası', 'var(--neon-red)'); });
-                setInterval(bulutaGonderKontrol, 2000);
+                // 1) ÖNCE buluttan oku — gönderme yapmadan. Boş veri taşmasını engeller.
+                dbBulut.collection('kulup').doc('master').get().then(doc => {
+                    try {
+                        if(doc.exists && doc.data() && doc.data().veri) {
+                            let uzakJSON = doc.data().veri;
+                            let uzakSayi = jsonSporcuSayisi(uzakJSON);
+                            let yerelSayi = sporcuSayisi(turnuvaDB);
+                            if(uzakSayi > 0) { bulutVeriyiUygula(JSON.parse(uzakJSON)); sonBulutJSON = uzakJSON; bulutDurum('☁️ senkron', 'var(--neon-green)'); }
+                            else if(yerelSayi > 0) { sonBulutJSON = ''; bulutDurum('☁️ bağlı (bulut boştu, yerel korundu)', 'var(--gold)'); } // bulut boş, yereli koru — birazdan gönderilecek
+                            else { sonBulutJSON = uzakJSON; bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
+                        } else { bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
+                    } catch(e) {}
+                    bulutIlkPullYapildi = true; // artık göndermeye izin var
+                    // 2) Canlı dinleyici
+                    dbBulut.collection('kulup').doc('master').onSnapshot(doc2 => {
+                        if(!doc2.exists) return;
+                        let d = doc2.data(); if(!d || !d.veri) return;
+                        if(d.veri === sonBulutJSON) { bulutDurum('☁️ senkron', 'var(--neon-green)'); return; }
+                        let gelenSayi = jsonSporcuSayisi(d.veri);
+                        let yerelSayi = sporcuSayisi(turnuvaDB);
+                        // KORUMA: bulut boş gelirse ama yerelde sporcu varsa, silme — yereli koru
+                        if(gelenSayi === 0 && yerelSayi > 0) { bulutDurum('☁️ boş güncelleme yok sayıldı 🛡️', 'var(--gold)'); return; }
+                        try { bulutVeriyiUygula(JSON.parse(d.veri)); sonBulutJSON = d.veri; bulutDurum('☁️ güncellendi', 'var(--neon-green)'); } catch(e) {}
+                    }, err => { bulutDurum('☁️ izin/kural hatası', 'var(--neon-red)'); });
+                    // 3) Periyodik gönderme
+                    setInterval(bulutaGonderKontrol, 2000);
+                }).catch(e => {
+                    // okuma başarısızsa yine de dinleyiciyi kur ama göndermeyi kilitli tut
+                    bulutDurum('☁️ okuma hatası', 'var(--neon-red)');
+                });
             } catch(e) { bulutDurum('☁️ hata: ' + (e.message || e.code || 'bilinmiyor'), 'var(--neon-red)'); }
         }
         function bulutaGonderKontrol() {
-            if(!bulutHazir) return;
+            if(!bulutHazir || !bulutIlkPullYapildi) return; // ilk okuma bitmeden ASLA gönderme
             let json = bulutVeriJSON();
             if(json === sonBulutJSON) return;
+            let yerelSayi = sporcuSayisi(turnuvaDB);
+            let bulutSayi = jsonSporcuSayisi(sonBulutJSON);
+            // KORUMA: yerel boş ama bulutta sporcu varsa, boş veriyle bulutu silme
+            if(yerelSayi === 0 && bulutSayi > 0) { bulutDurum('☁️ koruma: boş veri gönderilmedi 🛡️', 'var(--gold)'); return; }
             sonBulutJSON = json;
             dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
-                .then(() => bulutDurum('☁️ kaydedildi', 'var(--neon-green)'))
+                .then(() => { guvenlikYedegiAl(); bulutDurum('☁️ kaydedildi', 'var(--neon-green)'); })
                 .catch(() => { bulutDurum('☁️ yazma hatası', 'var(--neon-red)'); });
         }
         function bulutaYukleManuel() {
             if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
+            if(sporcuSayisi(turnuvaDB) === 0 && jsonSporcuSayisi(sonBulutJSON) > 0) {
+                if(!confirm('DİKKAT: Şu an cihazda hiç sporcu yok ama bulutta var.\nBuluta yüklersen buluttaki tüm sporcular SİLİNİR.\nEmin misin?')) return;
+            }
             let json = bulutVeriJSON(); sonBulutJSON = json;
             bulutDurum('☁️ yükleniyor...', 'var(--gold)');
             dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
-                .then(() => { showToast('Buluta yüklendi ☁️⬆️', 'success'); bulutDurum('☁️ kaydedildi', 'var(--neon-green)'); })
+                .then(() => { guvenlikYedegiAl(); showToast('Buluta yüklendi ☁️⬆️', 'success'); bulutDurum('☁️ kaydedildi', 'var(--neon-green)'); })
                 .catch(() => { showToast('Yükleme hatası.', 'error'); bulutDurum('☁️ hata', 'var(--neon-red)'); });
+        }
+        function acilKurtarma() {
+            let j = localStorage.getItem('okculuk_yedek_son');
+            let z = localStorage.getItem('okculuk_yedek_son_zaman') || 'bilinmiyor';
+            if(!j) { showToast('Otomatik yedek bulunamadı.', 'warning'); return; }
+            let say = jsonSporcuSayisi(j);
+            if(say === 0) { showToast('Yedekte sporcu yok.', 'warning'); return; }
+            if(!confirm(`Son otomatik yedeği geri yükle?\n\n📅 Yedek zamanı: ${z}\n👥 ${say} sporcu\n\nMevcut veriler bununla değiştirilecek.`)) return;
+            try {
+                bulutVeriyiUygula(JSON.parse(j));
+                showToast(`Kurtarıldı! ${say} sporcu geri geldi 🛟`, 'success');
+                if(bulutHazir) bulutaYukleManuel(); // kurtarılan veriyi buluta da yaz
+            } catch(e) { showToast('Kurtarma hatası.', 'error'); }
         }
         function bulutManuelYenile() {
             if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
@@ -1827,6 +1978,8 @@
             if(pVeri) { try { personelDB = JSON.parse(pVeri) || []; } catch(e){} }
             let pyVeri = localStorage.getItem('okculuk_personel_yoklama');
             if(pyVeri) { try { personelYoklamaDB = JSON.parse(pyVeri) || []; } catch(e){} }
+            guvenlikYedegiAl(); // açılışta mevcut dolu veriyi hemen yedekle
+            setInterval(guvenlikYedegiAl, 20000); // periyodik güvenlik yedeği
             sporcuListesiniYenile(); siralamaListesiDoldur(); takimDropdownDoldur(); takimListesiCiz();
             hedefPanZoomKur();
             bulutBaslat();
@@ -1944,6 +2097,7 @@
             if(sekmeAd === 'liderlik') siralamaListesiDoldur(); 
             if(sekmeAd === 'egitmen') egitmenPaneliDoldur();
             if(sekmeAd === 'takimlar') { takimDropdownDoldur(); takimListesiCiz(); maclariCiz(); takimMaclariCiz(); }
+            if(sekmeAd === 'video') vaInit();
         }
         
         function cinsiyetSec(c) { aktifCinsiyet = c; document.getElementById('gender-kiz').classList.toggle('secili-kiz', c === 'K'); document.getElementById('gender-erkek').classList.toggle('secili-erkek', c === 'E'); }
@@ -2716,6 +2870,294 @@
         function baslatOkToplama() { let min = parseInt(document.getElementById('oto-toplama-dk').value) || 5; isTimerRunning = true; kalanSure = min * 60; document.getElementById('timer-alt').innerText = "OK TOPLAMA VE SKOR GİRİŞİ"; document.getElementById('sayac').style.color = "var(--accent-orange)"; document.getElementById('sayac').innerText = kalanSure; sesCal(600, 0.4); sayacIntervalBaslat(); }
         function kronometreSifirla() { clearInterval(timerId); isTimerRunning = false; timerPhase = 0; kalanSure = grupSuresi; document.getElementById('sayac').innerText = grupSuresi; document.getElementById('timer-alt').innerText = "ATIŞA HAZIR"; document.getElementById('sayac').style.color = "inherit"; document.getElementById('sayac').style.opacity = "1"; }
         function veriSifirla() { if(confirm("EMİN MİSİNİZ?\n\nTüm veriler sıfırlanacaktır.")) { turnuvaDB = { buyukler: {}, kucukler: {} }; takimlarDB = []; elemeEslesmeleri = []; takimElemeEslesmeleri = []; antrenmanlarDB = []; ozelSiniflar = []; personelDB = []; personelYoklamaDB = []; aktifTur = 1; aktifTakimTur = 1; localStorage.removeItem('okculuk_premium_data'); localStorage.removeItem('okculuk_takimlar_data'); localStorage.removeItem('okculuk_bracket_data'); localStorage.removeItem('okculuk_antrenman_data'); localStorage.removeItem('okculuk_ozelsinif_data'); localStorage.removeItem('okculuk_personel_data'); localStorage.removeItem('okculuk_personel_yoklama'); skorEkraniniKapat(); siralamaListesiDoldur(); takimListesiCiz(); showToast("Tüm veriler sıfırlandı.", "warning"); } }
+
+        /* =========================================================
+           VİDEO ANALİZ MODÜLÜ (Yapay Zekâ Destekli Okçuluk Analizi)
+           Abacus.AI vision API (RouteLLM / OpenAI uyumlu uç nokta)
+        ========================================================= */
+        const VA_API_URL = 'https://routellm.abacus.ai/v1/chat/completions';
+        const VA_MODEL = 'gpt-4o';
+        let vaMediaStream = null, vaMediaRecorder = null, vaRecChunks = [], vaRecTimer = null, vaRecSeconds = 0;
+        let vaCurrentVideoURL = null, vaHasVideo = false, vaInited = false;
+
+        function vaInit() {
+            if (vaInited) return;
+            vaInited = true;
+            // Kaydedilmiş API anahtarını yükle
+            const k = localStorage.getItem('okculuk_abacus_apikey');
+            if (k) document.getElementById('va-api-key').value = k;
+            // Sürükle-bırak olayları
+            const dz = document.getElementById('va-dropzone');
+            ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover'); }));
+            ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover'); }));
+            dz.addEventListener('drop', e => {
+                const f = e.dataTransfer.files && e.dataTransfer.files[0];
+                if (f) vaLoadVideoFile(f);
+            });
+        }
+
+        function vaToggleKey() {
+            const inp = document.getElementById('va-api-key');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+        function vaSaveKey() {
+            const v = document.getElementById('va-api-key').value.trim();
+            if (!v) return showToast("Lütfen geçerli bir API anahtarı girin.", "error");
+            localStorage.setItem('okculuk_abacus_apikey', v);
+            showToast("API anahtarı kaydedildi.", "success");
+        }
+        function vaGetKey() {
+            return (document.getElementById('va-api-key').value || localStorage.getItem('okculuk_abacus_apikey') || '').trim();
+        }
+
+        /* ---- Dosya seçimi / yükleme ---- */
+        function vaFileSelected(e) {
+            const f = e.target.files && e.target.files[0];
+            if (f) vaLoadVideoFile(f);
+        }
+        function vaLoadVideoFile(file) {
+            if (!file.type.startsWith('video/')) return showToast("Lütfen bir video dosyası seçin.", "error");
+            vaStopCamera();
+            if (vaCurrentVideoURL) URL.revokeObjectURL(vaCurrentVideoURL);
+            vaCurrentVideoURL = URL.createObjectURL(file);
+            const vid = document.getElementById('va-video');
+            vid.src = vaCurrentVideoURL;
+            vid.style.display = 'block';
+            document.getElementById('va-camera-preview').style.display = 'none';
+            document.getElementById('va-player-card').style.display = 'block';
+            vaHasVideo = true;
+            document.getElementById('va-analyze-btn').disabled = false;
+            document.getElementById('va-results-card').style.display = 'none';
+            showToast("Video yüklendi. Analiz edebilirsiniz.", "success");
+        }
+        function vaResetVideo() {
+            const vid = document.getElementById('va-video');
+            vid.pause(); vid.removeAttribute('src'); vid.load(); vid.style.display = 'none';
+            if (vaCurrentVideoURL) { URL.revokeObjectURL(vaCurrentVideoURL); vaCurrentVideoURL = null; }
+            vaHasVideo = false;
+            document.getElementById('va-analyze-btn').disabled = true;
+            document.getElementById('va-player-card').style.display = 'none';
+            document.getElementById('va-results-card').style.display = 'none';
+            document.getElementById('va-file-input').value = '';
+        }
+
+        /* ---- Kamera & Kayıt ---- */
+        async function vaStartCamera() {
+            try {
+                vaMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                const prev = document.getElementById('va-camera-preview');
+                prev.srcObject = vaMediaStream;
+                prev.style.display = 'block';
+                document.getElementById('va-video').style.display = 'none';
+                document.getElementById('va-player-card').style.display = 'block';
+                document.getElementById('va-cam-start').style.display = 'none';
+                document.getElementById('va-rec-start').style.display = 'inline-flex';
+                document.getElementById('va-cam-stop').style.display = 'inline-flex';
+                document.getElementById('va-analyze-btn').disabled = true;
+                showToast("Kamera açıldı. Kayda başlayabilirsiniz.", "success");
+            } catch (err) {
+                showToast("Kameraya erişilemedi: " + err.message, "error");
+            }
+        }
+        function vaStartRecording() {
+            if (!vaMediaStream) return;
+            vaRecChunks = [];
+            let mime = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
+            try { vaMediaRecorder = new MediaRecorder(vaMediaStream, { mimeType: mime }); }
+            catch(e){ vaMediaRecorder = new MediaRecorder(vaMediaStream); }
+            vaMediaRecorder.ondataavailable = e => { if (e.data.size > 0) vaRecChunks.push(e.data); };
+            vaMediaRecorder.onstop = () => {
+                const blob = new Blob(vaRecChunks, { type: 'video/webm' });
+                if (vaCurrentVideoURL) URL.revokeObjectURL(vaCurrentVideoURL);
+                vaCurrentVideoURL = URL.createObjectURL(blob);
+                const vid = document.getElementById('va-video');
+                vid.src = vaCurrentVideoURL;
+                vid.style.display = 'block';
+                document.getElementById('va-camera-preview').style.display = 'none';
+                vaHasVideo = true;
+                document.getElementById('va-analyze-btn').disabled = false;
+                showToast("Kayıt tamamlandı. Analiz edebilirsiniz.", "success");
+            };
+            vaMediaRecorder.start();
+            vaRecSeconds = 0;
+            document.getElementById('va-rec-status').style.display = 'inline-flex';
+            document.getElementById('va-rec-start').style.display = 'none';
+            document.getElementById('va-rec-stop').style.display = 'inline-flex';
+            vaRecTimer = setInterval(() => {
+                vaRecSeconds++;
+                const m = String(Math.floor(vaRecSeconds/60)).padStart(2,'0');
+                const s = String(vaRecSeconds%60).padStart(2,'0');
+                document.getElementById('va-rec-time').innerText = m + ':' + s;
+            }, 1000);
+        }
+        function vaStopRecording() {
+            if (vaMediaRecorder && vaMediaRecorder.state !== 'inactive') vaMediaRecorder.stop();
+            clearInterval(vaRecTimer);
+            document.getElementById('va-rec-status').style.display = 'none';
+            document.getElementById('va-rec-stop').style.display = 'none';
+            document.getElementById('va-rec-start').style.display = 'inline-flex';
+        }
+        function vaStopCamera() {
+            if (vaMediaRecorder && vaMediaRecorder.state !== 'inactive') { try { vaMediaRecorder.stop(); } catch(e){} }
+            clearInterval(vaRecTimer);
+            if (vaMediaStream) { vaMediaStream.getTracks().forEach(t => t.stop()); vaMediaStream = null; }
+            document.getElementById('va-camera-preview').style.display = 'none';
+            document.getElementById('va-cam-start').style.display = 'inline-flex';
+            document.getElementById('va-rec-start').style.display = 'none';
+            document.getElementById('va-rec-stop').style.display = 'none';
+            document.getElementById('va-cam-stop').style.display = 'none';
+            document.getElementById('va-rec-status').style.display = 'none';
+        }
+
+        /* ---- Videodan kare yakalama ---- */
+        function vaCaptureFrames(numFrames) {
+            return new Promise((resolve, reject) => {
+                const vid = document.getElementById('va-video');
+                const canvas = document.getElementById('va-canvas');
+                const dur = vid.duration;
+                if (!dur || !isFinite(dur) || dur <= 0) {
+                    // Süre bilinmiyorsa (bazı webm kayıtları) tek kare al
+                    return vaCaptureSingleFrame(vid, canvas).then(f => resolve([f])).catch(reject);
+                }
+                // Videonun başını/sonunu hafifçe kırp
+                const start = dur * 0.08, end = dur * 0.92;
+                const times = [];
+                for (let i = 0; i < numFrames; i++) times.push(start + (end - start) * (i / (numFrames - 1)));
+                const frames = [];
+                let idx = 0;
+                const ctx = canvas.getContext('2d');
+                const onSeek = () => {
+                    const maxW = 720;
+                    const scale = vid.videoWidth > maxW ? maxW / vid.videoWidth : 1;
+                    canvas.width = Math.round(vid.videoWidth * scale);
+                    canvas.height = Math.round(vid.videoHeight * scale);
+                    ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                    frames.push(canvas.toDataURL('image/jpeg', 0.8));
+                    idx++;
+                    if (idx < times.length) { vid.currentTime = times[idx]; }
+                    else { vid.removeEventListener('seeked', onSeek); resolve(frames); }
+                };
+                vid.addEventListener('seeked', onSeek);
+                vid.addEventListener('error', () => reject(new Error('Video okunamadı')), { once: true });
+                vid.currentTime = times[0];
+            });
+        }
+        function vaCaptureSingleFrame(vid, canvas) {
+            return new Promise((resolve) => {
+                const grab = () => {
+                    const ctx = canvas.getContext('2d');
+                    const maxW = 720;
+                    const w = vid.videoWidth || 640, h = vid.videoHeight || 480;
+                    const scale = w > maxW ? maxW / w : 1;
+                    canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
+                    ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                if (vid.readyState >= 2) grab();
+                else vid.addEventListener('loadeddata', grab, { once: true });
+            });
+        }
+
+        /* ---- Yapay zekâ analizi ---- */
+        async function vaAnalyze() {
+            const key = vaGetKey();
+            if (!key) { showToast("Önce Abacus.AI API anahtarınızı kaydedin.", "error"); return; }
+            if (!vaHasVideo) { showToast("Önce bir video yükleyin veya kaydedin.", "error"); return; }
+
+            const btn = document.getElementById('va-analyze-btn');
+            btn.disabled = true;
+            const resCard = document.getElementById('va-results-card');
+            const resDiv = document.getElementById('va-results');
+            resCard.style.display = 'block';
+            resDiv.innerHTML = '<div style="text-align:center; padding:18px;"><div class="va-spin"></div><div class="va-sub" style="margin-top:12px;">Videodan kareler alınıyor...</div></div>';
+            resCard.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const vid = document.getElementById('va-video');
+                if (vid.paused) { try { await vid.play(); vid.pause(); } catch(e){} }
+                const frames = await vaCaptureFrames(6);
+                resDiv.innerHTML = '<div style="text-align:center; padding:18px;"><div class="va-spin"></div><div class="va-sub" style="margin-top:12px;">Yapay zekâ okçunun formunu analiz ediyor... (bu işlem 15-40 sn sürebilir)</div></div>';
+
+                const prompt = `Sen uzman bir okçuluk antrenörüsün. Sana bir okçunun atış anından alınmış ardışık video kareleri veriliyor. Bu kareleri inceleyerek okçunun TEKNİĞİNİ analiz et.\n\nŞu unsurları değerlendir:\n- Duruş ve postür (stance)\n- Çekiş tekniği (draw)\n- Çapa noktası tutarlılığı (anchor point)\n- Bırakış formu (release)\n- Devam hareketi / takip (follow-through)\n- Vücut hizalanması (body alignment)\n- Görülen teknik hatalar\n\nTÜM cevabını TÜRKÇE ver. SADECE aşağıdaki JSON formatında, başka hiçbir metin olmadan yanıt ver:\n{\n  "genel_puan": <0-100 arası tam sayı>,\n  "genel_yorum": "<1-2 cümle genel değerlendirme>",\n  "dogrular": ["<doğru yapılan teknik 1>", "..."],\n  "hatalar": ["<tespit edilen hata 1>", "..."],\n  "oneriler": ["<geliştirme önerisi 1>", "..."]\n}\nEğer kareler okçuluk içermiyorsa veya analiz edilemiyorsa, hatalar dizisine bunu Türkçe açıkla ve genel_puan değerini 0 yap.`;
+
+                const content = [{ type: 'text', text: prompt }];
+                frames.forEach(f => content.push({ type: 'image_url', image_url: { url: f } }));
+
+                const resp = await fetch(VA_API_URL, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: VA_MODEL, messages: [{ role: 'user', content: content }], max_tokens: 1200, temperature: 0.3 })
+                });
+
+                if (!resp.ok) {
+                    const t = await resp.text();
+                    throw new Error('API hatası (' + resp.status + '): ' + t.slice(0, 200));
+                }
+                const data = await resp.json();
+                let txt = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+                vaRenderResult(txt, frames.length);
+            } catch (err) {
+                resDiv.innerHTML = '<div class="va-result-box va-box-bad"><div class="va-box-head" style="color:var(--neon-red);">⚠️ Analiz Başarısız</div><div class="va-list-item">' + (err.message || err) + '</div><div class="va-sub" style="margin-top:8px;">API anahtarınızı ve internet bağlantınızı kontrol edip tekrar deneyin.</div></div>';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function vaRenderResult(txt, frameCount) {
+            const resDiv = document.getElementById('va-results');
+            // JSON'u ayıkla
+            let obj = null;
+            try {
+                let clean = txt.trim().replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+                const s = clean.indexOf('{'), e = clean.lastIndexOf('}');
+                if (s !== -1 && e !== -1) clean = clean.slice(s, e + 1);
+                obj = JSON.parse(clean);
+            } catch (e) { obj = null; }
+
+            if (!obj) {
+                resDiv.innerHTML = '<div class="va-result-box va-box-tip"><div class="va-box-head">📋 Analiz</div><div class="va-list-item" style="white-space:pre-wrap;">' + (txt || 'Sonuç alınamadı.') + '</div></div>';
+                return;
+            }
+
+            const puan = (typeof obj.genel_puan === 'number') ? obj.genel_puan : (parseInt(obj.genel_puan) || 0);
+            const renk = puan >= 75 ? 'var(--neon-green)' : (puan >= 50 ? 'var(--gold)' : 'var(--neon-red)');
+            const dogrular = Array.isArray(obj.dogrular) ? obj.dogrular : [];
+            const hatalar = Array.isArray(obj.hatalar) ? obj.hatalar : [];
+            const oneriler = Array.isArray(obj.oneriler) ? obj.oneriler : [];
+
+            let html = '';
+            // Özet
+            html += '<div class="va-result-box" style="display:flex; align-items:center; gap:16px;">';
+            html += '<div class="va-score-circle" style="border-color:' + renk + '; color:' + renk + ';">' + puan + '<span style="font-size:11px; font-weight:600;">/100</span></div>';
+            html += '<div style="flex:1;"><div style="font-weight:800; font-size:14px;">Genel Değerlendirme</div><div class="va-sub" style="margin-top:4px; font-size:13px;">' + (obj.genel_yorum || '') + '</div><div class="va-sub" style="margin-top:6px;">' + frameCount + ' video karesi analiz edildi.</div></div>';
+            html += '</div>';
+
+            // Doğrular
+            html += '<div class="va-result-box va-box-good"><div class="va-box-head" style="color:var(--neon-green);">✓ Doğrular</div>';
+            if (dogrular.length) dogrular.forEach(d => html += '<div class="va-list-item">✅ ' + vaEsc(d) + '</div>');
+            else html += '<div class="va-list-item va-sub">Belirgin doğru teknik tespit edilemedi.</div>';
+            html += '</div>';
+
+            // Hatalar
+            html += '<div class="va-result-box va-box-bad"><div class="va-box-head" style="color:var(--neon-red);">✗ Hatalar</div>';
+            if (hatalar.length) hatalar.forEach(h => html += '<div class="va-list-item">❌ ' + vaEsc(h) + '</div>');
+            else html += '<div class="va-list-item va-sub">Belirgin bir hata tespit edilmedi. Tebrikler!</div>';
+            html += '</div>';
+
+            // Öneriler
+            html += '<div class="va-result-box va-box-tip"><div class="va-box-head" style="color:var(--neon-blue);">💡 Geliştirme Önerileri</div>';
+            if (oneriler.length) oneriler.forEach(o => html += '<div class="va-list-item">▶️ ' + vaEsc(o) + '</div>');
+            else html += '<div class="va-list-item va-sub">Ek öneri bulunmuyor.</div>';
+            html += '</div>';
+
+            html += '<div class="va-sub" style="text-align:center;">⚠️ Bu analiz yapay zekâ tarafından üretilmiştir ve bir antrenörün gözlemi yerine geçmez.</div>';
+
+            resDiv.innerHTML = html;
+        }
+        function vaEsc(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
     </script>
 </body>
 </html>
