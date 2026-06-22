@@ -417,6 +417,8 @@
                 <button onclick="sporcuKartEkle()" style="background:var(--accent-orange); color:white; border:none; border-radius:8px; padding:12px; font-weight:bold; width:100%;">KAYIT EKLE ➕</button>
             </div>
 
+            <button onclick="yeniDersBaslat()" style="width:100%; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); border-radius:10px; padding:11px; font-weight:bold; font-size:13px; margin-bottom:12px;">🗂️ Yeni Ders Başlat (mevcut skor kartlarını arşivle)</button>
+
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 0 5px;">
                 <span id="skor-kayitli-sayi" style="color:var(--text-muted); font-size:11px; font-weight:bold;">Atıcılar</span>
                 <select id="liste-filtre" onchange="sporcuListesiniYenile()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:8px 10px; border-radius:6px; font-size:11px; outline:none;">
@@ -427,6 +429,10 @@
                     <option value="klasik">Klasik Yaylar</option>
                     <option value="makarali">Makaralı Yaylar</option>
                 </select>
+            </div>
+            <div style="margin-bottom:10px;">
+                <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; padding-left:2px;">🏷️ Sınıf seç — sadece o sınıfın sporcuları görünür</div>
+                <select id="skor-sinif-filtre" onchange="skorSinifFiltre=this.value; sporcuListesiniYenile();" style="width:100%; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--neon-blue); padding:10px; border-radius:8px; font-size:13px; font-weight:bold; outline:none;"></select>
             </div>
             <div id="sporcu-ana-liste"></div>
         </div>
@@ -596,6 +602,10 @@
                 <button onclick="raporOnizlemeAc()" style="flex:2; background:rgba(255,98,0,0.2); border:1px solid var(--accent-orange); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">📄 Renkli PDF Rapor</button>
                 <button onclick="veriSifirla()" style="flex:1; background:rgba(239,68,68,0.2); border:1px solid var(--neon-red); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">Sıfırla</button>
             </div>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <button onclick="bulutaYukleManuel()" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--text-main); padding:9px; border-radius:6px; font-size:12px; font-weight:bold;">☁️⬆️ Buluta Yükle</button>
+                <button onclick="bulutManuelYenile()" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); padding:9px; border-radius:6px; font-size:12px; font-weight:bold;">☁️⬇️ Buluttan Çek</button>
+            </div>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <button onclick="tumVeriyiYedekle()" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">💾 Yedekle (JSON)</button>
                 <button onclick="yedekDosyaSec()" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">📂 Geri Yükle</button>
@@ -641,6 +651,7 @@
         let yoklamaDurum = {};
         let egitmenAylikAy = '';
         let sinifGoruntuFiltre = '__hepsi';
+        let skorSinifFiltre = '__hepsi';
         let ozelSiniflar = [];
         let personelDB = []; let personelYoklamaDB = []; let personelYoklamaDurum = {}; let personelAylikAy = ''; let personelDuzenleId = null;
         let fotoImg = null; let fotoMode = 'merkez'; let fotoMerkez = null; let fotoKenar = null; let fotoOklar = []; let fotoTip = '10ring'; let fotoAthlete = '';
@@ -717,13 +728,47 @@
         function ozelSiniflariKaydet() { try { localStorage.setItem('okculuk_ozelsinif_data', JSON.stringify(ozelSiniflar)); } catch(e) {} }
         function personeliKaydet() { try { localStorage.setItem('okculuk_personel_data', JSON.stringify(personelDB)); localStorage.setItem('okculuk_personel_yoklama', JSON.stringify(personelYoklamaDB)); } catch(e) {} }
         function bugunISO() { let d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function yeniDersBaslat() {
+            let isimler = Object.keys(turnuvaDB[aktifGrup] || {});
+            let arsivlenecek = isimler.filter(ad => { let sp = turnuvaDB[aktifGrup][ad]; return sp.seriler && sp.seriler.length > 0; });
+            if(arsivlenecek.length === 0) return showToast('Arşivlenecek dolu skor kartı yok.', 'warning');
+            if(!confirm(`Bu dersin skor kartları arşivlenip herkese YENİ kart açılsın mı?\n\n${arsivlenecek.length} sporcunun mevcut kartı geçmişe taşınacak ve skorları sıfırlanacak. (Geçmiş kartlar karnede görünür, silinmez.)`)) return;
+            let bugun = bugunISO();
+            isimler.forEach(ad => {
+                let sp = turnuvaDB[aktifGrup][ad];
+                if(sp.seriler && sp.seriler.length > 0) {
+                    if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi = [];
+                    sp.kartGecmisi.push({ tarih: bugun, seriler: sp.seriler, detayliOklar: sp.detayliOklar || [], toplamSkor: sp.toplamSkor || 0, xAdet: sp.xAdet || 0 });
+                    sp.seriler = []; sp.detayliOklar = []; sp.toplamSkor = 0; sp.xAdet = 0; sp.lastModified = Date.now();
+                }
+            });
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            showToast(`Yeni ders başladı! ${arsivlenecek.length} kart arşivlendi 🗂️`, 'success');
+            sporcuListesiniYenile(); siralamaListesiDoldur();
+        }
         function formatTarih(iso) { if(!iso) return '-'; let p = iso.split('-'); return (p.length === 3) ? `${p[2]}.${p[1]}.${p[0]}` : iso; }
         function buHaftaMi(iso) { if(!iso) return false; let d = new Date(iso + 'T00:00:00'); let n = new Date(); let gun = (n.getDay()+6)%7; let bas = new Date(n); bas.setHours(0,0,0,0); bas.setDate(n.getDate()-gun); let son = new Date(bas); son.setDate(bas.getDate()+7); return d >= bas && d < son; }
         function sinifListesi() {
             let s = new Set(SINIF_PRESET);
             ozelSiniflar.forEach(g => s.add(g));
-            Object.keys(turnuvaDB[aktifGrup] || {}).forEach(ad => { let v = turnuvaDB[aktifGrup][ad].sinif; if(v) s.add(v); });
+            Object.keys(turnuvaDB[aktifGrup] || {}).forEach(ad => { sporcuSiniflari(turnuvaDB[aktifGrup][ad]).forEach(v => { if(v) s.add(v); }); });
             return Array.from(s);
+        }
+        // Bir sporcu birden çok sınıfa üye olabilir (haftada 1/2/3 gün gelenler için)
+        function sporcuSiniflari(sp) {
+            if(sp && Array.isArray(sp.siniflar) && sp.siniflar.length) return sp.siniflar;
+            if(sp && sp.sinif) return [sp.sinif];
+            return [];
+        }
+        function sporcuSinifUye(sp, s) { return sporcuSiniflari(sp).includes(s); }
+        function sporcuSinifToggle(ad, s) {
+            let sp = turnuvaDB[aktifGrup][ad]; if(!sp) return;
+            let arr = sporcuSiniflari(sp).slice();
+            let idx = arr.indexOf(s);
+            if(idx >= 0) arr.splice(idx, 1); else arr.push(s);
+            sp.siniflar = arr; sp.sinif = arr[0] || ''; sp.lastModified = Date.now();
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            egitmenRenderSiniflar();
         }
 
         function egitmenSekmeAc(v) { egitmenAltSekme = v; egitmenPaneliDoldur(); }
@@ -1034,7 +1079,7 @@
             // Özel grup yöneticisi
             let grupChips = siniflar.map(s => {
                 let silinebilir = ozelSiniflar.includes(s);
-                let say = aktifler.filter(ad => (turnuvaDB[aktifGrup][ad].sinif||'') === s).length;
+                let say = aktifler.filter(ad => sporcuSinifUye(turnuvaDB[aktifGrup][ad], s)).length;
                 return `<span style="display:inline-flex; align-items:center; gap:4px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:6px; padding:4px 8px; font-size:11px; margin:2px;">${s} <span style="color:var(--text-muted);">(${say})</span>${silinebilir?` <span onclick="ozelGrupSil('${s.replace(/'/g,"\\'")}')" style="cursor:pointer; color:var(--neon-red); font-weight:bold;">✕</span>`:''}</span>`;
             }).join('');
             let html = `<div class="glass-panel" style="padding:14px; border-radius:12px; margin-bottom:12px;">
@@ -1059,17 +1104,19 @@
             </div>`;
 
             // Aktif sporcular (görüntülenen gruba göre)
-            let gosterilen = (sinifGoruntuFiltre === '__hepsi') ? aktifler : aktifler.filter(ad => (turnuvaDB[aktifGrup][ad].sinif || '') === sinifGoruntuFiltre);
+            let gosterilen = (sinifGoruntuFiltre === '__hepsi') ? aktifler : aktifler.filter(ad => sporcuSinifUye(turnuvaDB[aktifGrup][ad], sinifGoruntuFiltre));
             html += `<div style="font-size:12px; font-weight:bold; color:var(--text-main); margin:4px 0 8px 2px;">${sinifGoruntuFiltre==='__hepsi'?'Aktif Sporcular':sinifGoruntuFiltre} (${gosterilen.length})</div>`;
             gosterilen.forEach(ad => {
-                let i = egitmenAdListesi.indexOf(ad);
                 let sp = turnuvaDB[aktifGrup][ad]; let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)';
-                let opt = `<option value="">— Grup —</option>` + siniflar.map(s => `<option value="${s}" ${sp.sinif===s?'selected':''}>${s}</option>`).join('');
+                let uyeler = sporcuSiniflari(sp);
+                let cipler = siniflar.map(s => {
+                    let uye = uyeler.includes(s);
+                    return `<span onclick="sporcuSinifToggle('${ad.replace(/'/g,"\\'")}', '${s.replace(/'/g,"\\'")}')" style="cursor:pointer; display:inline-block; padding:5px 10px; margin:3px; border-radius:14px; font-size:11px; font-weight:bold; border:1px solid ${uye?'var(--neon-green)':'var(--border-color)'}; background:${uye?'rgba(16,185,129,0.18)':'var(--bg-panel)'}; color:${uye?'var(--neon-green)':'var(--text-muted)'};">${uye?'✓ ':''}${s}</span>`;
+                }).join('');
                 html += `<div class="glass-panel" style="padding:10px 12px; border-radius:10px; margin-bottom:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                        <span style="font-weight:600; font-size:14px; flex:1; min-width:0;"><span style="color:${cRenk};">●</span> ${ad}</span>
-                        <select id="sinif-sel-${i}" onchange="sinifAta(${i})" style="padding:7px; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:12px; max-width:130px;">${opt}</select>
-                    </div>
+                    <div style="font-weight:600; font-size:14px;"><span style="color:${cRenk};">●</span> ${ad}</div>
+                    <div style="font-size:10px; color:var(--text-muted); margin:6px 0 2px;">Hangi sınıflara gelir? (birden çok seçebilirsin)</div>
+                    <div style="display:flex; flex-wrap:wrap;">${cipler || '<span style="font-size:11px; color:var(--text-muted);">Önce yukarıdan sınıf ekle.</span>'}</div>
                     <div style="display:flex; gap:6px; margin-top:8px;">
                         <button onclick="sporcuPasifYap('${ad.replace(/'/g,"\\'")}', true)" style="flex:1; background:rgba(245,158,11,0.15); border:1px solid var(--accent-orange); color:var(--text-main); padding:6px; border-radius:6px; font-size:11px; font-weight:bold;">⏸ Pasife Al (Bıraktı)</button>
                         <button onclick="sporcuSil('${ad.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,0.15); border:1px solid var(--neon-red); color:var(--text-main); padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold;">🗑️ Sil</button>
@@ -1327,7 +1374,7 @@
             let opts = [['__hepsi','Tüm Sporcular']].concat(siniflar.map(s => [s, s]));
             let sinifOpt = opts.map(([v,l]) => `<option value="${v}" ${v===egitmenYeniSinifFiltre?'selected':''}>${l}</option>`).join('');
             let isimler = Object.keys(turnuvaDB[aktifGrup] || {});
-            let liste = isimler.filter(ad => (egitmenYeniSinifFiltre === '__hepsi' || (turnuvaDB[aktifGrup][ad].sinif || '') === egitmenYeniSinifFiltre) && !turnuvaDB[aktifGrup][ad].pasif);
+            let liste = isimler.filter(ad => (egitmenYeniSinifFiltre === '__hepsi' || sporcuSinifUye(turnuvaDB[aktifGrup][ad], egitmenYeniSinifFiltre)) && !turnuvaDB[aktifGrup][ad].pasif);
             liste.forEach(ad => { if(yoklamaDurum[ad] === undefined) yoklamaDurum[ad] = false; });
             egitmenAdListesi = liste;
 
@@ -1671,7 +1718,7 @@
                     if(d.veri === sonBulutJSON) { bulutDurum('☁️ senkron', 'var(--neon-green)'); return; }
                     try { bulutVeriyiUygula(JSON.parse(d.veri)); sonBulutJSON = d.veri; bulutDurum('☁️ güncellendi', 'var(--neon-green)'); } catch(e) {}
                 }, err => { bulutDurum('☁️ izin/kural hatası', 'var(--neon-red)'); });
-                setInterval(bulutaGonderKontrol, 4000);
+                setInterval(bulutaGonderKontrol, 2000);
             } catch(e) { bulutDurum('☁️ hata: ' + (e.message || e.code || 'bilinmiyor'), 'var(--neon-red)'); }
         }
         function bulutaGonderKontrol() {
@@ -1682,6 +1729,14 @@
             dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
                 .then(() => bulutDurum('☁️ kaydedildi', 'var(--neon-green)'))
                 .catch(() => { bulutDurum('☁️ yazma hatası', 'var(--neon-red)'); });
+        }
+        function bulutaYukleManuel() {
+            if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
+            let json = bulutVeriJSON(); sonBulutJSON = json;
+            bulutDurum('☁️ yükleniyor...', 'var(--gold)');
+            dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                .then(() => { showToast('Buluta yüklendi ☁️⬆️', 'success'); bulutDurum('☁️ kaydedildi', 'var(--neon-green)'); })
+                .catch(() => { showToast('Yükleme hatası.', 'error'); bulutDurum('☁️ hata', 'var(--neon-red)'); });
         }
         function bulutManuelYenile() {
             if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
@@ -1836,6 +1891,15 @@
             else if (f === 'makarali') { listObj.sort((a,b) => a.yay === 'Makaralı' ? -1 : 1); }
 
             let grupSecenekleri = sinifListesi();
+            // Sınıf filtresi seçeneklerini doldur
+            let sfEl = document.getElementById('skor-sinif-filtre');
+            if(sfEl) {
+                let opts = [['__hepsi', '👥 Tüm Sporcular']].concat(grupSecenekleri.map(s => [s, '🏷️ ' + s]));
+                if(!grupSecenekleri.includes(skorSinifFiltre) && skorSinifFiltre !== '__hepsi') skorSinifFiltre = '__hepsi';
+                sfEl.innerHTML = opts.map(([v, l]) => `<option value="${v}" ${v === skorSinifFiltre ? 'selected' : ''}>${l}</option>`).join('');
+            }
+            // Seçili sınıfa göre süz
+            if(skorSinifFiltre !== '__hepsi') listObj = listObj.filter(sp => sporcuSinifUye(sp, skorSinifFiltre));
             listObj.forEach(sp => {
                 let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)'; let yIcon = sp.yay === 'Makaralı' ? '⚙️' : '🏹'; let sLen = sp.seriler ? sp.seriler.length : 0;
                 let grupOpt = `<option value="">🏷️ Grup yok</option>` + grupSecenekleri.map(g => `<option value="${g}" ${sp.sinif===g?'selected':''}>${g}</option>`).join('');
@@ -1851,7 +1915,7 @@
         }
         function sporcuGrupAta(ad, grup) {
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp) return;
-            sp.sinif = grup; sp.lastModified = Date.now();
+            sp.sinif = grup; sp.siniflar = grup ? [grup] : []; sp.lastModified = Date.now();
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
             showToast(grup ? `${ad} → "${grup}"` : `${ad} grubu kaldırıldı`, 'success');
         }
@@ -1875,7 +1939,7 @@
             currentZoom = val; if(val <= 1.0) { panX = 0; panY = 0; }
             applyHedefTransform();
         }
-        function hedefGorunumSifirla() { currentZoom = 1.0; panX = 0; panY = 0; applyHedefTransform(); }
+        function hedefGorunumSifirla() { currentZoom = 2.0; panX = 0; panY = 0; applyHedefTransform(); }
 
         /* PARMAKLA/FAREYLE KAYDIRMA - tek dokunuş hâlâ skor girer */
         function hedefPanZoomKur() {
@@ -2085,6 +2149,7 @@
             
             if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); 
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); showToast(`Seri Kaydedildi! (+${seriPuan})`, "success");
+            try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
             
             let newLen = grupData.seriler.length;
             if(newLen >= limit) { showToast("Tüm seriler tamamlandı!", "success"); skorEkraniniKapat(); } 
@@ -2242,6 +2307,21 @@
                         gsAlani.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0; align-items:center; gap:6px;"><span style="flex:1;">Seri ${i+1}: ${oklarHTML}</span><span style="color:var(--accent-orange); font-weight:bold; white-space:nowrap;">${s.puan} P</span><button onclick="seriDuzenleAc('${ad.replace(/'/g,"\\'")}', ${i})" style="background:rgba(255,98,0,0.15); border:1px solid var(--accent-orange); color:var(--text-main); border-radius:5px; padding:3px 8px; font-size:12px; font-weight:bold;">✏️</button></div>`;
                     });
                 } else { gsAlani.innerHTML += "<div style='color:var(--text-muted); font-style:italic;'>Henüz atış yapılmadı.</div>"; }
+
+                let kg = sp.kartGecmisi || [];
+                if(kg.length > 0) {
+                    gsAlani.innerHTML += `<div style="margin-top:14px; font-weight:bold; font-size:12px; color:var(--neon-blue);">📂 Geçmiş Skor Kartları (${kg.length})</div>`;
+                    kg.slice().reverse().forEach(kart => {
+                        let seriOzet = (kart.seriler || []).map((s, si) => {
+                            let oklarHTML = (s.oklar || []).map(o => { let r = getRenkForPuan(o); return `<span style="background:${r.bg}; color:${r.c}; border-radius:3px; padding:1px 4px; margin-right:2px;">${o}</span>`; }).join('');
+                            return `<div style="padding:3px 0; border-bottom:1px dashed var(--border-color);">S${si+1}: ${oklarHTML} <b style="color:var(--accent-orange); float:right;">${s.puan}P</b></div>`;
+                        }).join('');
+                        gsAlani.innerHTML += `<details style="margin-top:6px; background:rgba(0,0,0,0.12); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
+                            <summary style="cursor:pointer; font-size:12px; font-weight:bold;">📅 ${formatTarih(kart.tarih)} — <span style="color:var(--neon-green);">${kart.toplamSkor||0} P</span> <span style="color:var(--gold);">(${kart.xAdet||0} X)</span></summary>
+                            <div style="margin-top:6px; font-size:11px;">${seriOzet || '<span style="color:var(--text-muted);">Seri yok.</span>'}</div>
+                        </details>`;
+                    });
+                }
                 
                 karneModalDetayliOklar = sp.detayliOklar || [];
                 document.getElementById('karne-hedef-secici').value = '10ring';
