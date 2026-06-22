@@ -57,6 +57,9 @@
         .pin-btn { padding: 18px 0; font-size: 22px; font-weight: 800; color: var(--text-main); background: #1a1a1c; border: 2px solid #333336; border-radius: 12px; cursor: pointer; }
         body.light-theme .pin-btn { background: #fff; color: #111827; border-color: #cbd5e1; }
         .pin-btn:active { background: var(--accent-orange); color: #fff; }
+        body.sporcu-uye-modu .sadece-egitmen { display: none !important; }
+        body.sporcu-uye-modu .sadece-sporcu { display: inline-block !important; }
+        body.sporcu-uye-modu #tab-egitmen, body.sporcu-uye-modu #icerik-egitmen { display: none !important; }
 
         /* ÜST BAR VE SEKMELER */
         #ust-bar { padding: 10px 15px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
@@ -179,6 +182,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v25</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -207,9 +211,14 @@
                 <button class="pin-btn" style="font-size:18px;" onclick="sifreSil()">⌫</button>
             </div>
         </div>
+        <div id="giris-sporcu" style="width:100%; max-width:320px; display:none; flex-direction:column; align-items:center; gap:12px;">
+            <div style="color:var(--text-muted); font-size:12px; text-align:center;">Adını ve kişisel kodunu gir<br>(kod verilmediyse <b>doğum yılın</b>)</div>
+            <input type="text" id="sporcu-giris-ad" placeholder="Ad Soyad" autocomplete="off" style="width:100%; padding:12px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; text-align:center; font-size:15px;">
+            <input type="text" id="sporcu-giris-kod" placeholder="Kişisel kod" inputmode="numeric" autocomplete="off" style="width:100%; padding:12px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; text-align:center; font-size:15px;">
+            <button onclick="sporcuGirisDene()" style="width:100%; padding:13px; background:var(--accent-orange); color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:15px;">🎯 Giriş Yap</button>
+            <button onclick="platformGeri()" style="width:100%; padding:9px; font-size:12px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); border-radius:8px;">← Geri</button>
+        </div>
     </div>
-
-    <!-- 2. SPORCU KARNESİ MODALI -->
     <div id="detay-modal" class="modal-overlay kolay-kapat">
         <div class="modal-content glass-panel" style="max-width:550px; padding:20px;">
             <div class="panel-header">
@@ -293,6 +302,8 @@
                 <option value="Klasik">Klasik Yay</option>
                 <option value="Makaralı">Makaralı Yay</option>
             </select>
+            <div style="margin-top:15px; margin-bottom:5px; font-size:12px;">🔑 Sporcu Giriş Kodu <span style="color:var(--text-muted);">(boş bırakırsan doğum yılı geçerli)</span>:</div>
+            <input type="text" id="duzenle-kod" inputmode="numeric" placeholder="Örn. 1234" style="width:100%; padding:10px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px;">
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button onclick="kapatModal('duzenle-modal')" style="background:var(--border-color); color:var(--text-main); padding:8px 15px; border-radius:6px; border:none; font-weight:bold;">İptal</button>
                 <button onclick="sporcuGuncelleKaydet()" style="background:var(--accent-orange); color:white; padding:8px 15px; border-radius:6px; border:none; font-weight:bold;">Kaydet</button>
@@ -349,18 +360,33 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- EMOJİ SİMGE SEÇME MODALI -->
+    <div id="emoji-modal" class="modal-overlay kolay-kapat">
+        <div class="modal-content glass-panel" style="max-width:380px;">
+            <h3 style="margin-top:0; color:var(--accent-orange); border-bottom:1px solid var(--border-color); padding-bottom:10px;">😀 Simgeni Seç</h3>
+            <input type="hidden" id="emoji-hedef-ad">
+            <div id="emoji-grid" style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:12px 0;"></div>
+            <div style="display:flex; justify-content:space-between; gap:10px;">
+                <button onclick="emojiSec('')" style="background:var(--border-color); color:var(--text-main); padding:8px 14px; border-radius:6px; border:none; font-weight:bold; font-size:12px;">Simgeyi Kaldır</button>
+                <button onclick="kapatModal('emoji-modal')" style="background:var(--accent-orange); color:#fff; padding:8px 15px; border-radius:6px; border:none; font-weight:bold;">Kapat</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ÜST BAR -->
     <div id="ust-bar" class="glass-panel">
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v25</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-                <input type="number" id="toplam-seri-ayar" value="12" min="1" max="36" style="width: 50px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:6px; border-radius:6px; text-align:center;" onchange="sporcuListesiniYenile()">
-                <button onclick="ekranAcDegistir()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🔄 Lig Değiştir</button>
+                <input type="number" id="toplam-seri-ayar" value="12" min="1" max="36" class="sadece-egitmen" style="width: 50px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:6px; border-radius:6px; text-align:center;" onchange="sporcuListesiniYenile()">
+                <button onclick="ekranAcDegistir()" class="sadece-egitmen" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🔄 Lig Değiştir</button>
+                <button onclick="sporcuCikis()" class="sadece-sporcu" style="background:rgba(239,68,68,0.15); color:var(--text-main); border:1px solid var(--neon-red); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; display:none;">🚪 Çıkış</button>
             </div>
         </div>
         <div class="sekme-grubu">
@@ -403,7 +429,7 @@
     <!-- SKOR GİRİŞİ SEKMESİ -->
     <div id="icerik-skor" class="sekme-icerik" style="padding:0;">
         <div id="skor-liste-gorunumu" style="padding:15px;">
-            <div class="glass-panel" style="padding:15px; border-radius:12px; margin-bottom:15px;">
+            <div class="glass-panel sadece-egitmen" style="padding:15px; border-radius:12px; margin-bottom:15px;">
                 <div class="satir-inputs">
                     <input type="text" id="yeni-sporcu-ad" placeholder="SPORCU ADI SOYADI">
                     <input type="number" id="yeni-sporcu-yil" placeholder="YIL" value="2015">
@@ -417,9 +443,9 @@
                 <button onclick="sporcuKartEkle()" style="background:var(--accent-orange); color:white; border:none; border-radius:8px; padding:12px; font-weight:bold; width:100%;">KAYIT EKLE ➕</button>
             </div>
 
-            <button onclick="yeniDersBaslat()" style="width:100%; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); border-radius:10px; padding:11px; font-weight:bold; font-size:13px; margin-bottom:12px;">🗂️ Yeni Ders Başlat (mevcut skor kartlarını arşivle)</button>
+            <button onclick="yeniDersBaslat()" class="sadece-egitmen" style="width:100%; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); border-radius:10px; padding:11px; font-weight:bold; font-size:13px; margin-bottom:12px;">🗂️ Yeni Ders Başlat (mevcut skor kartlarını arşivle)</button>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 0 5px;">
+            <div class="sadece-egitmen" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 0 5px;">
                 <span id="skor-kayitli-sayi" style="color:var(--text-muted); font-size:11px; font-weight:bold;">Atıcılar</span>
                 <select id="liste-filtre" onchange="sporcuListesiniYenile()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:8px 10px; border-radius:6px; font-size:11px; outline:none;">
                     <option value="yeniKayit">Sıralama: En Yeni Kayıt</option>
@@ -430,7 +456,7 @@
                     <option value="makarali">Makaralı Yaylar</option>
                 </select>
             </div>
-            <div style="margin-bottom:10px;">
+            <div class="sadece-egitmen" style="margin-bottom:10px;">
                 <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; padding-left:2px;">🏷️ Sınıf seç — sadece o sınıfın sporcuları görünür</div>
                 <select id="skor-sinif-filtre" onchange="skorSinifFiltre=this.value; sporcuListesiniYenile();" style="width:100%; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--neon-blue); padding:10px; border-radius:8px; font-size:13px; font-weight:bold; outline:none;"></select>
             </div>
@@ -598,15 +624,15 @@
                 <span class="panel-title">🏆 LİDERLİK & TURNUVA MERKEZİ</span>
                 <button class="btn-tam-ekran-ac" onclick="toggleFullscreen('liderlik-panel')">⛶ Tam Ekran</button>
             </div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div class="sadece-egitmen" style="display:flex; gap:10px; margin-bottom:10px;">
                 <button onclick="raporOnizlemeAc()" style="flex:2; background:rgba(255,98,0,0.2); border:1px solid var(--accent-orange); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">📄 Renkli PDF Rapor</button>
                 <button onclick="veriSifirla()" style="flex:1; background:rgba(239,68,68,0.2); border:1px solid var(--neon-red); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">Sıfırla</button>
             </div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div class="sadece-egitmen" style="display:flex; gap:10px; margin-bottom:10px;">
                 <button onclick="bulutaYukleManuel()" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--text-main); padding:9px; border-radius:6px; font-size:12px; font-weight:bold;">☁️⬆️ Buluta Yükle</button>
                 <button onclick="bulutManuelYenile()" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); padding:9px; border-radius:6px; font-size:12px; font-weight:bold;">☁️⬇️ Buluttan Çek</button>
             </div>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div class="sadece-egitmen" style="display:flex; gap:10px; margin-bottom:15px;">
                 <button onclick="tumVeriyiYedekle()" style="flex:1; background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">💾 Yedekle (JSON)</button>
                 <button onclick="yedekDosyaSec()" style="flex:1; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">📂 Geri Yükle</button>
                 <input type="file" id="yedek-dosya-input" accept="application/json,.json" style="display:none;" onchange="yedektenGeriYukle(event)">
@@ -636,6 +662,7 @@
         const TEAM_COLORS = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#14b8a6', '#f43f5e', '#a855f7', '#0ea5e9'];
         let aktifGrup = 'buyukler'; let grupSuresi = 180; let kalanSure = 180; let audioCtx = null;
         let aktifPlatform = 'sporcu';
+        let loggedInSporcu = null; // null = eğitmen/tam yetki; isim = giriş yapan sporcu (sadece kendini görür)
         let detayKarneSporcu = '';
         let secilenSporcu = ""; let aktifCinsiyet = "K"; let aktifYay = "Klasik"; 
         let turnuvaDB = { buyukler: {}, kucukler: {} }; let takimlarDB = [];
@@ -746,6 +773,43 @@
             showToast(`Yeni ders başladı! ${arsivlenecek.length} kart arşivlendi 🗂️`, 'success');
             sporcuListesiniYenile(); siralamaListesiDoldur();
         }
+        function kartGeriGetir(ad, idx) {
+            let sp = turnuvaDB[aktifGrup][ad]; if(!sp || !sp.kartGecmisi || !sp.kartGecmisi[idx]) return;
+            if(!confirm('Bu eski kartı aktif karta geri getir? Şu anki aktif kartın (varsa) geçmişe taşınır, sonra bu karttan devam edebilirsin.')) return;
+            if(sp.seriler && sp.seriler.length > 0) {
+                sp.kartGecmisi.push({ tarih: bugunISO(), seriler: sp.seriler, detayliOklar: sp.detayliOklar || [], toplamSkor: sp.toplamSkor || 0, xAdet: sp.xAdet || 0 });
+            }
+            let kart = sp.kartGecmisi.splice(idx, 1)[0];
+            sp.seriler = kart.seriler || []; sp.detayliOklar = kart.detayliOklar || []; sp.toplamSkor = kart.toplamSkor || 0; sp.xAdet = kart.xAdet || 0; sp.lastModified = Date.now();
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
+            showToast('Kart geri getirildi — buradan devam edebilirsin ▶️', 'success');
+            sporcuDetayGoster(ad); siralamaListesiDoldur(); sporcuListesiniYenile();
+        }
+        const EMOJI_SET = ['🎯','🏹','🔥','⚡','⭐','💪','👑','🏆','🥇','🦅','🐺','🦁','🐯','🐉','🦊','🐻','🐼','🦄','🐲','🦖','😎','🤩','😈','🤠','🥷','🦸','🚀','🌟','⚔️','🛡️','🌈','🎽','🏅','🎖️','🐹','🦌','🦬','🐸','🐧','🦉'];
+        let emojiHedefSporcu = null;
+        function emojiModalAc(ad) {
+            if(!ad) return; emojiHedefSporcu = ad;
+            document.getElementById('emoji-hedef-ad').value = ad;
+            let grid = document.getElementById('emoji-grid');
+            grid.innerHTML = EMOJI_SET.map(e => `<button onclick="emojiSec('${e}')" style="font-size:24px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:6px 0; cursor:pointer;">${e}</button>`).join('');
+            document.getElementById('emoji-modal').classList.add('aktif');
+        }
+        function emojiSec(e) {
+            let ad = emojiHedefSporcu; if(!ad) return;
+            let sp = (turnuvaDB[aktifGrup] && turnuvaDB[aktifGrup][ad]) ? turnuvaDB[aktifGrup][ad] : null;
+            if(!sp) { for(let g in turnuvaDB){ if(turnuvaDB[g] && turnuvaDB[g][ad]){ sp = turnuvaDB[g][ad]; break; } } }
+            if(!sp) return;
+            sp.emoji = e; sp.lastModified = Date.now();
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(err) {}
+            kapatModal('emoji-modal');
+            showToast(e ? `Simgen ayarlandı: ${e}` : 'Simge kaldırıldı', 'success');
+            sporcuListesiniYenile(); siralamaListesiDoldur();
+            let baslik = document.getElementById('modal-sporcu-ad');
+            if(baslik && document.getElementById('detay-modal') && document.getElementById('detay-modal').classList.contains('aktif')) sporcuDetayGoster(ad);
+        }
+        function spEmoji(sp) { return (sp && sp.emoji) ? sp.emoji + ' ' : ''; }
         function formatTarih(iso) { if(!iso) return '-'; let p = iso.split('-'); return (p.length === 3) ? `${p[2]}.${p[1]}.${p[0]}` : iso; }
         function buHaftaMi(iso) { if(!iso) return false; let d = new Date(iso + 'T00:00:00'); let n = new Date(); let gun = (n.getDay()+6)%7; let bas = new Date(n); bas.setHours(0,0,0,0); bas.setDate(n.getDate()-gun); let son = new Date(bas); son.setDate(bas.getDate()+7); return d >= bas && d < son; }
         function sinifListesi() {
@@ -1791,8 +1855,38 @@
             }
             aktifPlatform = 'sporcu';
             document.getElementById('giris-platform').style.display = 'none';
-            document.getElementById('giris-lig').style.display = 'flex';
-            document.getElementById('giris-baslik').innerText = 'SPORCU KARTI — Lig Seçin';
+            document.getElementById('giris-sporcu').style.display = 'flex';
+            document.getElementById('giris-baslik').innerText = 'SPORCU GİRİŞİ';
+        }
+        function sporcuGirisDene() {
+            let ad = (document.getElementById('sporcu-giris-ad').value || '').trim().toUpperCase();
+            let kod = (document.getElementById('sporcu-giris-kod').value || '').trim();
+            if(!ad || !kod) return showToast('Ad ve kod gir.', 'warning');
+            let bulundu = null, bulunanGrup = null;
+            ['buyukler', 'kucukler'].forEach(g => {
+                let db = turnuvaDB[g] || {};
+                Object.keys(db).forEach(isim => {
+                    if(isim.trim().toUpperCase() === ad) {
+                        let sp = db[isim]; let dogruKod = String(sp.kod || sp.dogumYili || '').trim();
+                        if(dogruKod && dogruKod === kod) { bulundu = isim; bulunanGrup = g; }
+                    }
+                });
+            });
+            if(!bulundu) return showToast('Ad veya kod hatalı. (Kod yoksa doğum yılını dene)', 'error');
+            loggedInSporcu = bulundu; aktifGrup = bulunanGrup; aktifPlatform = 'sporcu';
+            try { document.getElementById('aktif-grup-etiket').innerText = (aktifGrup === 'buyukler' ? 'BÜYÜKLER' : 'KÜÇÜKLER'); } catch(e) {}
+            document.getElementById('giris-ekrani').style.display = 'none';
+            tablariPlatformaGoreAyarla(); // KRİTİK: gizleme ilk burada, hiçbir hata engellemeden çalışsın
+            try { kronometreSureAyarla(); kronometreSifirla(); skorEkraniniKapat(); } catch(e) {}
+            try { sporcuListesiniYenile(); takimDropdownDoldur(); takimListesiCiz(); } catch(e) {}
+            try { siralamaListesiDoldur(); } catch(e) {}
+            tablariPlatformaGoreAyarla(); // içerikler dolduktan sonra tekrar uygula (garanti)
+            showToast(`Hoş geldin, ${bulundu}! 🎯`, 'success');
+        }
+        function sporcuCikis() {
+            loggedInSporcu = null; aktifPlatform = 'sporcu';
+            document.body.classList.remove('sporcu-uye-modu');
+            location.reload();
         }
         function sifreDisplayGuncelle() {
             let el = document.getElementById('sifre-display'); if(!el) return; let dots = '';
@@ -1805,7 +1899,8 @@
             if(sifreBuffer.length === 4) {
                 setTimeout(() => {
                     if(sifreBuffer === '3478') {
-                        aktifPlatform = 'egitmen';
+                        aktifPlatform = 'egitmen'; loggedInSporcu = null;
+                        document.body.classList.remove('sporcu-uye-modu');
                         document.getElementById('giris-sifre').style.display = 'none';
                         document.getElementById('giris-lig').style.display = 'flex';
                         document.getElementById('giris-baslik').innerText = 'EĞİTMEN — Lig Seçin';
@@ -1815,12 +1910,21 @@
         }
         function sifreSil() { sifreBuffer = sifreBuffer.slice(0, -1); sifreDisplayGuncelle(); }
         function sifreGeri() { sifreBuffer = ''; document.getElementById('giris-sifre').style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
-        function platformGeri() { document.getElementById('giris-lig').style.display = 'none'; let s = document.getElementById('giris-sifre'); if(s) s.style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
+        function platformGeri() { document.getElementById('giris-lig').style.display = 'none'; let s = document.getElementById('giris-sifre'); if(s) s.style.display = 'none'; let sp = document.getElementById('giris-sporcu'); if(sp) sp.style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
         function tablariPlatformaGoreAyarla() {
             let g = (id, goster) => { let el = document.getElementById(id); if(el) el.style.display = goster ? '' : 'none'; };
+            let sporcuModu = !!loggedInSporcu;
             document.body.classList.toggle('platform-sporcu', aktifPlatform !== 'egitmen');
-            if(aktifPlatform === 'egitmen') { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', true); g('tab-takimlar', true); sekmeAc('egitmen'); }
-            else { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', false); g('tab-takimlar', true); sekmeAc('skor'); }
+            document.body.classList.toggle('sporcu-uye-modu', sporcuModu);
+            // CSS'e güvenmeden, doğrudan JS ile kesin gizle/göster (orijinal display korunur)
+            document.querySelectorAll('.sadece-egitmen').forEach(el => {
+                if(sporcuModu) { if(el.dataset.eskiDisplay === undefined) el.dataset.eskiDisplay = el.style.display || ''; el.style.display = 'none'; }
+                else if(el.dataset.eskiDisplay !== undefined) { el.style.display = el.dataset.eskiDisplay; delete el.dataset.eskiDisplay; }
+            });
+            document.querySelectorAll('.sadece-sporcu').forEach(el => { el.style.display = sporcuModu ? '' : 'none'; });
+            if(aktifPlatform === 'egitmen') { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', true); g('tab-takimlar', true); try { sekmeAc('egitmen'); } catch(e) {} }
+            else if(sporcuModu) { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', false); g('tab-takimlar', true); try { sekmeAc('liderlik'); } catch(e) {} }
+            else { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', false); g('tab-takimlar', true); try { sekmeAc('skor'); } catch(e) {} }
         }
         
         function grupKurulumu(grup) { 
@@ -1861,7 +1965,7 @@
         function duzenleModalAc(eskiAd) {
             try {
                 let sp = turnuvaDB[aktifGrup][eskiAd]; document.getElementById('duzenle-eski-ad').value = eskiAd; document.getElementById('duzenle-yeni-ad').value = eskiAd;
-                document.getElementById('duzenle-yay-tipi').value = sp.yay || "Klasik"; document.getElementById('duzenle-modal').style.display = 'flex';
+                document.getElementById('duzenle-yay-tipi').value = sp.yay || "Klasik"; document.getElementById('duzenle-kod').value = sp.kod || ''; document.getElementById('duzenle-modal').style.display = 'flex';
             } catch(e) { showToast("Düzenleme açılamadı.", "error"); }
         }
 
@@ -1869,7 +1973,7 @@
             let eskiAd = document.getElementById('duzenle-eski-ad').value; let yeniAd = document.getElementById('duzenle-yeni-ad').value.trim().toUpperCase(); let yayTipi = document.getElementById('duzenle-yay-tipi').value;
             if(!yeniAd) return showToast("İsim boş olamaz!", "error"); let sp = turnuvaDB[aktifGrup][eskiAd];
             if(yeniAd !== eskiAd) { if(turnuvaDB[aktifGrup][yeniAd]) return showToast("Bu isimde bir sporcu var!", "error"); turnuvaDB[aktifGrup][yeniAd] = sp; delete turnuvaDB[aktifGrup][eskiAd]; sp.ad = yeniAd; }
-            sp.yay = yayTipi; sp.lastModified = Date.now(); localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            sp.yay = yayTipi; sp.kod = (document.getElementById('duzenle-kod').value || '').trim(); sp.lastModified = Date.now(); localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
             document.getElementById('duzenle-modal').style.display = 'none'; showToast("Sporcu güncellendi!", "success"); sporcuListesiniYenile(); takimDropdownDoldur();
         }
 
@@ -1878,6 +1982,7 @@
             let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
             if (!turnuvaDB[aktifGrup]) turnuvaDB[aktifGrup] = {}; 
             let listObj = Object.keys(turnuvaDB[aktifGrup]).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; });
+            if(loggedInSporcu) listObj = listObj.filter(s => s.ad === loggedInSporcu);
             
             let cKlasik = listObj.filter(s=>s.yay==='Klasik').length; let cMakarali = listObj.filter(s=>s.yay==='Makaralı').length;
             document.getElementById('skor-kayitli-sayi').innerText = `Atıcılar (Kls: ${cKlasik} | Mak: ${cMakarali})`;
@@ -1903,11 +2008,14 @@
             listObj.forEach(sp => {
                 let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)'; let yIcon = sp.yay === 'Makaralı' ? '⚙️' : '🏹'; let sLen = sp.seriler ? sp.seriler.length : 0;
                 let grupOpt = `<option value="">🏷️ Grup yok</option>` + grupSecenekleri.map(g => `<option value="${g}" ${sp.sinif===g?'selected':''}>${g}</option>`).join('');
+                let duzenleBtn = loggedInSporcu ? '' : `<button class="duzenle-btn" onclick="duzenleModalAc('${sp.ad}')">✏️</button>`;
+                let simgeBtn = `<button onclick="emojiModalAc('${sp.ad.replace(/'/g,"\\'")}')" style="background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:6px; padding:2px 7px; font-size:12px; margin-left:4px; cursor:pointer;">🙂 Simge</button>`;
+                let grupSelect = loggedInSporcu ? '' : `<select onchange="sporcuGrupAta('${sp.ad.replace(/'/g,"\\'")}', this.value)" style="margin-top:6px; max-width:170px; padding:6px 8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:11px; pointer-events:auto; position:relative; z-index:6;">${grupOpt}</select>`;
                 alan.innerHTML += `<div class="sporcu-satir">
                     <div class="sporcu-bilgi-bloku" style="flex:1; min-width:0;">
-                        <div class="sporcu-isim"><span style="color:${cRenk}; font-size:20px; line-height:1;">•</span> ${sp.ad} <button class="duzenle-btn" onclick="duzenleModalAc('${sp.ad}')">✏️</button></div>
+                        <div class="sporcu-isim"><span style="color:${cRenk}; font-size:20px; line-height:1;">•</span> ${spEmoji(sp)}${sp.ad} ${duzenleBtn}${simgeBtn}</div>
                         <div class="sporcu-detay">${yIcon} ${sp.yay} | Atış: ${sLen}/${limit}</div>
-                        <select onchange="sporcuGrupAta('${sp.ad.replace(/'/g,"\\'")}', this.value)" style="margin-top:6px; max-width:170px; padding:6px 8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:11px; pointer-events:auto; position:relative; z-index:6;">${grupOpt}</select>
+                        ${grupSelect}
                     </div>
                     <button class="skor-gir-btn" onclick="skorEkraniniAc('${sp.ad}')">Hedef 🎯</button>
                 </div>`;
@@ -2288,11 +2396,12 @@
         }
 
         function sporcuDetayGoster(ad) {
+            if(loggedInSporcu && ad !== loggedInSporcu) { showToast('Sadece kendi karneni görebilirsin.', 'warning'); return; }
             try {
                 let sp = turnuvaDB[aktifGrup][ad]; if(!sp) return;
                 detayKarneSporcu = ad;
                 let analizAlani = document.getElementById('karne-analiz-alani'); if(analizAlani) { analizAlani.innerHTML = okAnaliziHTML(sp, 'Modal'); okAnaliziCiz(sp, 'Modal'); }
-                document.getElementById('modal-sporcu-ad').innerText = ad; document.getElementById('modal-toplam-puan').innerText = sp.toplamSkor || 0; document.getElementById('modal-toplam-x').innerText = sp.xAdet || 0; 
+                document.getElementById('modal-sporcu-ad').innerText = spEmoji(sp) + ad; document.getElementById('modal-toplam-puan').innerText = sp.toplamSkor || 0; document.getElementById('modal-toplam-x').innerText = sp.xAdet || 0; 
                 let seriler = sp.seriler || []; let detayliOklar = sp.detayliOklar || [];
                 let gsAlani = document.getElementById('karne-gecmis-seriler'); gsAlani.innerHTML = "";
                 let ustBilgi = `<div style="background:rgba(0,0,0,0.15); border:1px solid var(--border-color); border-radius:8px; padding:10px; margin-bottom:10px;">${okDagilimiHTML(sp)}</div>`;
@@ -2304,21 +2413,25 @@
                 if(seriler.length > 0) {
                     seriler.forEach((s, i) => {
                         let oklarHTML = ""; (s.oklar || []).forEach(o => { let r = getRenkForPuan(o); oklarHTML += `<span style="background:${r.bg}; color:${r.c}; border:1px solid rgba(0,0,0,0.2); border-radius:3px; padding:1px 4px; margin-right:3px;">${o}</span>`; });
-                        gsAlani.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0; align-items:center; gap:6px;"><span style="flex:1;">Seri ${i+1}: ${oklarHTML}</span><span style="color:var(--accent-orange); font-weight:bold; white-space:nowrap;">${s.puan} P</span><button onclick="seriDuzenleAc('${ad.replace(/'/g,"\\'")}', ${i})" style="background:rgba(255,98,0,0.15); border:1px solid var(--accent-orange); color:var(--text-main); border-radius:5px; padding:3px 8px; font-size:12px; font-weight:bold;">✏️</button></div>`;
+                        let seriDuzBtn = loggedInSporcu ? '' : `<button onclick="seriDuzenleAc('${ad.replace(/'/g,"\\'")}', ${i})" style="background:rgba(255,98,0,0.15); border:1px solid var(--accent-orange); color:var(--text-main); border-radius:5px; padding:3px 8px; font-size:12px; font-weight:bold;">✏️</button>`;
+                        gsAlani.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0; align-items:center; gap:6px;"><span style="flex:1;">Seri ${i+1}: ${oklarHTML}</span><span style="color:var(--accent-orange); font-weight:bold; white-space:nowrap;">${s.puan} P</span>${seriDuzBtn}</div>`;
                     });
                 } else { gsAlani.innerHTML += "<div style='color:var(--text-muted); font-style:italic;'>Henüz atış yapılmadı.</div>"; }
 
                 let kg = sp.kartGecmisi || [];
                 if(kg.length > 0) {
                     gsAlani.innerHTML += `<div style="margin-top:14px; font-weight:bold; font-size:12px; color:var(--neon-blue);">📂 Geçmiş Skor Kartları (${kg.length})</div>`;
-                    kg.slice().reverse().forEach(kart => {
+                    kg.slice().reverse().forEach((kart, ri) => {
+                        let realIdx = kg.length - 1 - ri;
                         let seriOzet = (kart.seriler || []).map((s, si) => {
                             let oklarHTML = (s.oklar || []).map(o => { let r = getRenkForPuan(o); return `<span style="background:${r.bg}; color:${r.c}; border-radius:3px; padding:1px 4px; margin-right:2px;">${o}</span>`; }).join('');
                             return `<div style="padding:3px 0; border-bottom:1px dashed var(--border-color);">S${si+1}: ${oklarHTML} <b style="color:var(--accent-orange); float:right;">${s.puan}P</b></div>`;
                         }).join('');
+                        let devamBtn = loggedInSporcu ? '' : `<button onclick="kartGeriGetir('${ad.replace(/'/g,"\\'")}', ${realIdx})" style="margin-top:8px; width:100%; background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--text-main); border-radius:6px; padding:7px; font-size:11px; font-weight:bold;">▶️ Bu Karttan Devam Et (aktif yap)</button>`;
                         gsAlani.innerHTML += `<details style="margin-top:6px; background:rgba(0,0,0,0.12); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
                             <summary style="cursor:pointer; font-size:12px; font-weight:bold;">📅 ${formatTarih(kart.tarih)} — <span style="color:var(--neon-green);">${kart.toplamSkor||0} P</span> <span style="color:var(--gold);">(${kart.xAdet||0} X)</span></summary>
                             <div style="margin-top:6px; font-size:11px;">${seriOzet || '<span style="color:var(--text-muted);">Seri yok.</span>'}</div>
+                            ${devamBtn}
                         </details>`;
                     });
                 }
@@ -2394,18 +2507,20 @@
                 let madalya = ""; let rc = ""; if(idx === 0) { madalya = "🥇"; rc = "rank-1"; } else if(idx === 1) { madalya = "🥈"; rc = "rank-2"; } else if(idx === 2) { madalya = "🥉"; rc = "rank-3"; } else { madalya = `<span style="font-size:12px; margin-left:5px;">${idx+1}.</span>`; }
                 let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)';
                 let macBilgi = getSporcuMacBilgisi(sp.ad); let serilerLen = sp.seriler ? sp.seriler.length : 0;
-                
-                dom.innerHTML += `<div class="tablo-satir ${rc}">
+                let kendisi = loggedInSporcu && sp.ad === loggedInSporcu;
+                let karneBtn = (!loggedInSporcu || kendisi) ? `<button class="incele-btn" onclick="sporcuDetayGoster('${sp.ad}')">🔍 Karne</button>` : '';
+                let vurgu = kendisi ? 'box-shadow:0 0 0 2px var(--accent-orange) inset;' : '';
+                dom.innerHTML += `<div class="tablo-satir ${rc}" style="${vurgu}">
                     <div style="font-weight:600; font-size:13px; display:flex; align-items:center; gap:5px;">
                         <span style="width:25px; text-align:center;">${madalya}</span>
                         <div style="display:flex; flex-direction:column;">
-                            <span><span style="color:${cRenk}">${sp.ad}</span> <span style="font-size:10px; color:var(--text-muted);">(${serilerLen}/${limit})</span></span>
+                            <span><span style="color:${cRenk}">${spEmoji(sp)}${sp.ad}</span> ${kendisi ? '<span style="color:var(--accent-orange); font-weight:bold;">(SEN)</span>' : ''} <span style="font-size:10px; color:var(--text-muted);">(${serilerLen}/${limit})</span></span>
                             ${macBilgi ? `<span style="font-size:10px; color:var(--accent-orange);">${macBilgi}</span>` : ''}
                         </div>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <div style="background:var(--border-color); padding:4px 8px; border-radius:6px; font-weight:bold;"><span style="color:var(--accent-orange);">${sp.toplamSkor||0} P</span><span style="font-size:10px;"> [${sp.xAdet||0}X]</span></div>
-                        <button class="incele-btn" onclick="sporcuDetayGoster('${sp.ad}')">🔍 Karne</button>
+                        ${karneBtn}
                     </div>
                 </div>`;
             });
