@@ -626,10 +626,18 @@
 
         <!-- BÖLÜNMÜŞ (SPLIT) SKOR PANELİ -->
         <div id="skor-grid-paneli-baba" style="display:none; height:100%;">
-            <div style="background: var(--bg-panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+            <div style="background: var(--bg-panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
                 <button onclick="skorEkraniniKapat()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:bold;">◀ Geri</button>
                 <span id="giris-paneli-baslik" style="font-weight:bold; font-size:14px; color:var(--accent-orange);">ATICI</span>
-                <button onclick="skorKaydet()" style="background:var(--accent-orange); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px;">Seriyi Kaydet ✔️</button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display: flex; align-items: center; gap: 8px; background: rgba(245,158,11,0.18); border: 1px solid var(--accent-orange); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; user-select: none;">
+                        <span id="ciddi-mod-switch" style="display:inline-block; width:34px; height:18px; border-radius:10px; background:var(--accent-orange); position:relative; transition:background 0.2s; flex-shrink:0;">
+                            <span id="ciddi-mod-knob" style="position:absolute; top:2px; left:18px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;"></span>
+                        </span>
+                        <span id="ciddi-mod-label">🎯 Ciddi Yarışma <span style="font-size: 9px; opacity: 0.8;">(ödül alırsın, göstermeyiz)</span></span>
+                    </button>
+                    <button onclick="skorKaydet()" style="background:var(--accent-orange); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; white-space: nowrap;">Seriyi Kaydet ✔️</button>
+                </div>
             </div>
 
             <div style="padding: 15px; overflow-y: auto; flex: 1;">
@@ -984,7 +992,7 @@
         let sinifGoruntuFiltre = '__hepsi';
         let skorSinifFiltre = '__hepsi';
         let ozelSiniflar = [];
-        let personelDB = []; let personelYoklamaDB = []; let personelYoklamaDurum = {}; let personelAylikAy = ''; let personelDuzenleId = null;
+        let personelDB = []; let personelYoklamaDB = []; let personelYoklamaDurum = {}; let personelAylikAy = ''; let personelDuzenleId = null; let personelGirisTarih = '';
         let fotoImg = null; let fotoMode = 'merkez'; let fotoMerkez = null; let fotoKenar = null; let fotoOklar = []; let fotoTip = '10ring'; let fotoAthlete = '';
 
         function showToast(message, type = 'success') {
@@ -1674,7 +1682,7 @@
             let alan = document.getElementById('egitmen-liste');
             let d = new Date(); let ay = personelAylikAy || `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
             personelAylikAy = ay;
-            personelDB.forEach(p => { if(personelYoklamaDurum[p.id] === undefined) personelYoklamaDurum[p.id] = false; });
+            let girisTarih = personelGirisTarih || bugunISO(); personelGirisTarih = girisTarih;
 
             let html = `<div class="glass-panel" style="padding:14px; border-radius:12px; margin-bottom:12px;">
                 <div style="font-weight:700; font-size:13px; margin-bottom:8px;">👔 Çalışan Eğitmen Ekle</div>
@@ -1687,20 +1695,24 @@
 
             if(personelDB.length === 0) { alan.innerHTML = html + `<div style="color:var(--text-muted); text-align:center; padding:15px; font-size:12px;">Henüz çalışan eğitmen eklenmedi.</div>`; return; }
 
+            // O güne ait kayıt (gelen eğitmen id listesi)
+            let gunKaydi = personelYoklamaDB.find(r => r.tarih === girisTarih);
+            let gelenSet = new Set((gunKaydi && gunKaydi.gelenler) || []);
+
             html += `<div class="glass-panel" style="padding:14px; border-radius:12px; margin-bottom:12px;">
                 <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:10px; flex-wrap:wrap;">
-                    <div style="display:flex; flex-direction:column; gap:3px;"><span style="font-size:10px; color:var(--text-muted);">Giriş Tarihi</span><input type="date" id="personel-tarih" value="${bugunISO()}" style="padding:8px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:6px;"></div>
-                    <div style="flex:1; font-size:11px; color:var(--text-muted); min-width:120px;">Gelen eğitmenin satırına dokunun, sonra "Girişi Kaydet".</div>
+                    <div style="display:flex; flex-direction:column; gap:3px;"><span style="font-size:10px; color:var(--text-muted);">Giriş Tarihi</span><input type="date" id="personel-tarih" value="${girisTarih}" onchange="personelGirisTarih=this.value; egitmenRenderPersonel();" style="padding:8px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:6px;"></div>
+                    <div style="flex:1; font-size:11px; color:var(--neon-green); min-width:120px; font-weight:600;">✅ Eğitmenin satırına dokunduğunuz an <u>otomatik kaydedilir</u> — ayrıca düğmeye basmanıza gerek yok.</div>
                 </div>`;
             personelDB.forEach(p => {
-                let geldi = personelYoklamaDurum[p.id];
+                let geldi = gelenSet.has(p.id);
                 html += `<div onclick="personelToggle('${p.id}')" style="cursor:pointer; display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:10px; margin-bottom:6px; border:1px solid ${geldi?'var(--neon-green)':'var(--border-color)'}; background:${geldi?'rgba(16,185,129,0.13)':'var(--bg-panel)'};">
                     <span id="psn-chk-${p.id}" style="font-size:18px;">${geldi?'✅':'⬜'}</span>
                     <span style="flex:1; font-weight:600; font-size:14px;">${p.ad}</span>
                     <span style="font-size:11px; color:var(--text-muted);">${p.ucret?`${p.ucret}₺/gün`:''}</span>
                 </div>`;
             });
-            html += `<button onclick="personelGirisKaydet()" style="width:100%; background:var(--neon-green); color:#fff; border:none; padding:13px; border-radius:10px; font-weight:bold; font-size:14px; margin-top:6px;">💾 Girişi Kaydet</button></div>`;
+            html += `<div style="font-size:11px; color:var(--text-muted); margin-top:4px; text-align:center;">📅 ${formatTarih(girisTarih)} için ${gelenSet.size} eğitmen işaretli.</div></div>`;
 
             html += `<div class="glass-panel" style="padding:14px; border-radius:12px;">
                 <div style="display:flex; gap:8px; align-items:flex-end; margin-bottom:10px; flex-wrap:wrap;">
@@ -1716,6 +1728,7 @@
                         <button onclick="personelSil('${p.id}')" style="background:rgba(239,68,68,0.15); border:1px solid var(--neon-red); color:var(--text-main); padding:4px 10px; border-radius:6px; font-size:10px; font-weight:bold;">🗑️</button>
                     </div>
                     <div style="font-size:12px; color:var(--text-muted); margin-top:5px;">📆 Bu ay: <b style="color:var(--text-main);">${s.ay}</b> gün &nbsp;•&nbsp; 📅 Bu hafta: <b style="color:var(--text-main);">${s.hafta}</b> gün${ucret!==null?` &nbsp;•&nbsp; 💰 <b style="color:var(--neon-green);">${ucret}₺</b>`:''}</div>
+                    <div style="margin-top:7px;"><div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">🗓️ Geldiği günler (${ay}):</div>${s.gunler.length ? `<div style="display:flex; flex-wrap:wrap; gap:5px;">${s.gunler.map(g => `<span style="background:rgba(16,185,129,0.15); border:1px solid var(--neon-green); color:var(--neon-green); padding:3px 8px; border-radius:20px; font-size:11px; font-weight:600;">${g.slice(8)}.${g.slice(5,7)}</span>`).join('')}</div>` : `<span style="font-size:11px; color:var(--text-muted);">Bu ay kayıt yok.</span>`}</div>
                     <div style="display:flex; gap:6px; align-items:center; margin-top:8px;">
                         <span style="font-size:11px; color:var(--gold); white-space:nowrap;">⭐ Değerlendirme:</span>
                         <select id="psn-puan-${pi}" style="padding:6px; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:12px;">${puanOpt}</select>
@@ -1742,24 +1755,30 @@
         }
         function personelSil(id) { let p = personelDB.find(x => x.id === id); if(!confirm(`${p?p.ad:'Eğitmen'} ve tüm giriş kayıtları silinsin mi?`)) return; personelDB = personelDB.filter(x => x.id !== id); personelYoklamaDB.forEach(r => { r.gelenler = (r.gelenler||[]).filter(g => g !== id); }); delete personelYoklamaDurum[id]; personeliKaydet(); showToast('Silindi.', 'warning'); egitmenRenderPersonel(); }
         function personelToggle(id) {
-            personelYoklamaDurum[id] = !personelYoklamaDurum[id]; let geldi = personelYoklamaDurum[id];
-            let chk = document.getElementById(`psn-chk-${id}`); if(chk) { chk.innerText = geldi?'✅':'⬜'; let row = chk.parentElement; if(row){ row.style.background = geldi?'rgba(16,185,129,0.13)':'var(--bg-panel)'; row.style.borderColor = geldi?'var(--neon-green)':'var(--border-color)'; } }
-        }
-        function personelGirisKaydet() {
-            let tarih = document.getElementById('personel-tarih').value || bugunISO();
-            let gelenler = personelDB.filter(p => personelYoklamaDurum[p.id]).map(p => p.id);
-            if(gelenler.length === 0) return showToast('En az bir eğitmen seçin!', 'warning');
-            let mevcut = personelYoklamaDB.find(r => r.tarih === tarih);
-            if(mevcut) mevcut.gelenler = gelenler;
-            else personelYoklamaDB.push({ id: 'pyok_' + Date.now(), tarih, gelenler });
+            // OTOMATİK KAYIT: dokunulan eğitmen, seçili gün için anında DB'ye yazılır
+            let tarih = personelGirisTarih || (document.getElementById('personel-tarih') ? document.getElementById('personel-tarih').value : '') || bugunISO();
+            personelGirisTarih = tarih;
+            let kayit = personelYoklamaDB.find(r => r.tarih === tarih);
+            if(!kayit) { kayit = { id: 'pyok_' + Date.now(), tarih, gelenler: [] }; personelYoklamaDB.push(kayit); }
+            if(!kayit.gelenler) kayit.gelenler = [];
+            let geldi;
+            if(kayit.gelenler.includes(id)) { kayit.gelenler = kayit.gelenler.filter(g => g !== id); geldi = false; }
+            else { kayit.gelenler.push(id); geldi = true; }
+            // Boş kayıtları temizle
+            if(kayit.gelenler.length === 0) personelYoklamaDB = personelYoklamaDB.filter(r => r !== kayit);
             personeliKaydet();
-            showToast(`${formatTarih(tarih)} girişi kaydedildi (${gelenler.length} eğitmen)!`, 'success');
-            personelYoklamaDurum = {}; egitmenRenderPersonel();
+            try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
+            let p = personelDB.find(x => x.id === id);
+            // Anlık görsel güncelleme
+            let chk = document.getElementById(`psn-chk-${id}`); if(chk) { chk.innerText = geldi?'✅':'⬜'; let row = chk.parentElement; if(row){ row.style.background = geldi?'rgba(16,185,129,0.13)':'var(--bg-panel)'; row.style.borderColor = geldi?'var(--neon-green)':'var(--border-color)'; } }
+            showToast(`${p?p.ad:'Eğitmen'} — ${formatTarih(tarih)} ${geldi?'✅ geldi (kaydedildi)':'çıkarıldı'}`, geldi?'success':'warning');
+            egitmenRenderPersonel();
         }
         function personelStats(id, ay) {
-            let ayKayit = personelYoklamaDB.filter(r => (r.gelenler||[]).includes(id) && (r.tarih||'').slice(0,7) === ay).length;
+            let kayitlar = personelYoklamaDB.filter(r => (r.gelenler||[]).includes(id) && (r.tarih||'').slice(0,7) === ay);
+            let gunler = kayitlar.map(r => r.tarih).sort();
             let haftaKayit = personelYoklamaDB.filter(r => (r.gelenler||[]).includes(id) && buHaftaMi(r.tarih)).length;
-            return { ay: ayKayit, hafta: haftaKayit };
+            return { ay: kayitlar.length, hafta: haftaKayit, gunler };
         }
         function personelPDF() {
             let ay = personelAylikAy;
@@ -2428,11 +2447,10 @@
                 let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)'; let yIcon = sp.yay === 'Makaralı' ? '⚙️' : '🏹'; let sLen = sp.seriler ? sp.seriler.length : 0;
                 let grupOpt = `<option value="">🏷️ Grup yok</option>` + grupSecenekleri.map(g => `<option value="${g}" ${sp.sinif===g?'selected':''}>${g}</option>`).join('');
                 let duzenleBtn = loggedInSporcu ? '' : `<button class="duzenle-btn" onclick="duzenleModalAc('${sp.ad}')">✏️</button>`;
-                let simgeBtn = `<button onclick="emojiModalAc('${sp.ad.replace(/'/g,"\\'")}')" style="background:rgba(245,98,0,0.12); border:1px solid var(--accent-orange); color:var(--accent-orange); border-radius:6px; padding:3px 9px; font-size:12px; font-weight:bold; margin-left:4px; cursor:pointer;">🙂 Simge Değiştir</button>`;
                 let grupSelect = loggedInSporcu ? '' : `<select onchange="sporcuGrupAta('${sp.ad.replace(/'/g,"\\'")}', this.value)" style="margin-top:6px; max-width:170px; padding:6px 8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:11px; pointer-events:auto; position:relative; z-index:6;">${grupOpt}</select>`;
                 alan.innerHTML += `<div class="sporcu-satir">
                     <div class="sporcu-bilgi-bloku" style="flex:1; min-width:0;">
-                        <div class="sporcu-isim"><span style="color:${cRenk}; font-size:20px; line-height:1;">•</span> ${spEmoji(sp)}${sp.ad} ${duzenleBtn}${simgeBtn}</div>
+                        <div class="sporcu-isim"><span style="color:${cRenk}; font-size:20px; line-height:1;">•</span> ${spEmoji(sp)}${sp.ad} ${duzenleBtn}</div>
                         <div class="sporcu-detay">${yIcon} ${sp.yay} | Atış: ${sLen}/${limit}</div>
                         ${grupSelect}
                     </div>
@@ -2649,17 +2667,47 @@
         function skorEkraniniAc(ad) { 
             secilenSporcu = ad; document.getElementById('skor-liste-gorunumu').style.display = 'none'; document.getElementById('skor-grid-paneli-baba').style.display = 'block'; hedefGorunumSifirla(); hedefPanZoomKur(); 
             let sp = turnuvaDB[aktifGrup][ad]; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12; let sLen = sp.seriler ? sp.seriler.length + 1 : 1;
-            if(sLen > limit) document.getElementById('giris-paneli-baslik').innerText = `${ad} - Tamamlandı`;
+            if(!sp.seriler || sp.seriler.length === 0) sp.devamModu = false; // yeni kart: devam modu sıfırla
+            if(sp.devamModu) document.getElementById('giris-paneli-baslik').innerText = `${ad} - ${sLen}. Seri (Ekstra)`;
+            else if(sLen > limit) document.getElementById('giris-paneli-baslik').innerText = `${ad} - Tamamlandı`;
             else document.getElementById('giris-paneli-baslik').innerText = `${ad} - ${sLen}. Seri`;
             setHedefTipi('6ring'); 
+            ciddiModGorunumGuncelle();
         }
         function skorEkraniniKapat() { secilenSporcu = ""; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile(); }
+
+        // CİDDİ YARIŞMA MODU: Aç/kapa düğmesi (varsayılan AÇIK)
+        let ciddiModAcik = true;
+        function ciddiModToggle() {
+            ciddiModAcik = !ciddiModAcik;
+            ciddiModGorunumGuncelle();
+        }
+        function ciddiModGorunumGuncelle() {
+            let sw = document.getElementById('ciddi-mod-switch');
+            let knob = document.getElementById('ciddi-mod-knob');
+            let label = document.getElementById('ciddi-mod-label');
+            let btn = document.getElementById('ciddi-mod-btn');
+            if(!sw || !knob || !label || !btn) return;
+            if(ciddiModAcik) {
+                sw.style.background = 'var(--accent-orange)';
+                knob.style.left = '18px';
+                label.innerHTML = '🎯 Ciddi Yarışma <span style="font-size: 9px; opacity: 0.8;">(ödül alırsın, göstermeyiz)</span>';
+                btn.style.background = 'rgba(245,158,11,0.18)';
+                btn.style.borderColor = 'var(--accent-orange)';
+            } else {
+                sw.style.background = 'var(--accent-grey, #555)';
+                knob.style.left = '2px';
+                label.innerHTML = '🎉 Eğlence Modu <span style="font-size: 9px; opacity: 0.8;">(kutlamalar açık)</span>';
+                btn.style.background = 'rgba(255,255,255,0.06)';
+                btn.style.borderColor = 'var(--border-color)';
+            }
+        }
 
         function skorKaydet() {
             if(!secilenSporcu) return; let okAdet = getMaksOk();
             if(anlikAtilanOklar.length !== okAdet) { buyukHata(`EKSİK SKOR GİRDİN!\n\nBu seride ${okAdet} ok olmalı.\nŞu an sadece ${anlikAtilanOklar.length} ok var.\n\nLütfen tüm okları gir.`); return; }
             let grupData = turnuvaDB[aktifGrup][secilenSporcu]; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
-            if(grupData.seriler && grupData.seriler.length >= limit) { showToast("Maksimum seriye ulaşıldı!", "error"); skorEkraniniKapat(); return; }
+            if(!grupData.devamModu && grupData.seriler && grupData.seriler.length >= limit) { showToast("Maksimum seriye ulaşıldı!", "error"); skorEkraniniKapat(); return; }
             
             let seriPuan = 0; let okDegerleri = []; if(grupData.xAdet === undefined) grupData.xAdet = 0; if(grupData.toplamSkor === undefined) grupData.toplamSkor = 0;
             let kaydedilecek = efektifOklar();
@@ -2678,24 +2726,58 @@
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); showToast(`Seri Kaydedildi! (+${seriPuan})`, "success");
 
             // --- BAŞARI & REKOR SİSTEMİ ENTEGRASYONU ---
+            // Ciddi Yarışma Modu: Açıksa ödülleri sessizce ver (kutlama/konfeti yok)
+            let ciddiMod = ciddiModAcik;
+            
             try {
                 let seriSari = okDegerleri.filter(o => o === 'X' || o === '10' || o === '9').length;
                 let seriX = okDegerleri.filter(o => o === 'X').length;
                 let simdi = new Date();
                 atisLog.push({ t: simdi.toISOString(), tarih: bugunISO(), ad: secilenSporcu, grup: aktifGrup, sari: seriSari, x: seriX, puan: seriPuan });
                 atisLogKaydet();
-                rekorKirmaKontrol(secilenSporcu, seriSari, seriX, seriPuan);
-                rozetKontrol(secilenSporcu);
-                // OYUNLAŞTIRMA: atıştan coin kazan + günlük görev kontrolü
-                coinEkle(secilenSporcu, 2 + seriSari, false);
-                gorevKontrol(secilenSporcu);
-            } catch(e) { console.warn('Başarı/rekor kontrol hatası:', e); }
+                
+                if(ciddiMod) {
+                    // CİDDİ YARIŞMA MODU: Ödüller sessizce verilir, kutlama/konfeti/toast YOK
+                    kutlamalarSessiz = true;           // tüm kutlama/konfeti/popup'ları kapat
+                    kutlamaKuyruk = [];                // bekleyen kutlama varsa temizle
+                    try {
+                        rekorKirmaKontrol(secilenSporcu, seriSari, seriX, seriPuan);
+                        rozetKontrol(secilenSporcu);
+                        coinEkle(secilenSporcu, 2 + seriSari, true); // sessiz=true: toast yok
+                        gorevKontrol(secilenSporcu);
+                    } finally {
+                        kutlamaKuyruk = [];            // güvenlik için tekrar temizle
+                        kutlamalarSessiz = false;      // bayrağı geri aç
+                    }
+                } else {
+                    // NORMAL (EĞLENCE) MOD: Coin, rozet, rekor, görev + kutlamalar aktif
+                    kutlamalarSessiz = false;
+                    rekorKirmaKontrol(secilenSporcu, seriSari, seriX, seriPuan);
+                    rozetKontrol(secilenSporcu);
+                    coinEkle(secilenSporcu, 2 + seriSari, false); // sessiz=false: toast göster
+                    gorevKontrol(secilenSporcu);
+                }
+            } catch(e) { kutlamalarSessiz = false; console.warn('Başarı/rekor kontrol hatası:', e); }
 
             try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
             
             let newLen = grupData.seriler.length;
-            if(newLen >= limit) { showToast("Tüm seriler tamamlandı!", "success"); skorEkraniniKapat(); } 
-            else { anlikAtilanOklar = []; hedefGorseliGuncelle(false); document.getElementById('giris-paneli-baslik').innerText = `${secilenSporcu} - ${newLen + 1}. Seri`; }
+            if(!grupData.devamModu && newLen >= limit) {
+                // Seri limiti doldu — sporcu daha fazla seri girmek isteyebilir
+                if(confirm(`🎯 ${newLen} seri tamamlandı!\n\nDaha fazla seri girmek ister misin?\n\n👉 TAMAM = Devam et (yeni seriler ekle)\n👉 İPTAL = Bitir ve kapat`)) {
+                    grupData.devamModu = true;
+                    localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                    showToast("Devam modu açık — istediğin kadar seri ekleyebilirsin! 🔓", "success");
+                    anlikAtilanOklar = []; hedefGorseliGuncelle(false);
+                    document.getElementById('giris-paneli-baslik').innerText = `${secilenSporcu} - ${newLen + 1}. Seri (Ekstra)`;
+                } else {
+                    showToast("Tüm seriler tamamlandı!", "success"); skorEkraniniKapat();
+                }
+            } else {
+                anlikAtilanOklar = []; hedefGorseliGuncelle(false);
+                let etiket = grupData.devamModu ? ' (Ekstra)' : '';
+                document.getElementById('giris-paneli-baslik').innerText = `${secilenSporcu} - ${newLen + 1}. Seri${etiket}`;
+            }
         }
 
         /* DINAMİK TAKIM YARIŞMASI KİLİDİ VE RENK ATAMASI */
@@ -2948,7 +3030,7 @@
                     <div style="font-weight:600; font-size:13px; display:flex; align-items:center; gap:5px;">
                         <span style="width:25px; text-align:center;">${madalya}</span>
                         <div style="display:flex; flex-direction:column;">
-                            <span><span style="color:${cRenk}">${spEmoji(sp)}${sp.ad}</span> ${kendisi ? '<span style="color:var(--accent-orange); font-weight:bold;">(SEN)</span>' : ''} <span style="font-size:10px; color:var(--text-muted);">(${serilerLen}/${limit})</span></span>
+                            <span><span style="color:${cRenk}">${spEmoji(sp)}${sp.ad}</span>${oySatinAlinanlarKisa(sp)} ${kendisi ? '<span style="color:var(--accent-orange); font-weight:bold;">(SEN)</span>' : ''} <span style="font-size:10px; color:var(--text-muted);">(${serilerLen}/${limit})</span></span>
                             ${macBilgi ? `<span style="font-size:10px; color:var(--accent-orange);">${macBilgi}</span>` : ''}
                         </div>
                     </div>
@@ -3625,6 +3707,18 @@
                 </div>
             </div>`;
 
+            // Mağazadan satın alınan ödüller (herkese açık)
+            let satinAlinanlar = oySatinAlinanlar(sp);
+            let satinHtml = '';
+            if(satinAlinanlar.length > 0) {
+                satinHtml = `<div class="bs-card" style="margin-bottom:14px;">
+                    <div style="font-weight:800; font-size:14px; color:var(--gold); margin-bottom:10px;">🛍️ Mağazadan Aldıkları</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                        ${satinAlinanlar.map(x => `<div style="display:flex; align-items:center; gap:6px; background:var(--bg-main); border:1px solid var(--gold); border-radius:20px; padding:6px 12px; font-size:13px; font-weight:700;"><span style="font-size:18px;">${x.emoji}</span> ${x.ad}</div>`).join('')}
+                    </div>
+                </div>`;
+            }
+
             let rozetHtml = ROZETLER.map(r => {
                 let kz = kazanilmis.find(x => x.id === r.id);
                 if(kz) return `<div class="rozet-kart kazanildi"><span class="rozet-emoji">${r.emoji}</span><div class="rozet-ad">${r.ad}</div><div class="rozet-aciklama">${r.aciklama}</div><div class="rozet-tarih">✓ ${formatTarih(kz.tarih)}</div></div>`;
@@ -3633,7 +3727,7 @@
                 let oran = Math.min(100, Math.round(mevcut / r.hedef * 100));
                 return `<div class="rozet-kart kilitli"><span class="rozet-kilit-ikon">🔒</span><span class="rozet-emoji">${r.emoji}</span><div class="rozet-ad">${r.ad}</div><div class="rozet-aciklama">${r.aciklama}</div><div class="rozet-progress-dis"><div class="rozet-progress-ic" style="width:${oran}%;"></div></div><div class="rozet-progress-yazi">${Math.min(mevcut, r.hedef)} / ${r.hedef}</div></div>`;
             }).join('');
-            el.innerHTML = seviyeHtml + `<div class="rozet-vitrin-grid">${rozetHtml}</div>`;
+            el.innerHTML = seviyeHtml + satinHtml + `<div class="rozet-vitrin-grid">${rozetHtml}</div>`;
         }
 
         // --- Başarı paneli (ana) ---
@@ -3657,7 +3751,8 @@
 
         /* ===================== KUTLAMA / KONFETİ ===================== */
         let kutlamaKuyruk = []; let kutlamaAktif = false; let konfetiAnim = null;
-        function kutlamaKuyrukEkle(veri) { kutlamaKuyruk.push(veri); if(!kutlamaAktif) kutlamaSonraki(); }
+        let kutlamalarSessiz = false; // CİDDİ MOD: true iken hiçbir kutlama/konfeti/popup gösterilmez
+        function kutlamaKuyrukEkle(veri) { if(kutlamalarSessiz) return; kutlamaKuyruk.push(veri); if(!kutlamaAktif) kutlamaSonraki(); }
         function kutlamaSonraki() {
             if(kutlamaKuyruk.length === 0) { kutlamaAktif = false; return; }
             kutlamaAktif = true; kutlamaGoster(kutlamaKuyruk.shift());
@@ -3830,6 +3925,34 @@
             ]
         };
         const CERCEVE_RENK = { yok: 'var(--accent-orange)', altin: '#fbbf24', alev: '#ef4444', mavi: '#38bdf8', mor: '#a855f7' };
+
+        // --- Satın alınan ödüller (özel rozet + aksesuar) - herkese gösterilir ---
+        function oySatinAlinanlar(sp) {
+            if(!sp || !sp.magaza) return [];
+            let liste = [];
+            // Satın alınan özel rozetler
+            (sp.magaza.sahip || []).forEach(key => {
+                if(key.indexOf('rozet:') === 0) {
+                    let id = key.split(':')[1];
+                    let item = MAGAZA.rozet.find(x => x.id === id);
+                    if(item) liste.push({ emoji: item.emoji, ad: item.ad });
+                }
+            });
+            // Aktif aksesuar
+            if(sp.magaza.aksesuar && sp.magaza.aksesuar !== 'yok') {
+                let aks = MAGAZA.aksesuar.find(x => x.id === sp.magaza.aksesuar);
+                if(aks) liste.push({ emoji: aks.emoji, ad: aks.ad });
+            }
+            return liste;
+        }
+        // Liderlik tablosu / isim yanı için kısa metin: (💠 ⭐) gibi
+        function oySatinAlinanlarKisa(sp) {
+            let liste = oySatinAlinanlar(sp);
+            if(liste.length === 0) return '';
+            let emojiler = liste.map(x => x.emoji).join(' ');
+            let adlar = liste.map(x => x.ad).join(', ');
+            return ` <span title="${adlar}" style="font-size:13px;">(${emojiler})</span>`;
+        }
 
         // --- Günlük görevler ---
         const GUNLUK_GOREVLER = [
