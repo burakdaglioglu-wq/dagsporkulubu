@@ -156,11 +156,23 @@
         #toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent-orange); color: white; padding: 12px 20px; border-radius: 6px; font-weight: 600; z-index: 999999; transform: translateX(150%); transition: transform 0.3s; border:1px solid rgba(255,255,255,0.2);}
         #toast.show { transform: translateX(0); }
 
+        .seri-preset-btn { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; min-width: 44px; }
+        .seri-preset-btn.aktif { background: var(--accent-orange); color: #fff; border-color: var(--accent-orange); }
+
         @media (max-width: 850px) {
             .grup-satir { flex-direction: column; align-items: stretch; text-align: center; }
             .skor-split-layout { flex-direction: column; }
             .skor-right-panel { margin-top: 10px; }
             .sporcu-satir { flex-direction: row; text-align: left; }
+        }
+        @media (max-width: 560px) {
+            .skor-left-panel, .skor-right-panel { min-width: 0 !important; width: 100%; }
+            #skor-grid-paneli-baba .skor-split-layout { gap: 10px; }
+            .svg-hedef { width: 100% !important; max-width: 88vw; }
+            .hedef-scroll-container { max-height: 56vh; padding: 6px; }
+            #hizli-giris-pad { grid-template-columns: repeat(4, 1fr) !important; }
+            .sekme-grubu { gap: 3px; }
+            .sekme-btn { font-size: 11px; padding: 7px 8px; }
         }
 
         /* ===== VIDEO ANALİZ SEKMESİ ===== */
@@ -542,7 +554,7 @@
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-                <input type="number" id="toplam-seri-ayar" value="12" min="1" max="36" class="sadece-egitmen" style="width: 50px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:6px; border-radius:6px; text-align:center;" onchange="sporcuListesiniYenile()">
+                <input type="number" id="toplam-seri-ayar" value="12" min="1" max="60" class="sadece-egitmen" title="Atış serisi sayısı" style="width: 50px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:6px; border-radius:6px; text-align:center;" onchange="seriSayisiAyarla(this.value)">
                 <button onclick="ekranAcDegistir()" class="sadece-egitmen" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🔄 Lig Değiştir</button>
                 <button onclick="sporcuCikis()" class="sadece-sporcu" style="background:rgba(239,68,68,0.15); color:var(--text-main); border:1px solid var(--neon-red); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; display:none;">🚪 Çıkış</button>
             </div>
@@ -621,23 +633,39 @@
                 <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; padding-left:2px;">🏷️ Sınıf seç — sadece o sınıfın sporcuları görünür</div>
                 <select id="skor-sinif-filtre" onchange="skorSinifFiltre=this.value; sporcuListesiniYenile();" style="width:100%; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--neon-blue); padding:10px; border-radius:8px; font-size:13px; font-weight:bold; outline:none;"></select>
             </div>
+            <div class="sadece-egitmen" style="margin-bottom:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:10px; padding:10px;">
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; font-weight:bold;">🎯 Atış Serisi Sayısı (her sporcu için)</div>
+                <div id="seri-preset-grup" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    <button type="button" onclick="seriSayisiAyarla(12)" class="seri-preset-btn">12</button>
+                    <button type="button" onclick="seriSayisiAyarla(16)" class="seri-preset-btn">16</button>
+                    <button type="button" onclick="seriSayisiAyarla(20)" class="seri-preset-btn">20</button>
+                    <button type="button" onclick="seriSayisiAyarla(24)" class="seri-preset-btn">24</button>
+                    <button type="button" onclick="seriSayisiAyarla(30)" class="seri-preset-btn">30</button>
+                    <div style="display:flex; align-items:center; gap:5px; margin-left:auto;">
+                        <span style="font-size:11px; color:var(--text-muted);">Özel:</span>
+                        <input type="number" id="seri-ozel-input" min="1" max="60" placeholder="örn 18" style="width:64px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:6px; text-align:center; font-size:13px;" onchange="seriSayisiAyarla(this.value)">
+                    </div>
+                </div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:6px;">Şu an: <b id="seri-aktif-gosterge" style="color:var(--accent-orange);">12</b> seri</div>
+            </div>
             <div id="sporcu-ana-liste"></div>
         </div>
 
         <!-- BÖLÜNMÜŞ (SPLIT) SKOR PANELİ -->
         <div id="skor-grid-paneli-baba" style="display:none; height:100%;">
-            <div style="background: var(--bg-panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
-                <button onclick="skorEkraniniKapat()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:bold;">◀ Geri</button>
-                <span id="giris-paneli-baslik" style="font-weight:bold; font-size:14px; color:var(--accent-orange);">ATICI</span>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display: flex; align-items: center; gap: 8px; background: rgba(245,158,11,0.18); border: 1px solid var(--accent-orange); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; user-select: none;">
-                        <span id="ciddi-mod-switch" style="display:inline-block; width:34px; height:18px; border-radius:10px; background:var(--accent-orange); position:relative; transition:background 0.2s; flex-shrink:0;">
-                            <span id="ciddi-mod-knob" style="position:absolute; top:2px; left:18px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;"></span>
-                        </span>
-                        <span id="ciddi-mod-label">🎯 Ciddi Yarışma <span style="font-size: 9px; opacity: 0.8;">(ödül alırsın, göstermeyiz)</span></span>
-                    </button>
-                    <button onclick="skorKaydet()" style="background:var(--accent-orange); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; white-space: nowrap;">Seriyi Kaydet ✔️</button>
+            <div style="background: var(--bg-panel); padding: 12px; border-bottom: 1px solid var(--border-color); box-sizing:border-box; width:100%; max-width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button onclick="skorEkraniniKapat()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:6px; font-size:12px; font-weight:bold; flex-shrink:0;">◀ Geri</button>
+                    <span id="giris-paneli-baslik" style="font-weight:bold; font-size:14px; color:var(--accent-orange); text-align:center; flex:1; min-width:0;">ATICI</span>
+                    <span style="width:60px; flex-shrink:0;"></span>
                 </div>
+                <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display:flex; align-items:center; gap:8px; width:100%; box-sizing:border-box; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; margin-bottom:10px;">
+                    <span id="ciddi-mod-switch" style="display:inline-block; width:34px; height:18px; border-radius:10px; background:var(--accent-grey, #555); position:relative; transition:background 0.2s; flex-shrink:0;">
+                        <span id="ciddi-mod-knob" style="position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;"></span>
+                    </span>
+                    <span id="ciddi-mod-label" style="flex:1; text-align:left;">🎉 Eğlence Modu <span style="font-size: 9px; opacity: 0.8;">(kutlamalar açık)</span></span>
+                </button>
+                <button onclick="skorKaydet()" style="display:block; width:100%; box-sizing:border-box; background:var(--neon-green); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; font-size:16px; box-shadow:0 3px 12px rgba(16,185,129,0.35);">💾 SERİYİ KAYDET ✔️</button>
             </div>
 
             <div style="padding: 15px; overflow-y: auto; flex: 1;">
@@ -650,12 +678,9 @@
                             <button class="hedef-sec-btn" id="btn-6ring" onclick="setHedefTipi('6ring')">6 Halkalı</button>
                             <button class="hedef-sec-btn" id="btn-3spot" onclick="setHedefTipi('3spot')">3'lü Spot</button>
                         </div>
-                        <div style="display:flex; gap:10px; margin-bottom:10px; width:100%; max-width:350px;">
-                            <button onclick="hedefZoomIn()" style="flex:1; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px; border-radius:6px; font-weight:bold; font-size:12px;">🔍 Yakınlaştır (+)</button>
-                            <button onclick="hedefZoomOut()" style="flex:1; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px; border-radius:6px; font-weight:bold; font-size:12px;">🔍 Uzaklaştır (-)</button>
-                            <button onclick="zoomTarget(1.0)" style="flex:1; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px; border-radius:6px; font-weight:bold; font-size:12px;">🔍 Sıfırla</button>
+                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; text-align:center; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:8px;">🤏 <b>İki parmağınızla</b> hedefi yakınlaştırıp uzaklaştırın &nbsp;•&nbsp; ☝️ tek parmakla <b>sürükleyin</b> &nbsp;•&nbsp; 👆 tek dokunuş = ok girişi
+                        <button onclick="hedefGorunumSifirla()" style="display:block; margin:8px auto 0; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:5px 14px; border-radius:6px; font-weight:bold; font-size:11px;">🎯 Görünümü Sıfırla</button>
                         </div>
-                        <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; text-align:center;">💡 Yakınlaştırdıktan sonra parmağınızla <b>sürükleyerek</b> dış halkalara kaydırabilirsiniz. Tek dokunuş = ok girişi.</div>
                         <div class="hedef-scroll-container">
                             <div id="hedef-wrapper-id" class="hedef-wrapper">
                                 <svg id="hedef-svg-10ring" class="svg-hedef" viewBox="-110 -110 220 220" onclick="hedefTiklandi(event)">
@@ -2273,7 +2298,11 @@
             });
             let fm = document.getElementById('foto-modal'); if(fm) fm.addEventListener('click', e => { if(e.target === fm) fotoModalKapat(); });
         };
-        window.addEventListener('load', function() { setTimeout(bulutBaslat, 1000); });
+        window.addEventListener('load', function() {
+            setTimeout(bulutBaslat, 1000);
+            try { let ss = parseInt(localStorage.getItem('okculuk_seri_sayisi')); if(ss && ss > 0) { let inp = document.getElementById('toplam-seri-ayar'); if(inp) inp.value = ss; } } catch(e){}
+            try { seriPresetGorunumGuncelle(); } catch(e){}
+        });
 
         function toggleTheme() { document.body.classList.toggle('light-theme'); localStorage.setItem('dag_sk_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); }
         function ekranAcDegistir() { document.getElementById('giris-ekrani').style.display = 'flex'; document.getElementById('kapat-giris-btn').style.display = 'block'; platformGeri(); kronometreSifirla(); }
@@ -2415,9 +2444,25 @@
             document.getElementById('duzenle-modal').style.display = 'none'; showToast("Sporcu güncellendi!", "success"); sporcuListesiniYenile(); takimDropdownDoldur();
         }
 
+        // ATIŞ SERİSİ SAYISINI AYARLA (12/16/20/24/30 veya özel)
+        function seriSayisiAyarla(n) {
+            n = parseInt(n); if(!n || n < 1) return; if(n > 60) n = 60;
+            let inp = document.getElementById('toplam-seri-ayar'); if(inp) inp.value = n;
+            try { localStorage.setItem('okculuk_seri_sayisi', n); } catch(e){}
+            seriPresetGorunumGuncelle(n);
+            sporcuListesiniYenile();
+            showToast(`Atış serisi: ${n} olarak ayarlandı`, 'success');
+        }
+        function seriPresetGorunumGuncelle(n) {
+            n = n || parseInt((document.getElementById('toplam-seri-ayar')||{}).value) || 12;
+            let gost = document.getElementById('seri-aktif-gosterge'); if(gost) gost.innerText = n;
+            document.querySelectorAll('.seri-preset-btn').forEach(b => { b.classList.toggle('aktif', parseInt(b.innerText) === n); });
+            let oz = document.getElementById('seri-ozel-input'); if(oz && ![12,16,20,24,30].includes(n)) oz.value = n;
+        }
         function sporcuListesiniYenile() {
             let alan = document.getElementById('sporcu-ana-liste'); if(!alan) return; alan.innerHTML = "";
             let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
+            try { seriPresetGorunumGuncelle(limit); } catch(e){}
             if (!turnuvaDB[aktifGrup]) turnuvaDB[aktifGrup] = {}; 
             let listObj = Object.keys(turnuvaDB[aktifGrup]).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; });
             if(loggedInSporcu) listObj = listObj.filter(s => s.ad === loggedInSporcu);
@@ -2486,16 +2531,74 @@
         }
         function hedefGorunumSifirla() { currentZoom = 2.0; panX = 0; panY = 0; applyHedefTransform(); }
 
-        /* PARMAKLA/FAREYLE KAYDIRMA - tek dokunuş hâlâ skor girer */
+        /* PARMAKLA KAYDIRMA + İKİ PARMAK PINCH ZOOM - tek dokunuş hâlâ skor girer */
+        let pzPinchAktif = false, pzBaslangicMesafe = 0, pzBaslangicZoom = 1;
         function hedefPanZoomKur() {
             let w = document.getElementById('hedef-wrapper-id'); if(!w || w.dataset.panKuruldu) return;
             w.dataset.panKuruldu = "1";
+
+            // --- DOKUNMATİK (TOUCH): tek parmak sürükle, iki parmak pinch zoom ---
+            w.addEventListener('touchstart', (e) => {
+                if(e.touches.length === 2) {
+                    // İki parmak → pinch zoom başlat
+                    pzPinchAktif = true; pzDown = false; pzMoved = true;
+                    let dx = e.touches[0].clientX - e.touches[1].clientX;
+                    let dy = e.touches[0].clientY - e.touches[1].clientY;
+                    pzBaslangicMesafe = Math.hypot(dx, dy);
+                    pzBaslangicZoom = currentZoom;
+                    w.classList.add('panning');
+                    e.preventDefault();
+                } else if(e.touches.length === 1) {
+                    pzPinchAktif = false;
+                    pzDown = true; pzMoved = false;
+                    pzStartX = e.touches[0].clientX; pzStartY = e.touches[0].clientY;
+                    pzStartPanX = panX; pzStartPanY = panY;
+                }
+            }, { passive: false });
+
+            w.addEventListener('touchmove', (e) => {
+                if(pzPinchAktif && e.touches.length === 2) {
+                    e.preventDefault();
+                    let dx = e.touches[0].clientX - e.touches[1].clientX;
+                    let dy = e.touches[0].clientY - e.touches[1].clientY;
+                    let mesafe = Math.hypot(dx, dy);
+                    if(pzBaslangicMesafe > 0) {
+                        let oran = mesafe / pzBaslangicMesafe;
+                        currentZoom = Math.min(6.0, Math.max(1.0, pzBaslangicZoom * oran));
+                        if(currentZoom <= 1.0) { panX = 0; panY = 0; }
+                        w.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+                    }
+                } else if(pzDown && e.touches.length === 1) {
+                    let dx = e.touches[0].clientX - pzStartX, dy = e.touches[0].clientY - pzStartY;
+                    if(!pzMoved && Math.hypot(dx, dy) > 8) { pzMoved = true; w.classList.add('panning'); }
+                    if(pzMoved && currentZoom > 1.0) {
+                        e.preventDefault();
+                        panX = pzStartPanX + dx; panY = pzStartPanY + dy;
+                        w.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+                    }
+                }
+            }, { passive: false });
+
+            let touchBitir = (e) => {
+                if(e.touches.length === 0) {
+                    if(pzPinchAktif || pzMoved) { hedefTapEngelle = true; setTimeout(() => { hedefTapEngelle = false; }, 60); }
+                    pzPinchAktif = false; pzDown = false; w.classList.remove('panning');
+                } else if(e.touches.length === 1 && pzPinchAktif) {
+                    // pinch'ten tek parmağa düştü → pan'a geçme, tap'i engelle
+                    pzPinchAktif = false; pzDown = false; hedefTapEngelle = true;
+                }
+            };
+            w.addEventListener('touchend', touchBitir);
+            w.addEventListener('touchcancel', touchBitir);
+
+            // --- FARE (MOUSE): sürükleyerek pan ---
             w.addEventListener('pointerdown', (e) => {
+                if(e.pointerType !== 'mouse') return; // dokunmatik olayları touch handler yönetir
                 pzDown = true; pzMoved = false; pzStartX = e.clientX; pzStartY = e.clientY;
                 pzStartPanX = panX; pzStartPanY = panY;
             });
             w.addEventListener('pointermove', (e) => {
-                if(!pzDown) return;
+                if(e.pointerType !== 'mouse' || !pzDown) return;
                 let dx = e.clientX - pzStartX, dy = e.clientY - pzStartY;
                 if(!pzMoved && Math.hypot(dx, dy) > 8) { pzMoved = true; w.classList.add('panning'); }
                 if(pzMoved && currentZoom > 1.0) {
@@ -2504,7 +2607,8 @@
                     w.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
                 }
             });
-            let bitir = () => {
+            let bitir = (e) => {
+                if(e && e.pointerType && e.pointerType !== 'mouse') return;
                 if(!pzDown) return;
                 pzDown = false; w.classList.remove('panning');
                 if(pzMoved) { hedefTapEngelle = true; setTimeout(() => { hedefTapEngelle = false; }, 50); }
@@ -2512,6 +2616,14 @@
             w.addEventListener('pointerup', bitir);
             w.addEventListener('pointercancel', bitir);
             w.addEventListener('pointerleave', bitir);
+
+            // --- FARE TEKERLEĞİ ile zoom (masaüstü kolaylığı) ---
+            w.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                currentZoom = Math.min(6.0, Math.max(1.0, currentZoom + (e.deltaY < 0 ? 0.3 : -0.3)));
+                if(currentZoom <= 1.0) { panX = 0; panY = 0; }
+                w.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+            }, { passive: false });
         }
 
         function getMaksOk() { return (aktifGrup === 'buyukler') ? 6 : 3; }
@@ -2676,8 +2788,8 @@
         }
         function skorEkraniniKapat() { secilenSporcu = ""; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile(); }
 
-        // CİDDİ YARIŞMA MODU: Aç/kapa düğmesi (varsayılan AÇIK)
-        let ciddiModAcik = true;
+        // CİDDİ YARIŞMA MODU: Aç/kapa düğmesi (varsayılan KAPALI → kutlamalar görünür)
+        let ciddiModAcik = false;
         function ciddiModToggle() {
             ciddiModAcik = !ciddiModAcik;
             ciddiModGorunumGuncelle();
