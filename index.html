@@ -345,7 +345,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v39</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v41</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -567,7 +567,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v39</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v41</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -694,8 +694,10 @@
                     <span id="ciddi-mod-label" style="flex:1; text-align:left;">🎉 Eğlence Modu <span style="font-size: 9px; opacity: 0.8;">(kutlamalar açık)</span></span>
                 </button>
                 <button onclick="skorKaydet()" style="display:block; width:100%; box-sizing:border-box; background:var(--neon-green); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; font-size:16px; box-shadow:0 3px 12px rgba(16,185,129,0.35);">💾 SERİYİ KAYDET ✔️</button>
-                <button onclick="seriUzat()" style="display:block; width:100%; box-sizing:border-box; margin-top:8px; background:rgba(255,98,0,0.15); color:var(--text-main); border:1px solid var(--accent-orange); padding:9px; border-radius:10px; font-weight:bold; font-size:13px;">➕ Seri Uzat (ekstra atışa devam et)</button>
-                <button onclick="oncekiSeriyiDuzelt()" class="sadece-egitmen" style="display:block; width:100%; box-sizing:border-box; margin-top:8px; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:9px; border-radius:10px; font-weight:bold; font-size:13px;">✏️ Önceki Seriyi Düzelt</button>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button onclick="seriUzat()" style="flex:1; background:rgba(255,98,0,0.15); color:var(--text-main); border:1px solid var(--accent-orange); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">➕ Seri Uzat</button>
+                    <button onclick="oncekiSeriyiDuzelt()" class="sadece-egitmen" style="flex:1; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">✏️ Önceki Seriyi Düzelt</button>
+                </div>
             </div>
             <button onclick="skorKaydet()" id="yuzen-kaydet-btn" title="Seriyi Kaydet" style="position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:9000; background:var(--neon-green); color:white; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:15px; box-shadow:0 5px 18px rgba(16,185,129,0.55);">💾 SERİYİ KAYDET ✔️</button>
 
@@ -1953,28 +1955,35 @@
             html += `<div style="margin-top:14px; text-align:center; font-weight:bold; color:var(--neon-green);">Toplam: ${Object.keys(gun).length} sporcu geldi</div></div>`;
             alan.innerHTML = html;
         }
+        let sertifikaSecili = new Set();
+        function sertifikaSecimToggle(ad, secili) { if(secili) sertifikaSecili.add(ad); else sertifikaSecili.delete(ad); }
+        function sertifikaTumSec(deger) {
+            let isimler = egitmenAramaUygula(Object.keys(turnuvaDB[aktifGrup] || {}));
+            if(deger) isimler.forEach(a => sertifikaSecili.add(a)); else isimler.forEach(a => sertifikaSecili.delete(a));
+            egitmenRenderSertifika();
+        }
         function egitmenRenderSertifika() {
             let alan = document.getElementById('egitmen-liste'); if(!alan) return;
             let isimler = egitmenAramaUygula(Object.keys(turnuvaDB[aktifGrup] || {}));
-            let chkler = isimler.map(ad => `<label style="display:flex; align-items:center; gap:10px; padding:9px 11px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:8px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" class="sertifika-chk" value="${ad.replace(/"/g,'&quot;')}" style="width:18px; height:18px; flex-shrink:0;"> <span style="font-weight:600; font-size:14px;">${spEmoji(turnuvaDB[aktifGrup][ad])}${ad}</span></label>`).join('');
+            let chkler = isimler.map(ad => `<label style="display:flex; align-items:center; gap:10px; padding:9px 11px; background:var(--bg-panel); border:1px solid ${sertifikaSecili.has(ad)?'var(--gold)':'var(--border-color)'}; border-radius:8px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" class="sertifika-chk" value="${ad.replace(/"/g,'&quot;')}" ${sertifikaSecili.has(ad)?'checked':''} onchange="sertifikaSecimToggle(this.value, this.checked); this.closest('label').style.borderColor = this.checked ? 'var(--gold)' : 'var(--border-color)';" style="width:18px; height:18px; flex-shrink:0;"> <span style="font-weight:600; font-size:14px;">${spEmoji(turnuvaDB[aktifGrup][ad])}${ad}</span></label>`).join('');
             alan.innerHTML = `<div class="glass-panel" style="padding:14px; border-radius:12px;">
                 <div style="font-weight:800; color:var(--gold); font-size:15px; margin-bottom:4px;">📜 Başarı Sertifikası</div>
-                <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Sporcuları seç, başlığı/metni yaz, tek tıkla hepsini güzel sertifika olarak yazdır veya PDF yap.</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Sporcuları seç, başlığı/metni yaz, tek tıkla hepsini güzel sertifika olarak yazdır veya PDF yap. <b style="color:var(--gold);">Seçili: ${sertifikaSecili.size}</b></div>
                 <div style="font-size:12px; margin-bottom:4px;">Belge Başlığı:</div>
                 <input id="sertifika-baslik" value="BAŞARI BELGESİ" style="width:100%; padding:9px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
                 <div style="font-size:12px; margin-bottom:4px;">Açıklama metni:</div>
                 <textarea id="sertifika-altmetin" rows="2" style="width:100%; padding:9px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; resize:vertical;">Okçuluk Akademisi programındaki üstün başarısı, disiplini ve gayreti için takdimen verilmiştir.</textarea>
                 <label style="display:flex; align-items:center; gap:8px; margin:10px 0; font-size:13px;"><input type="checkbox" id="sertifika-skor" checked style="width:17px; height:17px;"> Skor bilgisini ekle (toplam puan / X sayısı)</label>
                 <div style="display:flex; gap:8px; margin-bottom:8px;">
-                    <button onclick="document.querySelectorAll('.sertifika-chk').forEach(c=>c.checked=true)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Tümünü Seç</button>
-                    <button onclick="document.querySelectorAll('.sertifika-chk').forEach(c=>c.checked=false)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Temizle</button>
+                    <button onclick="sertifikaTumSec(true)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Tümünü Seç</button>
+                    <button onclick="sertifikaTumSec(false)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Temizle</button>
                 </div>
                 <div style="max-height:320px; overflow-y:auto; margin-bottom:12px;">${chkler || '<div style="color:var(--text-muted); font-size:12px;">Bu ligde sporcu yok.</div>'}</div>
                 <button onclick="sertifikalariUret()" style="width:100%; background:var(--gold); color:#1b1b1b; border:none; padding:12px; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">📜 Seçili Sertifikaları Üret / Yazdır</button>
             </div>`;
         }
         function sertifikalariUret() {
-            let secili = [...document.querySelectorAll('.sertifika-chk:checked')].map(c => c.value);
+            let secili = [...sertifikaSecili].filter(ad => turnuvaDB[aktifGrup] && turnuvaDB[aktifGrup][ad]);
             if(secili.length === 0) { showToast('En az bir sporcu seç.', 'warning'); return; }
             let baslik = (document.getElementById('sertifika-baslik').value || 'BAŞARI BELGESİ').trim();
             let altMetin = (document.getElementById('sertifika-altmetin').value || '').trim();
