@@ -345,7 +345,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v31</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v32</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -551,7 +551,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v31</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v32</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -2154,6 +2154,31 @@
         let bulutIlkPullYapildi = false; // buluttan ilk okuma yapılmadan ASLA gönderme yapma
 
         function sporcuSayisi(db) { try { return Object.keys((db && db.buyukler) || {}).length + Object.keys((db && db.kucukler) || {}).length; } catch(e) { return 0; } }
+        // AKILLI BİRLEŞTİRME: bulut verisini üzerine YAZMAZ, her sporcu için daha yeni olanı korur.
+        // Lig bazında ayrı çalışır → büyük/küçük asla karışmaz. Tek taraftaki sporcu kaybolmaz. Eski cihaz yeni skoru ezemez.
+        function turnuvaDBMerge(yerel, uzak) {
+            let sonuc = { buyukler: {}, kucukler: {} };
+            ['buyukler', 'kucukler'].forEach(g => {
+                let a = (yerel && yerel[g]) || {};
+                let b = (uzak && uzak[g]) || {};
+                let adlar = new Set([...Object.keys(a), ...Object.keys(b)]);
+                adlar.forEach(ad => {
+                    let x = a[ad], y = b[ad];
+                    if(x && !y) { sonuc[g][ad] = x; return; }
+                    if(y && !x) { sonuc[g][ad] = y; return; }
+                    let xm = (x && x.lastModified) || 0, ym = (y && y.lastModified) || 0;
+                    if(ym > xm) sonuc[g][ad] = y;
+                    else if(xm > ym) sonuc[g][ad] = x;
+                    else {
+                        // zaman damgası eşit → daha çok seri + daha çok geçmiş kart olanı koru (veri kaybetme)
+                        let xp = (x.seriler || []).length + (x.kartGecmisi || []).length;
+                        let yp = (y.seriler || []).length + (y.kartGecmisi || []).length;
+                        sonuc[g][ad] = (yp > xp) ? y : x;
+                    }
+                });
+            });
+            return sonuc;
+        }
         function jsonSporcuSayisi(j) { try { return sporcuSayisi(JSON.parse(j || '{}').turnuvaDB || {}); } catch(e) { return 0; } }
         // Otomatik güvenlik yedeği: en son DOLU veriyi sakla (kaza ile silinirse kurtarma için)
         function guvenlikYedegiAl() {
@@ -2170,7 +2195,7 @@
 
         function bulutVeriyiUygula(p) {
             guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
-            if(p.turnuvaDB) turnuvaDB = p.turnuvaDB;
+            if(p.turnuvaDB) turnuvaDB = turnuvaDBMerge(turnuvaDB, p.turnuvaDB); // ÜZERİNE YAZMA — birleştir
             if(p.takimlarDB) takimlarDB = p.takimlarDB;
             if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
             if(p.ozelSiniflar) ozelSiniflar = p.ozelSiniflar;
