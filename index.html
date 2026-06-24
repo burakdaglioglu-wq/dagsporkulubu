@@ -345,7 +345,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v32</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v39</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -469,9 +469,25 @@
             <input type="text" id="duzenle-dogum" inputmode="numeric" placeholder="Örn. 2015" style="width:100%; padding:10px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px;">
             <div style="margin-top:15px; margin-bottom:5px; font-size:12px;">🔑 Sporcu Giriş Kodu <span style="color:var(--text-muted);">(boş bırakırsan doğum yılı geçerli)</span>:</div>
             <input type="text" id="duzenle-kod" inputmode="numeric" placeholder="Örn. 1234" style="width:100%; padding:10px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px;">
+            <button onclick="veliQRGoster(document.getElementById('duzenle-eski-ad').value)" style="width:100%; margin-top:14px; background:rgba(59,130,246,0.13); border:1px solid var(--neon-blue); color:var(--text-main); padding:10px; border-radius:8px; font-weight:bold; font-size:13px;">📱 Veli QR Kodu Oluştur</button>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button onclick="kapatModal('duzenle-modal')" style="background:var(--border-color); color:var(--text-main); padding:8px 15px; border-radius:6px; border:none; font-weight:bold;">İptal</button>
                 <button onclick="sporcuGuncelleKaydet()" style="background:var(--accent-orange); color:white; padding:8px 15px; border-radius:6px; border:none; font-weight:bold;">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VELİ QR MODALI -->
+    <div id="veli-qr-modal" class="modal-overlay">
+        <div class="modal-content glass-panel" style="max-width:360px; text-align:center;">
+            <h3 style="margin-top:0; color:var(--neon-blue); border-bottom:1px solid var(--border-color); padding-bottom:10px;">📱 Veli QR Kodu</h3>
+            <div style="font-weight:bold; font-size:15px; margin:6px 0;" id="veli-qr-ad">SPORCU</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Veli bu kodu okutunca doğrudan bu sporcunun <b>canlı karnesi</b> açılır — giriş yapmasına gerek yok.</div>
+            <img id="veli-qr-img" src="" alt="QR" style="width:240px; height:240px; max-width:100%; background:#fff; border-radius:12px; padding:6px;">
+            <input type="text" id="veli-qr-link" readonly style="width:100%; margin-top:10px; padding:8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; font-size:11px; text-align:center;">
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button onclick="veliQRKopyala()" style="flex:1; background:var(--neon-blue); color:#fff; border:none; padding:9px; border-radius:8px; font-weight:bold; font-size:12px;">📋 Bağlantıyı Kopyala</button>
+                <button onclick="kapatModal('veli-qr-modal')" style="flex:1; background:var(--accent-orange); color:#fff; border:none; padding:9px; border-radius:8px; font-weight:bold; font-size:12px;">Kapat</button>
             </div>
         </div>
     </div>
@@ -551,7 +567,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v32</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v39</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -567,7 +583,7 @@
             <button id="tab-liderlik" class="sekme-btn" onclick="sekmeAc('liderlik')">🏆 Liderlik</button>
             <button id="tab-egitmen" class="sekme-btn" onclick="sekmeAc('egitmen')">🎓 Eğitmen</button>
             <button id="tab-takimlar" class="sekme-btn" onclick="sekmeAc('takimlar')">🏅 Yarışmalar</button>
-            <button id="tab-video" class="sekme-btn" onclick="sekmeAc('video')">🎥 Video Analiz</button>
+            <button id="tab-video" class="sekme-btn" onclick="showToast('🎥 Video Analiz yapım aşamasında — yakında!', 'warning')" style="opacity:0.55;">🎥 Video Analiz <span style="font-size:9px; background:var(--gold); color:#000; padding:1px 5px; border-radius:6px; margin-left:3px;">YAKINDA</span></button>
             <button id="tab-basari" class="sekme-btn" onclick="sekmeAc('basari')">🏅 Başarılar</button>
             <button id="tab-oyun" class="sekme-btn" onclick="sekmeAc('oyun')">🎮 Görev & Mağaza</button>
         </div>
@@ -605,6 +621,11 @@
     <div id="icerik-skor" class="sekme-icerik" style="padding:0;">
         <div id="skor-liste-gorunumu" style="padding:15px;">
             <div id="skor-tarih-banner" style="text-align:center; font-weight:bold; font-size:13px; color:var(--accent-orange); margin-bottom:12px; background:rgba(255,98,0,0.08); border:1px solid var(--accent-orange); border-radius:10px; padding:9px;">📅 Bugünün Antrenmanı</div>
+            <button id="salon-modu-btn" onclick="salonModuToggle()" style="display:flex; align-items:center; gap:11px; width:100%; box-sizing:border-box; margin-bottom:12px; border:1px solid var(--neon-green); background:rgba(16,185,129,0.13); color:var(--text-main); border-radius:12px; padding:11px 14px; cursor:pointer; text-align:left;"></button>
+            <div id="haftalik-yedek-banner" class="sadece-egitmen" style="display:none; margin-bottom:12px; background:rgba(245,158,11,0.15); border:1px solid var(--gold); border-radius:10px; padding:10px 12px; font-size:12px;">
+                <span style="font-weight:bold;">📦 Haftalık yedek zamanı geldi.</span> Verilerini güvene almak için indir.
+                <button onclick="tumVeriyiYedekle()" style="margin-top:7px; width:100%; background:var(--gold); color:#000; border:none; padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">💾 Şimdi Yedekle</button>
+            </div>
             <div class="glass-panel sadece-egitmen" style="padding:15px; border-radius:12px; margin-bottom:15px;">
                 <div class="satir-inputs">
                     <input type="text" id="yeni-sporcu-ad" placeholder="SPORCU ADI SOYADI">
@@ -665,6 +686,7 @@
                     <span id="giris-paneli-baslik" style="font-weight:bold; font-size:14px; color:var(--accent-orange); text-align:center; flex:1; min-width:0;">ATICI</span>
                     <span style="width:60px; flex-shrink:0;"></span>
                 </div>
+                <div id="hizli-gecis-bar" class="sadece-egitmen" style="display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px 0; -webkit-overflow-scrolling:touch;"></div>
                 <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display:flex; align-items:center; gap:8px; width:100%; box-sizing:border-box; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; margin-bottom:10px;">
                     <span id="ciddi-mod-switch" style="display:inline-block; width:34px; height:18px; border-radius:10px; background:var(--accent-grey, #555); position:relative; transition:background 0.2s; flex-shrink:0;">
                         <span id="ciddi-mod-knob" style="position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;"></span>
@@ -673,6 +695,7 @@
                 </button>
                 <button onclick="skorKaydet()" style="display:block; width:100%; box-sizing:border-box; background:var(--neon-green); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; font-size:16px; box-shadow:0 3px 12px rgba(16,185,129,0.35);">💾 SERİYİ KAYDET ✔️</button>
                 <button onclick="seriUzat()" style="display:block; width:100%; box-sizing:border-box; margin-top:8px; background:rgba(255,98,0,0.15); color:var(--text-main); border:1px solid var(--accent-orange); padding:9px; border-radius:10px; font-weight:bold; font-size:13px;">➕ Seri Uzat (ekstra atışa devam et)</button>
+                <button onclick="oncekiSeriyiDuzelt()" class="sadece-egitmen" style="display:block; width:100%; box-sizing:border-box; margin-top:8px; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:9px; border-radius:10px; font-weight:bold; font-size:13px;">✏️ Önceki Seriyi Düzelt</button>
             </div>
             <button onclick="skorKaydet()" id="yuzen-kaydet-btn" title="Seriyi Kaydet" style="position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:9000; background:var(--neon-green); color:white; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:15px; box-shadow:0 5px 18px rgba(16,185,129,0.55);">💾 SERİYİ KAYDET ✔️</button>
 
@@ -685,6 +708,12 @@
                             <button class="hedef-sec-btn aktif" id="btn-10ring" onclick="setHedefTipi('10ring')">10 Halkalı</button>
                             <button class="hedef-sec-btn" id="btn-6ring" onclick="setHedefTipi('6ring')">6 Halkalı</button>
                             <button class="hedef-sec-btn" id="btn-3spot" onclick="setHedefTipi('3spot')">3'lü Spot</button>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:7px 9px;">
+                            <span style="font-size:11px; font-weight:bold; flex:1;">🏹 Bu seride kaç ok?</span>
+                            <button id="oksayi-btn-oto" onclick="okSayisiAyarla(null)" style="padding:5px 9px; border-radius:6px; font-size:11px; font-weight:bold; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); cursor:pointer;">Oto</button>
+                            <button id="oksayi-btn-3" onclick="okSayisiAyarla(3)" style="padding:5px 11px; border-radius:6px; font-size:11px; font-weight:bold; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); cursor:pointer;">3</button>
+                            <button id="oksayi-btn-6" onclick="okSayisiAyarla(6)" style="padding:5px 11px; border-radius:6px; font-size:11px; font-weight:bold; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); cursor:pointer;">6</button>
                         </div>
                         <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; text-align:center; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:8px;">🤏 <b>İki parmağınızla</b> hedefi yakınlaştırıp uzaklaştırın &nbsp;•&nbsp; ☝️ tek parmakla <b>sürükleyin</b> &nbsp;•&nbsp; 👆 tek dokunuş = ok girişi
                         <button onclick="hedefGorunumSifirla()" style="display:block; margin:8px auto 0; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:5px 14px; border-radius:6px; font-weight:bold; font-size:11px;">🎯 Görünümü Sıfırla</button>
@@ -739,7 +768,7 @@
                             <button class="hedef-kontrol-btn" onclick="karavanaEkle()">Karavana (M)</button>
                             <button class="hedef-kontrol-btn" style="background:var(--accent-grey) !important; box-shadow:none;" onclick="sonOkuSil()">Geri Al ↺</button>
                         </div>
-                        <button onclick="fotoModalAc()" style="width:100%; margin-top:10px; background:rgba(255,98,0,0.2); border:1px solid var(--accent-orange); color:var(--text-main); padding:11px; border-radius:8px; font-weight:bold; font-size:13px;">📷 Fotoğraftan Skorla</button>
+                        <!-- Fotoğraftan Skorla kaldırıldı (ileride geliştirilecek) -->
                         <details style="margin-top:12px; width:100%;">
                             <summary style="cursor:pointer; font-size:12px; color:var(--text-muted); text-align:center;">▸ Manuel kart girişi (dropdown)</summary>
                             <div class="manuel-giris-alani" id="manuel-giris-container" style="margin-top:10px;"></div>
@@ -1031,6 +1060,57 @@
         let yoklamaDurum = {};
         let egitmenAylikAy = '';
         let sinifGoruntuFiltre = '__hepsi';
+        // OTOMATİK YOKLAMA
+        let otomatikYoklamaDB = {}; // { 'YYYY-MM-DD': { 'AD': { saat:'HH:MM', grup:'buyukler' } } }
+        let salonModu = (localStorage.getItem('okculuk_salon_modu') !== '0'); // varsayılan AÇIK
+        function otomatikYoklamaKaydet() { try { localStorage.setItem('okculuk_otomatik_yoklama', JSON.stringify(otomatikYoklamaDB)); } catch(e) {} }
+        function otomatikYoklamaIsaretle(ad) {
+            if(!salonModu || !ad) return;
+            let bugun = bugunISO();
+            if(!otomatikYoklamaDB[bugun]) otomatikYoklamaDB[bugun] = {};
+            if(!otomatikYoklamaDB[bugun][ad]) {
+                let saat = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                otomatikYoklamaDB[bugun][ad] = { saat: saat, grup: aktifGrup };
+                otomatikYoklamaKaydet();
+                try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
+            }
+        }
+        function salonModuToggle() {
+            salonModu = !salonModu;
+            localStorage.setItem('okculuk_salon_modu', salonModu ? '1' : '0');
+            salonModuGorunumGuncelle();
+            showToast(salonModu ? '🏠 Salon Modu açık — skor girince otomatik yoklama' : '🚶 Bireysel Mod — yoklama alınmaz', salonModu ? 'success' : 'warning');
+        }
+        function haftalikYedekKontrol() {
+            try {
+                let son = parseInt(localStorage.getItem('okculuk_son_yedek_zaman') || '0');
+                if(Date.now() - son >= 7 * 24 * 60 * 60 * 1000) { let b = document.getElementById('haftalik-yedek-banner'); if(b) b.style.display = 'block'; }
+            } catch(e) {}
+        }
+        function salonModuGorunumGuncelle() {
+            let b = document.getElementById('salon-modu-btn'); if(!b) return;
+            b.innerHTML = `
+                <span style="font-size:22px; flex-shrink:0;">${salonModu ? '🏠' : '🚶'}</span>
+                <span style="flex:1; min-width:0;">
+                    <span style="display:block; font-weight:bold; font-size:13px;">${salonModu ? 'Salon Modu' : 'Bireysel Mod'}</span>
+                    <span style="display:block; font-size:10px; opacity:.85;">${salonModu ? 'Skor girince otomatik yoklama alınır ✅' : 'Yoklama alınmaz (bireysel atış)'}</span>
+                </span>
+                <span style="width:44px; height:24px; border-radius:14px; background:${salonModu ? 'var(--neon-green)' : 'var(--accent-grey, #555)'}; position:relative; flex-shrink:0; transition:.2s;">
+                    <span style="position:absolute; top:3px; left:${salonModu ? '23px' : '3px'}; width:18px; height:18px; border-radius:50%; background:#fff; transition:.2s;"></span>
+                </span>`;
+            b.style.borderColor = salonModu ? 'var(--neon-green)' : 'var(--border-color)';
+            b.style.background = salonModu ? 'rgba(16,185,129,0.13)' : 'rgba(255,255,255,0.04)';
+        }
+        // Yoklama birleştirme (cihazlar arası kayıp olmasın — birleşim, en erken saat)
+        function otomatikYoklamaMerge(yerel, uzak) {
+            let sonuc = {}; let gunler = new Set([...Object.keys(yerel||{}), ...Object.keys(uzak||{})]);
+            gunler.forEach(gun => {
+                sonuc[gun] = {}; let a = (yerel && yerel[gun]) || {}, b = (uzak && uzak[gun]) || {};
+                let adlar = new Set([...Object.keys(a), ...Object.keys(b)]);
+                adlar.forEach(ad => { let x = a[ad], y = b[ad]; if(x && !y) sonuc[gun][ad] = x; else if(y && !x) sonuc[gun][ad] = y; else { sonuc[gun][ad] = ((x.saat||'99') <= (y.saat||'99')) ? x : y; } });
+            });
+            return sonuc;
+        }
         let skorSinifFiltre = '__hepsi'; let skorAramaFiltre = '';
         let ozelSiniflar = [];
         let personelDB = []; let personelYoklamaDB = []; let personelYoklamaDurum = {}; let personelAylikAy = ''; let personelDuzenleId = null; let personelGirisTarih = '';
@@ -1059,8 +1139,8 @@
         function tumVeriyiYedekle() {
             try {
                 let paket = {
-                    uygulama: "DagSK Master OS", surum: 28, tarih: new Date().toISOString(),
-                    turnuvaDB, takimlarDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB
+                    uygulama: "DagSK Master OS", surum: 36, tarih: new Date().toISOString(),
+                    turnuvaDB, takimlarDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, otomatikYoklamaDB, atisLog, rekorlarDB
                 };
                 let blob = new Blob([JSON.stringify(paket, null, 2)], { type: 'application/json' });
                 let url = URL.createObjectURL(blob);
@@ -1069,6 +1149,8 @@
                 let a = document.createElement('a'); a.href = url; a.download = `DagSK-Yedek-${ts}.json`;
                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
+                try { localStorage.setItem('okculuk_son_yedek_zaman', String(Date.now())); } catch(e) {}
+                let rb = document.getElementById('haftalik-yedek-banner'); if(rb) rb.style.display = 'none';
                 showToast("Yedek indirildi! 💾", "success");
             } catch(e) { showToast("Yedekleme başarısız oldu.", "error"); }
         }
@@ -1213,16 +1295,18 @@
         function egitmenPaneliDoldur() {
             let nav = document.getElementById('egitmen-altnav');
             if(nav) {
-                let sek = [['yoklama','✅ Yoklama'],['yeni','➕ Antrenman'],['aylik','📆 Aylık'],['gecmis','📋 Geçmiş'],['karne','👤 Karne'],['defter','📔 Defter'],['siniflar','🏷️ Sınıf/Grup'],['personel','👔 Personel']];
+                let sek = [['yoklama','✅ Yoklama'],['gelenler','⏱️ Bugün Gelenler'],['yeni','➕ Antrenman'],['aylik','📆 Aylık'],['gecmis','📋 Geçmiş'],['karne','👤 Karne'],['sertifika','📜 Sertifika'],['defter','📔 Defter'],['siniflar','🏷️ Sınıf/Grup'],['personel','👔 Personel']];
                 nav.innerHTML = sek.map(([k,l]) => `<button onclick="egitmenSekmeAc('${k}')" style="flex:1; min-width:90px; white-space:nowrap; background:${egitmenAltSekme===k?'var(--neon-blue)':'transparent'}; color:${egitmenAltSekme===k?'#fff':'var(--text-main)'}; border:1px solid ${egitmenAltSekme===k?'var(--neon-blue)':'var(--border-color)'}; padding:8px 6px; border-radius:8px; font-weight:bold; font-size:12px;">${l}</button>`).join('');
             }
             let alan = document.getElementById('egitmen-liste'); if(!alan) return;
             if(Object.keys(turnuvaDB[aktifGrup] || {}).length === 0) { alan.innerHTML = "<div style='color:var(--text-muted); text-align:center; padding:20px; font-size:13px;'>Önce <b>Skor</b> sekmesinden sporcu ekleyin.</div>"; return; }
             if(egitmenAltSekme === 'yoklama') egitmenRenderYoklama();
+            else if(egitmenAltSekme === 'gelenler') egitmenRenderGelenler();
             else if(egitmenAltSekme === 'yeni') egitmenRenderYeni();
             else if(egitmenAltSekme === 'aylik') egitmenRenderAylik();
             else if(egitmenAltSekme === 'gecmis') egitmenRenderGecmis();
             else if(egitmenAltSekme === 'karne') egitmenRenderKarne();
+            else if(egitmenAltSekme === 'sertifika') egitmenRenderSertifika();
             else if(egitmenAltSekme === 'defter') egitmenRenderDefter();
             else if(egitmenAltSekme === 'siniflar') egitmenRenderSiniflar();
             else if(egitmenAltSekme === 'personel') egitmenRenderPersonel();
@@ -1848,6 +1932,97 @@
         }
 
         /* --- HIZLI YOKLAMA (check usulü + canlı cinsiyet sayımı) --- */
+        function egitmenRenderGelenler() {
+            let alan = document.getElementById('egitmen-liste'); if(!alan) return;
+            let bugun = bugunISO();
+            let gun = otomatikYoklamaDB[bugun] || {};
+            let q = (egitmenAramaFiltre || '').trim().toLocaleLowerCase('tr');
+            let tarihYazi = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            let html = `<div class="glass-panel" style="padding:14px; border-radius:12px;">
+                <div style="font-weight:800; color:var(--neon-green); font-size:15px; margin-bottom:4px;">⏱️ Bugün Salona Gelenler</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">📅 ${tarihYazi}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">ℹ️ Salon Modu açıkken skor giren sporcu otomatik gelmiş sayılır.</div>`;
+            ['buyukler', 'kucukler'].forEach(g => {
+                let satirlar = Object.keys(gun).filter(ad => gun[ad].grup === g && (!q || ad.toLocaleLowerCase('tr').includes(q)))
+                    .map(ad => ({ ad, saat: gun[ad].saat || '--:--' }))
+                    .sort((a, b) => a.saat.localeCompare(b.saat));
+                html += `<div style="margin-top:12px; font-weight:bold; font-size:13px; color:var(--accent-orange);">${g === 'buyukler' ? '🔵 Büyükler' : '🟢 Küçükler'} <span style="color:var(--text-muted); font-size:11px;">(${satirlar.length})</span></div>`;
+                if(satirlar.length === 0) { html += `<div style="font-size:12px; color:var(--text-muted); padding:6px 0;">Henüz gelen yok.</div>`; }
+                else { satirlar.forEach(s => { html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:9px 11px; margin-top:6px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:9px;"><span style="font-weight:600; font-size:14px;">✅ ${s.ad}</span><span style="font-weight:bold; color:var(--neon-green); font-size:13px;">🕐 ${s.saat}</span></div>`; }); }
+            });
+            html += `<div style="margin-top:14px; text-align:center; font-weight:bold; color:var(--neon-green);">Toplam: ${Object.keys(gun).length} sporcu geldi</div></div>`;
+            alan.innerHTML = html;
+        }
+        function egitmenRenderSertifika() {
+            let alan = document.getElementById('egitmen-liste'); if(!alan) return;
+            let isimler = egitmenAramaUygula(Object.keys(turnuvaDB[aktifGrup] || {}));
+            let chkler = isimler.map(ad => `<label style="display:flex; align-items:center; gap:10px; padding:9px 11px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:8px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" class="sertifika-chk" value="${ad.replace(/"/g,'&quot;')}" style="width:18px; height:18px; flex-shrink:0;"> <span style="font-weight:600; font-size:14px;">${spEmoji(turnuvaDB[aktifGrup][ad])}${ad}</span></label>`).join('');
+            alan.innerHTML = `<div class="glass-panel" style="padding:14px; border-radius:12px;">
+                <div style="font-weight:800; color:var(--gold); font-size:15px; margin-bottom:4px;">📜 Başarı Sertifikası</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Sporcuları seç, başlığı/metni yaz, tek tıkla hepsini güzel sertifika olarak yazdır veya PDF yap.</div>
+                <div style="font-size:12px; margin-bottom:4px;">Belge Başlığı:</div>
+                <input id="sertifika-baslik" value="BAŞARI BELGESİ" style="width:100%; padding:9px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
+                <div style="font-size:12px; margin-bottom:4px;">Açıklama metni:</div>
+                <textarea id="sertifika-altmetin" rows="2" style="width:100%; padding:9px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; resize:vertical;">Okçuluk Akademisi programındaki üstün başarısı, disiplini ve gayreti için takdimen verilmiştir.</textarea>
+                <label style="display:flex; align-items:center; gap:8px; margin:10px 0; font-size:13px;"><input type="checkbox" id="sertifika-skor" checked style="width:17px; height:17px;"> Skor bilgisini ekle (toplam puan / X sayısı)</label>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <button onclick="document.querySelectorAll('.sertifika-chk').forEach(c=>c.checked=true)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Tümünü Seç</button>
+                    <button onclick="document.querySelectorAll('.sertifika-chk').forEach(c=>c.checked=false)" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-main); padding:7px; border-radius:7px; font-size:12px; font-weight:bold;">Temizle</button>
+                </div>
+                <div style="max-height:320px; overflow-y:auto; margin-bottom:12px;">${chkler || '<div style="color:var(--text-muted); font-size:12px;">Bu ligde sporcu yok.</div>'}</div>
+                <button onclick="sertifikalariUret()" style="width:100%; background:var(--gold); color:#1b1b1b; border:none; padding:12px; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">📜 Seçili Sertifikaları Üret / Yazdır</button>
+            </div>`;
+        }
+        function sertifikalariUret() {
+            let secili = [...document.querySelectorAll('.sertifika-chk:checked')].map(c => c.value);
+            if(secili.length === 0) { showToast('En az bir sporcu seç.', 'warning'); return; }
+            let baslik = (document.getElementById('sertifika-baslik').value || 'BAŞARI BELGESİ').trim();
+            let altMetin = (document.getElementById('sertifika-altmetin').value || '').trim();
+            let skorEkle = document.getElementById('sertifika-skor').checked;
+            let tarih = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            let esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            let sayfalar = secili.map(ad => {
+                let sp = (turnuvaDB[aktifGrup] && turnuvaDB[aktifGrup][ad]) || {};
+                let statHtml = skorEkle ? `<div class="sert-stat"><span>🎯 Toplam Puan: <b>${sp.toplamSkor||0}</b></span><span>⭐ X: <b>${sp.xAdet||0}</b></span><span>🏹 ${esc(sp.yay||'Klasik')} Yay</span></div>` : '';
+                return `<div class="sert"><div class="sert-ic">
+                    <div class="sert-kulup">DAĞ SPOR KULÜBÜ</div>
+                    <div class="sert-akademi">OKÇULUK AKADEMİSİ</div>
+                    <div class="sert-amblem">🎯</div>
+                    <div class="sert-baslik">${esc(baslik)}</div>
+                    <div class="sert-cizgi"></div>
+                    <div class="sert-takdim">Bu belge</div>
+                    <div class="sert-ad">${esc(ad)}</div>
+                    <div class="sert-metin">${esc(altMetin)}</div>
+                    ${statHtml}
+                    <div class="sert-alt"><div class="sert-tarih">📅 ${tarih}</div><div class="sert-imza"><div class="sert-imza-cizgi"></div>Antrenör / Eğitmen</div></div>
+                </div></div>`;
+            }).join('');
+            let w = window.open('', '_blank');
+            if(!w) { showToast('Açılır pencere engellendi — tarayıcı iznini ver.', 'error'); return; }
+            w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sertifikalar</title><style>
+                @page { size: A4 landscape; margin: 0; }
+                * { margin:0; padding:0; box-sizing:border-box; }
+                body { font-family: Georgia, 'Times New Roman', serif; }
+                .sert { width:297mm; height:210mm; padding:9mm; page-break-after:always; background:#fff; }
+                .sert-ic { width:100%; height:100%; border:3px solid #1b2a4a; border-radius:6px; padding:13mm; position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: inset 0 0 0 4px #c9a227; }
+                .sert-kulup { font-size:30px; font-weight:bold; color:#1b2a4a; letter-spacing:3px; }
+                .sert-akademi { font-size:15px; color:#ff6200; letter-spacing:6px; margin-top:3px; }
+                .sert-amblem { font-size:52px; margin:6px 0; }
+                .sert-baslik { font-size:38px; font-weight:bold; color:#ff6200; letter-spacing:4px; }
+                .sert-cizgi { width:120px; height:3px; background:#c9a227; margin:10px auto 16px; }
+                .sert-takdim { font-size:16px; color:#555; }
+                .sert-ad { font-size:44px; font-weight:bold; color:#1b2a4a; margin:6px 0 12px; }
+                .sert-metin { font-size:16px; color:#333; max-width:78%; line-height:1.6; }
+                .sert-stat { display:flex; gap:26px; margin-top:16px; font-size:15px; color:#1b2a4a; }
+                .sert-alt { position:absolute; bottom:13mm; left:13mm; right:13mm; display:flex; justify-content:space-between; align-items:flex-end; }
+                .sert-tarih { font-size:14px; color:#444; }
+                .sert-imza { font-size:14px; color:#444; text-align:center; }
+                .sert-imza-cizgi { width:170px; border-top:1.5px solid #1b2a4a; margin-bottom:5px; }
+            </style></head><body>${sayfalar}</body></html>`);
+            w.document.close();
+            setTimeout(() => { try { w.focus(); w.print(); } catch(e) {} }, 600);
+            showToast(`${secili.length} sertifika hazırlandı 📜`, 'success');
+        }
         function egitmenRenderYoklama() {
             let alan = document.getElementById('egitmen-liste');
             let siniflar = sinifListesi();
@@ -1961,7 +2136,7 @@
             veri.satirlar.forEach(r => {
                 let cRenk = r.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)';
                 html += `<tr><td style="padding:6px 8px; position:sticky; left:0; background:var(--bg-panel); border-bottom:1px solid var(--border-color); font-weight:600;"><span style="color:${cRenk};">●</span> ${r.ad}</td>`;
-                r.durum.forEach(g => html += `<td style="padding:6px 4px; text-align:center; border-bottom:1px solid var(--border-color); color:${g?'var(--neon-green)':'var(--text-muted)'};">${g?'✓':'·'}</td>`);
+                r.durum.forEach((g, ci) => { let saat = (r.durumSaat && r.durumSaat[ci]) ? r.durumSaat[ci] : ''; html += `<td style="padding:6px 4px; text-align:center; border-bottom:1px solid var(--border-color); color:${g?'var(--neon-green)':'var(--text-muted)'};">${g ? (saat ? `✓<div style="font-size:8px; color:var(--neon-blue); margin-top:1px;">${saat}</div>` : '✓') : '·'}</td>`; });
                 html += `<td style="padding:6px 8px; text-align:center; border-bottom:1px solid var(--border-color); font-weight:bold;">${r.gelen}/${veri.dersler.length}</td><td style="padding:6px 8px; text-align:center; border-bottom:1px solid var(--border-color); color:var(--accent-orange); font-weight:bold;">${r.yuzde}%</td></tr>`;
             });
             html += `</tbody></table></div>`;
@@ -1969,17 +2144,25 @@
         }
         function aylikVeriHesapla(ay) {
             let dersSet = antrenmanlarDB.filter(a => a.lig === aktifGrup && (a.tarih||'').slice(0,7) === ay);
-            dersSet = dersSet.slice().sort((a,b) => a.tarih < b.tarih ? -1 : a.tarih > b.tarih ? 1 : (a.id < b.id ? -1 : 1));
-            let dersler = dersSet.map(a => a.tarih);
+            let manuelTarihler = dersSet.map(a => a.tarih);
+            // OTOMATİK YOKLAMA günleri de ders günü sayılır (bu ay + bu lig)
+            let otoTarihler = Object.keys(otomatikYoklamaDB || {}).filter(t => (t||'').slice(0,7) === ay && Object.keys(otomatikYoklamaDB[t] || {}).some(ad => otomatikYoklamaDB[t][ad] && otomatikYoklamaDB[t][ad].grup === aktifGrup));
+            let dersler = [...new Set([...manuelTarihler, ...otoTarihler])].sort();
             let isimler = Object.keys(turnuvaDB[aktifGrup] || {}).filter(ad => !turnuvaDB[aktifGrup][ad].pasif);
             let satirlar = []; let toplamK = 0, toplamE = 0;
             isimler.forEach(ad => {
                 let sp = turnuvaDB[aktifGrup][ad];
-                let durum = dersSet.map(a => { let k = a.kayitlar.find(x => x.ad === ad); return !!(k && k.geldi); });
+                let durum = dersler.map(t => {
+                    let manuel = dersSet.find(a => a.tarih === t);
+                    let gManuel = !!(manuel && manuel.kayitlar && manuel.kayitlar.find(x => x.ad === ad && x.geldi));
+                    let gOto = !!(otomatikYoklamaDB[t] && otomatikYoklamaDB[t][ad] && otomatikYoklamaDB[t][ad].grup === aktifGrup);
+                    return gManuel || gOto;
+                });
+                let durumSaat = dersler.map(t => (otomatikYoklamaDB[t] && otomatikYoklamaDB[t][ad] && otomatikYoklamaDB[t][ad].grup === aktifGrup) ? (otomatikYoklamaDB[t][ad].saat || '') : '');
                 let gelen = durum.filter(Boolean).length;
                 if(gelen > 0) { if(sp.cinsiyet === 'K') toplamK += gelen; else toplamE += gelen; }
                 let yuzde = dersler.length ? Math.round(gelen / dersler.length * 100) : 0;
-                satirlar.push({ ad, cinsiyet: sp.cinsiyet, durum, gelen, yuzde });
+                satirlar.push({ ad, cinsiyet: sp.cinsiyet, durum, durumSaat, gelen, yuzde });
             });
             satirlar.sort((a,b) => b.gelen - a.gelen);
             return { dersler, satirlar, toplamK, toplamE };
@@ -2127,6 +2310,43 @@
                 }
             } catch(e) {} }, 150);
         }
+        function sapmaAnalizHTML(sp) {
+            let oklar = [];
+            let topla = (arr) => { (arr || []).forEach(o => { if(o && o.x != null && o.y != null && o.puan !== 'M') { let spotY = (o.tip === '3spot' && o.spot != null) ? [-140, 0, 140][o.spot] : 0; oklar.push({ dx: o.x, dy: o.y - spotY }); } }); };
+            topla(sp.detayliOklar);
+            (sp.kartGecmisi || []).forEach(k => topla(k.detayliOklar));
+            if(oklar.length < 3) return '';
+            let avgX = oklar.reduce((a, o) => a + o.dx, 0) / oklar.length;
+            let avgY = oklar.reduce((a, o) => a + o.dy, 0) / oklar.length;
+            let yatay = Math.abs(avgX) < 6 ? '' : (avgX > 0 ? 'SAĞ' : 'SOL');
+            let dikey = Math.abs(avgY) < 6 ? '' : (avgY > 0 ? 'AŞAĞI' : 'YUKARI');
+            let yon = [dikey, yatay].filter(Boolean);
+            let yonText = yon.length ? yon.join('-') : 'MERKEZ (dengeli)';
+            let oneri = '';
+            if(yatay === 'SAĞ') oneri = 'Oklar sağa kaçıyor — nişan/bırakış (release) ve duruşu kontrol et. ';
+            else if(yatay === 'SOL') oneri = 'Oklar sola kaçıyor — kavrama (grip) ve bırakışı kontrol et. ';
+            if(dikey === 'YUKARI') oneri += 'Yukarı grup: nişan yüksekliği/çekiş uzunluğuna bak.';
+            else if(dikey === 'AŞAĞI') oneri += 'Aşağı grup: çekiş ve duruşu kontrol et.';
+            let s = 110, cl = (v) => Math.max(-s, Math.min(s, v));
+            let noktalar = oklar.map(o => `<circle cx="${cl(o.dx).toFixed(1)}" cy="${cl(o.dy).toFixed(1)}" r="3" fill="rgba(59,130,246,0.45)"/>`).join('');
+            let dot = `<circle cx="${cl(avgX).toFixed(1)}" cy="${cl(avgY).toFixed(1)}" r="8" fill="var(--neon-red)" stroke="#fff" stroke-width="2"/>`;
+            let svg = `<svg viewBox="-120 -120 240 240" width="140" height="140" style="flex-shrink:0;">
+                <circle cx="0" cy="0" r="100" fill="rgba(255,255,255,0.03)" stroke="var(--border-color)"/>
+                <circle cx="0" cy="0" r="60" fill="none" stroke="var(--border-color)"/>
+                <circle cx="0" cy="0" r="25" fill="none" stroke="var(--gold)"/>
+                <line x1="-112" y1="0" x2="112" y2="0" stroke="var(--border-color)"/>
+                <line x1="0" y1="-112" x2="0" y2="112" stroke="var(--border-color)"/>
+                ${noktalar}${dot}</svg>`;
+            return `<div style="background:rgba(0,0,0,0.15); border:1px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:10px;">
+                <div style="font-weight:bold; color:var(--accent-orange); font-size:13px; margin-bottom:8px;">🎯 Sapma Yönü Analizi <span style="font-size:10px; color:var(--text-muted);">(${oklar.length} işaretli atış)</span></div>
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">${svg}
+                    <div style="flex:1; min-width:130px;">
+                        <div style="font-size:13px;">Ağırlık merkezi: <b style="color:var(--neon-red);">${yonText}</b></div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.4;">${oneri || 'Gruplaşma merkeze yakın, dengeli. 👍'}</div>
+                    </div></div>
+                <div style="font-size:9px; color:var(--text-muted); margin-top:8px;">ℹ️ Yalnızca hedefe dokunarak işaretlenen atışlar hesaba katılır (hızlı sayı girişi hariç).</div>
+            </div>`;
+        }
         function okDagilimiHTML(sp) {
             let { say, toplamOk } = okDagilimiSay(sp);
             if(toplamOk === 0) return `<div style="font-size:11px; color:var(--text-muted); font-style:italic;">Henüz atış kaydı yok.</div>`;
@@ -2191,7 +2411,7 @@
             } catch(e) {}
         }
         function bulutDurum(txt, renk) { let el = document.getElementById('bulut-durum'); if(el) { el.innerText = txt; el.style.color = renk || 'var(--text-muted)'; } }
-        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB }); }
+        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB }); }
 
         function bulutVeriyiUygula(p) {
             guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
@@ -2207,11 +2427,12 @@
             if(p.aktifTakimTur) aktifTakimTur = p.aktifTakimTur;
             if(p.atisLog) atisLog = p.atisLog;
             if(p.rekorlarDB) rekorlarDB = p.rekorlarDB;
+            if(p.otomatikYoklamaDB) otomatikYoklamaDB = otomatikYoklamaMerge(otomatikYoklamaDB, p.otomatikYoklamaDB);
             try {
                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
                 localStorage.setItem('okculuk_takimlar_data', JSON.stringify(takimlarDB));
                 antrenmanlariKaydet(); ozelSiniflariKaydet(); personeliKaydet(); bracketleriKaydet();
-                atisLogKaydet(); rekorlariKaydet();
+                atisLogKaydet(); rekorlariKaydet(); otomatikYoklamaKaydet();
             } catch(e) {}
             tumEkranlariYenile();
         }
@@ -2221,6 +2442,8 @@
             try { takimDropdownDoldur(); takimListesiCiz(); } catch(e) {}
             try { let e = document.getElementById('icerik-egitmen'); if(e && e.classList.contains('aktif')) egitmenPaneliDoldur(); } catch(e) {}
             try { let b = document.getElementById('icerik-basari'); if(b && b.classList.contains('aktif')) basariPaneliDoldur(); } catch(e) {}
+            // CANLI: açık karne (sporcu/aile görüntülerken) yeni atış gelince anında güncellensin
+            try { let dm = document.getElementById('detay-modal'); if(dm && dm.style.display !== 'none' && getComputedStyle(dm).display !== 'none' && detayKarneSporcu) sporcuDetayGoster(detayKarneSporcu); } catch(e) {}
         }
 
         let bulutDeneme = 0;
@@ -2249,6 +2472,7 @@
                         } else { bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
                     } catch(e) {}
                     bulutIlkPullYapildi = true; // artık göndermeye izin var
+                    try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
                     // 2) Canlı dinleyici
                     dbBulut.collection('kulup').doc('master').onSnapshot(doc2 => {
                         if(!doc2.exists) return;
@@ -2330,6 +2554,9 @@
             if(pVeri) { try { personelDB = JSON.parse(pVeri) || []; } catch(e){} }
             let pyVeri = localStorage.getItem('okculuk_personel_yoklama');
             if(pyVeri) { try { personelYoklamaDB = JSON.parse(pyVeri) || []; } catch(e){} }
+            let oyVeri = localStorage.getItem('okculuk_otomatik_yoklama');
+            if(oyVeri) { try { otomatikYoklamaDB = JSON.parse(oyVeri) || {}; } catch(e){} }
+            try { salonModuGorunumGuncelle(); } catch(e){}
             let alVeri = localStorage.getItem('okculuk_atislog_data');
             if(alVeri) { try { atisLog = JSON.parse(alVeri) || []; } catch(e){} }
             let rkVeri = localStorage.getItem('okculuk_rekorlar_data');
@@ -2339,6 +2566,16 @@
             setInterval(guvenlikYedegiAl, 20000); // periyodik güvenlik yedeği
             sporcuListesiniYenile(); siralamaListesiDoldur(); takimDropdownDoldur(); takimListesiCiz();
             hedefPanZoomKur();
+            // VELİ QR / bağlantı: ?vs=AD&vk=KOD ile gelindiyse otomatik o sporcunun canlı karnesi
+            try {
+                let params = new URLSearchParams(location.search);
+                let vs = params.get('vs');
+                if(vs) {
+                    veliBeklenen = { ad: vs, kod: params.get('vk') || '' };
+                    // bulut çekilince giriş yapılır; yine de yerel veriyle 2.5sn sonra dene (çevrimdışı için)
+                    setTimeout(() => { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } }, 2500);
+                }
+            } catch(e) {}
             bulutBaslat();
             // Boş alana dokununca kapat: kenar (backdrop) her zaman; "kolay-kapat" ekranlarda içerideki boşluklar da kapatır
             document.querySelectorAll('.modal-overlay').forEach(ov => {
@@ -2398,6 +2635,35 @@
             tablariPlatformaGoreAyarla(); // içerikler dolduktan sonra tekrar uygula (garanti)
             showToast(`Hoş geldin, ${bulundu}! 🎯`, 'success');
         }
+        let veliBeklenen = null;
+        function veliGiris(ad, kod) {
+            ad = (ad || '').trim().toUpperCase();
+            let bulundu = null, grup = null;
+            ['buyukler', 'kucukler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(isim => { if(isim.trim().toUpperCase() === ad) { let sp = db[isim]; let dk = String(sp.kod || sp.dogumYili || '').trim(); if(!kod || dk === String(kod).trim()) { bulundu = isim; grup = g; } } }); });
+            if(!bulundu) { showToast('QR/bağlantı geçersiz — sporcu bulunamadı.', 'error'); return false; }
+            loggedInSporcu = bulundu; aktifGrup = grup; aktifPlatform = 'sporcu';
+            try { document.getElementById('aktif-grup-etiket').innerText = (aktifGrup === 'buyukler' ? 'BÜYÜKLER' : 'KÜÇÜKLER'); } catch(e) {}
+            let ge = document.getElementById('giris-ekrani'); if(ge) ge.style.display = 'none';
+            tablariPlatformaGoreAyarla();
+            try { kronometreSureAyarla(); kronometreSifirla(); } catch(e) {}
+            try { sporcuListesiniYenile(); siralamaListesiDoldur(); } catch(e) {}
+            tablariPlatformaGoreAyarla();
+            try { sporcuDetayGoster(bulundu); } catch(e) {} // karneyi canlı aç
+            showToast(`👨‍👩‍👧 ${bulundu} — canlı karne`, 'success');
+            return true;
+        }
+        function veliQRGoster(ad) {
+            let sp = (turnuvaDB[aktifGrup] && turnuvaDB[aktifGrup][ad]) ? turnuvaDB[aktifGrup][ad] : null;
+            if(!sp) { for(let g in turnuvaDB) { if(turnuvaDB[g] && turnuvaDB[g][ad]) { sp = turnuvaDB[g][ad]; break; } } }
+            if(!sp) return;
+            let kod = String(sp.kod || sp.dogumYili || '').trim();
+            let url = location.origin + location.pathname + '?vs=' + encodeURIComponent(ad) + (kod ? '&vk=' + encodeURIComponent(kod) : '');
+            document.getElementById('veli-qr-ad').innerText = ad;
+            document.getElementById('veli-qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=' + encodeURIComponent(url);
+            document.getElementById('veli-qr-link').value = url;
+            document.getElementById('veli-qr-modal').style.display = 'flex';
+        }
+        function veliQRKopyala() { let i = document.getElementById('veli-qr-link'); if(!i) return; i.select(); i.setSelectionRange(0, 99999); try { document.execCommand('copy'); showToast('Bağlantı kopyalandı 📋', 'success'); } catch(e) {} }
         function sporcuCikis() {
             loggedInSporcu = null; aktifPlatform = 'sporcu';
             document.body.classList.remove('sporcu-uye-modu');
@@ -2513,6 +2779,8 @@
         function sporcuListesiniYenile() {
             let alan = document.getElementById('sporcu-ana-liste'); if(!alan) return; alan.innerHTML = "";
             try { let tb = document.getElementById('skor-tarih-banner'); if(tb) { let bugun = new Date().toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }); tb.innerText = `📅 Bugünün Antrenmanı — ${bugun}`; } } catch(e) {}
+            try { salonModuGorunumGuncelle(); } catch(e) {}
+            try { haftalikYedekKontrol(); } catch(e) {}
             let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
             try { seriPresetGorunumGuncelle(limit); } catch(e){}
             if (!turnuvaDB[aktifGrup]) turnuvaDB[aktifGrup] = {}; 
@@ -2679,7 +2947,23 @@
             }, { passive: false });
         }
 
-        function getMaksOk() { return (aktifGrup === 'buyukler') ? 6 : 3; }
+        let manuelOkSayisi = null; // null = lig varsayılanı (büyükler 6 / küçükler 3)
+        function getMaksOk() { return manuelOkSayisi || ((aktifGrup === 'buyukler') ? 6 : 3); }
+        function okSayisiAyarla(n) {
+            if(anlikAtilanOklar && anlikAtilanOklar.length > 0) { if(!confirm('Ok sayısını değiştirmek bu seride girdiğin okları sıfırlar. Devam edilsin mi?')) return; }
+            manuelOkSayisi = n; anlikAtilanOklar = [];
+            okSayisiGorunumGuncelle();
+            try { hedefGorseliGuncelle(false); } catch(e) {}
+        }
+        function okSayisiGorunumGuncelle() {
+            let cur = getMaksOk();
+            [['oto', manuelOkSayisi === null], ['3', manuelOkSayisi !== null && cur === 3], ['6', manuelOkSayisi !== null && cur === 6]].forEach(([v, aktif]) => {
+                let b = document.getElementById('oksayi-btn-' + v); if(!b) return;
+                b.style.background = aktif ? 'var(--accent-orange)' : 'var(--bg-main)';
+                b.style.color = aktif ? '#fff' : 'var(--text-main)';
+                b.style.borderColor = aktif ? 'var(--accent-orange)' : 'var(--border-color)';
+            });
+        }
         
         function setHedefTipi(tip) {
             aktifHedefTipi = tip;
@@ -2838,8 +3122,38 @@
             else document.getElementById('giris-paneli-baslik').innerText = `${ad} - ${sLen}. Seri`;
             setHedefTipi('6ring'); 
             ciddiModGorunumGuncelle();
+            try { hizliGecisBariCiz(); } catch(e) {}
+            try { okSayisiGorunumGuncelle(); } catch(e) {}
         }
-        function skorEkraniniKapat() { secilenSporcu = ""; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile(); }
+        function hizliGecisBariCiz() {
+            let bar = document.getElementById('hizli-gecis-bar'); if(!bar) return;
+            if(loggedInSporcu) { bar.innerHTML = ''; return; }
+            let adlar = Object.keys(turnuvaDB[aktifGrup] || {});
+            bar.innerHTML = adlar.map((ad, i) => {
+                let bas = ad.trim().split(/\s+/).map(p => (p[0] || '')).join('.').toLocaleUpperCase('tr');
+                let aktif = ad === secilenSporcu;
+                return `<button onclick="hizliGecis('${ad.replace(/'/g,"\\'")}')" title="${ad}" style="flex:0 0 auto; padding:7px 11px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; border:1px solid ${aktif?'var(--accent-orange)':'var(--border-color)'}; background:${aktif?'var(--accent-orange)':'var(--bg-main)'}; color:${aktif?'#fff':'var(--text-main)'};">${i+1}-${bas}</button>`;
+            }).join('');
+        }
+        function hizliGecis(ad) {
+            if(ad === secilenSporcu) return;
+            if(anlikAtilanOklar && anlikAtilanOklar.length > 0) {
+                if(!confirm('Bu seride henüz KAYDEDİLMEMİŞ oklar var.\nDiğer sporcuya geçersen bu oklar silinir.\n\nYine de geçilsin mi? (İptal = kal, oraya dön kaydet)')) return;
+            }
+            skorEkraniniAc(ad);
+        }
+        function oncekiSeriyiDuzelt() {
+            if(!secilenSporcu) return;
+            let sp = turnuvaDB[aktifGrup][secilenSporcu];
+            if(!sp || !sp.seriler || sp.seriler.length === 0) { showToast('Düzeltilecek önceki seri yok.', 'warning'); return; }
+            seriDuzenleAc(secilenSporcu, sp.seriler.length - 1); // son kaydedilen seri
+        }
+        function skorEkraniniKapat() {
+            if(anlikAtilanOklar && anlikAtilanOklar.length > 0) {
+                if(!confirm('Bu seride KAYDEDİLMEMİŞ oklar var!\nÇıkarsan girdiğin oklar kaybolur.\n\nYine de çıkılsın mı? (İptal = kal ve "Seriyi Kaydet")')) return;
+            }
+            anlikAtilanOklar = []; secilenSporcu = ""; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile();
+        }
         function seriUzat() {
             if(!secilenSporcu) { showToast('Önce bir sporcu seç.', 'warning'); return; }
             let sp = turnuvaDB[aktifGrup][secilenSporcu]; if(!sp) return;
@@ -2898,6 +3212,7 @@
             
             if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); 
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); showToast(`Seri Kaydedildi! (+${seriPuan})`, "success");
+            try { otomatikYoklamaIsaretle(secilenSporcu); } catch(e) {}
 
             // --- BAŞARI & REKOR SİSTEMİ ENTEGRASYONU ---
             // Ciddi Yarışma Modu: Açıksa ödülleri sessizce ver (kutlama/konfeti yok)
@@ -3095,6 +3410,7 @@
                 let seriler = sp.seriler || []; let detayliOklar = sp.detayliOklar || [];
                 let gsAlani = document.getElementById('karne-gecmis-seriler'); gsAlani.innerHTML = "";
                 let ustBilgi = `<div style="background:rgba(0,0,0,0.15); border:1px solid var(--border-color); border-radius:8px; padding:10px; margin-bottom:10px;">${okDagilimiHTML(sp)}</div>`;
+                try { ustBilgi += sapmaAnalizHTML(sp); } catch(e) {}
                 if(sp.egitmenNotu || (sp.egitmenPuan !== undefined && sp.egitmenPuan !== '' && sp.egitmenPuan !== null)) {
                     let ep = (sp.egitmenPuan !== undefined && sp.egitmenPuan !== '' && sp.egitmenPuan !== null) ? `<span style="color:var(--neon-blue); font-weight:bold;"> • Vurduğu Puan: ${sp.egitmenPuan}</span>` : '';
                     ustBilgi += `<div style="background:rgba(59,130,246,0.1); border:1px solid var(--neon-blue); border-radius:8px; padding:10px; margin-bottom:10px;"><div style="font-size:12px; font-weight:bold; color:var(--neon-blue); margin-bottom:4px;">🎓 Eğitmen Notu${ep}</div><div style="font-size:13px; color:var(--text-main); white-space:pre-wrap;">${(sp.egitmenNotu||'-')}</div></div>`;
@@ -3196,6 +3512,7 @@
         function cizSira(dizi, dom, limit) {
             if(dizi.length === 0) { dom.innerHTML = "<div style='color:var(--text-muted); font-size:11px;'>Sporcu yok.</div>"; return; }
             dizi.forEach((sp, idx) => {
+              try {
                 let madalya = ""; let rc = ""; if(idx === 0) { madalya = "🥇"; rc = "rank-1"; } else if(idx === 1) { madalya = "🥈"; rc = "rank-2"; } else if(idx === 2) { madalya = "🥉"; rc = "rank-3"; } else { madalya = `<span style="font-size:12px; margin-left:5px;">${idx+1}.</span>`; }
                 let cRenk = sp.cinsiyet === 'K' ? 'var(--neon-pink)' : 'var(--neon-blue)';
                 let macBilgi = getSporcuMacBilgisi(sp.ad); let serilerLen = sp.seriler ? sp.seriler.length : 0;
@@ -3215,6 +3532,7 @@
                         ${karneBtn}
                     </div>
                 </div>`;
+              } catch(satirHata) { /* tek sporcunun bozuk verisi tüm listeyi bozmasın */ }
             });
         }
 
@@ -4323,6 +4641,8 @@
         }
 
         // --- Görev listesi render ---
+        let gorevHepsiGoster = false;
+        function gorevHepsiToggle() { gorevHepsiGoster = !gorevHepsiGoster; gorevListeDoldur(); }
         function gorevListeDoldur() {
             let liste = document.getElementById('oy-gorev-liste'); if(!liste) return;
             let ad = oyAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null;
@@ -4330,7 +4650,7 @@
             let sp = f.sp; let bugun = bugunISO();
             let odenen = (sp.gorev && sp.gorev.tarih === bugun) ? sp.gorev.odenen : [];
             let m = gorevMetrik(ad); let tamamSay = 0;
-            liste.innerHTML = GUNLUK_GOREVLER.map(g => {
+            let kartlar = GUNLUK_GOREVLER.map(g => {
                 let mevcut = Math.max(g.deg(m), odenen.indexOf(g.id) >= 0 ? g.hedef : 0);
                 let bitti = mevcut >= g.hedef; if(bitti) tamamSay++;
                 let oran = Math.min(100, Math.round(mevcut / g.hedef * 100));
@@ -4346,7 +4666,14 @@
                     </div>
                     <div class="gorev-odul">${odulHtml}</div>
                 </div>`;
-            }).join('');
+            });
+            let ilk3 = kartlar.slice(0, 3).join('');
+            let kalan = kartlar.slice(3).join('');
+            let toggleBtn = '';
+            if(kartlar.length > 3) {
+                toggleBtn = `<button onclick="gorevHepsiToggle()" style="width:100%; margin-top:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; padding:9px; font-size:12px; font-weight:bold; cursor:pointer;">${gorevHepsiGoster ? '▲ Daha az göster' : `▼ Diğer ${kartlar.length - 3} görevi göster`}</button>`;
+            }
+            liste.innerHTML = ilk3 + (gorevHepsiGoster ? kalan : '') + toggleBtn;
             let toplamOdul = GUNLUK_GOREVLER.reduce((a,g) => a + g.odul, 0);
             document.getElementById('oy-gorev-ozet').textContent = `(${tamamSay}/${GUNLUK_GOREVLER.length} tamamlandı — günlük toplam ${toplamOdul} 💎)`;
         }
