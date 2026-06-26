@@ -350,7 +350,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v58</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v59</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -575,7 +575,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v58</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v59</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -596,7 +596,7 @@
             <button id="tab-video" class="sekme-btn" onclick="showToast('🎥 Video Analiz yapım aşamasında — yakında!', 'warning')" style="opacity:0.55;">🎥 Video Analiz <span style="font-size:9px; background:var(--gold); color:#000; padding:1px 5px; border-radius:6px; margin-left:3px;">YAKINDA</span></button>
             <button id="tab-basari" class="sekme-btn" onclick="sekmeAc('basari')">🏅 Başarılar</button>
             <button id="tab-oyun" class="sekme-btn" onclick="sekmeAc('oyun')">🎮 Görev & Mağaza</button>
-            <button id="tab-refleks" class="sekme-btn" onclick="sekmeAc('refleks')">🎯 Refleks Oyunu</button>
+            <button id="tab-refleks" class="sekme-btn" onclick="sekmeAc('refleks')">🧠 Reaksiyon Lab</button>
         </div>
     </div>
 
@@ -1016,21 +1016,49 @@
         <div id="rfx-profil" style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:10px;"></div>
         <div id="rfx-gorev" style="background:rgba(251,191,36,0.08); border:1px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:10px;"></div>
         <button id="rfx-lider-btn" onclick="rfxLiderTablosu()" style="width:100%; margin-bottom:14px; background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#000; border:none; padding:12px; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer;">🏆 Lider Tablosu & Rozetler</button>
-        <div id="rfx-menu" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px;">
-            <button onclick="rfxOyunAc('pod')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔴</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Refleks Pod</div><div style="font-size:11px; color:var(--text-muted);">Çıkan hedefe hızlı dokun</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('gonogo')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🚦</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Yeşile Bas</div><div style="font-size:11px; color:var(--text-muted);">Yeşilde dokun, kırmızıda durma!</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('tap')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">💥</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hızlı Dokunuş</div><div style="font-size:11px; color:var(--text-muted);">5 saniyede en çok dokunuş</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('timing')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">⏱️</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Tam Zamanında</div><div style="font-size:11px; color:var(--text-muted);">Bırakış zamanlaması (clicker)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('tut')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Nişan Tut</div><div style="font-size:11px; color:var(--text-muted);">Sabit kal, pini ortada tut</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('odak')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Odak Kilidi</div><div style="font-size:11px; color:var(--text-muted);">1→9 sırayla, tarama & odak</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('dusus')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🏹</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Mükemmel Düşüş</div><div style="font-size:11px; color:var(--text-muted);">Bırakınca yayı SIKMA</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('dinamik')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Dinamik Bırakış</div><div style="font-size:11px; color:var(--text-muted);">Geriye çekerken bırak (sırt)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('sabir')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">⏳</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Sabır (Hedef Panik)</div><div style="font-size:11px; color:var(--text-muted);">İşareti bekle, erken atma</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('nefes')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🫁</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Nefes Ritmi</div><div style="font-size:11px; color:var(--text-muted);">Sakinlik & nefes kontrolü</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('grup')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Grup At</div><div style="font-size:11px; color:var(--text-muted);">Tutarlılık / gruplama</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('takip')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">👁️</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hedef Takip</div><div style="font-size:11px; color:var(--text-muted);">Akıcı nişan / takip</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('hafiza')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🧠</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hafıza</div><div style="font-size:11px; color:var(--text-muted);">Sırayı hatırla (Simon)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-            <button onclick="rfxOyunAc('sayim')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Skor Sayımı</div><div style="font-size:11px; color:var(--text-muted);">Atış puanını hızlı topla</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+        <div id="rfx-menu">
+            <!-- Bilimsel giriş -->
+            <div style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.3); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:12px; color:var(--text-main); line-height:1.6;">
+                <b style="color:var(--neon-blue);">🔬 Reaksiyon neden önemli?</b><br>
+                Reaksiyon süresi (180–220ms), odak ve karar verme becerileri <b>antrenmanla gelişir</b>. Bu oyunlar sinir sistemini, ön korteksi ve serebellumu (denge/zamanlama) ayrı ayrı çalıştırır — tıpkı okçuluk gibi.
+            </div>
+
+            <!-- KATEGORİ 1: REAKSİYON & HIZ -->
+            <div style="font-weight:900; font-size:12px; color:var(--neon-red); letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">⚡ REAKSİYON & HIZ</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:16px;">
+                <button onclick="rfxOyunAc('pod')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🔴</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Reaksiyon Pod</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Çıkan hedefe hızlı dokun · görsel-motor</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('gonogo')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🚦</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Yeşile Bas</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Dur/geç kararı · inhibisyon</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('tap')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💥</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Hızlı Dokunuş</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Motor hız · parmak çevikliği</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            </div>
+
+            <!-- KATEGORİ 2: ODAK & ZİHİN -->
+            <div style="font-weight:900; font-size:12px; color:#a855f7; letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">🧠 ODAK & ZİHİN</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:16px;">
+                <button onclick="rfxOyunAc('odak')" style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Odak Kilidi</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Görsel tarama · prefrontal korteks</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('hafiza')" style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🧠</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Hafıza</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Kısa süreli bellek · sıra öğrenme</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('takip')" style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">👁️</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Hedef Takip</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Yumuşak göz hareketi · vizyel kontrol</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('sayim')" style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Skor Sayımı</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Zihinsel hesap · X=10 · çalışan bellek</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('kaos')" style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🌪️</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Kaos Odak</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Dikkat dağıtıcıya direniş · müsabaka</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            </div>
+
+            <!-- KATEGORİ 3: TEKNİK ATIŞLAR -->
+            <div style="font-weight:900; font-size:12px; color:var(--accent-orange); letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">🏹 TEKNİK ATIŞ BECERİLERİ</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:16px;">
+                <button onclick="rfxOyunAc('timing')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">⏱️</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Tam Zamanında</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Bırakış zamanlaması · kliker ritmi</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('tut')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Nişan Tut</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Sabitlik · propriyosepsiyon</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('dusus')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🏹</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Mükemmel Düşüş</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Tork önleme · bırakış sonrası</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('dinamik')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Dinamik Bırakış</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Sırt genişlemesi · ölü bırakış önleme</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('sabir')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">⏳</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Sabır</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Hedef panik · komutla atış</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('grup')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Grup At</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Tutarlılık · motor tekrar</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('ruzgar')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💨</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Rüzgar Okuyucu</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Offset nişan · açık hava taktik</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            </div>
+
+            <!-- KATEGORİ 4: SAKİNLİK & STRES -->
+            <div style="font-weight:900; font-size:12px; color:var(--neon-green); letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">🫁 SAKİNLİK & STRES YÖNETİMİ</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:8px;">
+                <button onclick="rfxOyunAc('nefes')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🫁</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Nefes Ritmi</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">HRV kontrolü · parasempatik aktivasyon</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                <button onclick="rfxOyunAc('sampiyonluk')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🏆</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Şampiyonluk Oku</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Adrenalin yönetimi · shoot-off simülasyonu</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            </div>
         </div>
         <div id="rfx-oyun-alani" style="display:none;"></div>
     </div>
@@ -5265,7 +5293,7 @@
         let rfxPodSkor = 0, rfxPodSure = 0, rfxPodCombo = 0, rfxPodEnCombo = 0;
         let rfxGnSure = 0, rfxGnDogru = 0, rfxGnHata = 0, rfxGnYesil = false, rfxGnBekliyor = false, rfxGnCombo = 0, rfxGnEnCombo = 0;
         let rfxTapSkor = 0, rfxTapKalan = 0, rfxTapBasladi = false;
-        function rfxTemizle() { rfxAktif = false; if(rfxTimer) clearInterval(rfxTimer); if(rfxSpawnT) clearTimeout(rfxSpawnT); if(rfxDsDusT) clearTimeout(rfxDsDusT); if(rfxDsFakeT) clearTimeout(rfxDsFakeT); if(rfxSbGoT) clearTimeout(rfxSbGoT); if(rfxSbPencereT) clearTimeout(rfxSbPencereT); rfxTimer = null; rfxSpawnT = null; rfxDsDusT = null; rfxDsFakeT = null; rfxSbGoT = null; rfxSbPencereT = null; }
+        function rfxTemizle() { rfxAktif = false; if(rfxTimer) clearInterval(rfxTimer); if(rfxSpawnT) clearTimeout(rfxSpawnT); if(rfxDsDusT) clearTimeout(rfxDsDusT); if(rfxDsFakeT) clearTimeout(rfxDsFakeT); if(rfxSbGoT) clearTimeout(rfxSbGoT); if(rfxSbPencereT) clearTimeout(rfxSbPencereT); if(rfxKaosTimer2) clearTimeout(rfxKaosTimer2); rfxTimer = null; rfxSpawnT = null; rfxDsDusT = null; rfxDsFakeT = null; rfxSbGoT = null; rfxSbPencereT = null; rfxKaosTimer2 = null; }
         function rfxAktifSporcu() { try { return oyAktifSporcu(); } catch(e) { return loggedInSporcu || ''; } }
         function rfxCoinGuncelle() { let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null; let el = document.getElementById('rfx-coin'); if(el) el.textContent = f ? (f.sp.coin || 0) : 0; }
         function rfxSporcuDegisti(ad) { oyunSeciliSporcu = ad; rfxCoinGuncelle(); rfxProfilCiz(); rfxGorevCiz(); }
@@ -5386,6 +5414,7 @@
             else if(tip === 'dusus') rfxDsKur(alan); else if(tip === 'dinamik') rfxDnKur(alan); else if(tip === 'sabir') rfxSbKur(alan);
             else if(tip === 'nefes') rfxNfKur(alan); else if(tip === 'grup') rfxGrKur(alan); else if(tip === 'takip') rfxTkKur(alan);
             else if(tip === 'hafiza') rfxHfKur(alan); else if(tip === 'sayim') rfxSyKur(alan);
+            else if(tip === 'kaos') rfxKaosKur(alan); else if(tip === 'ruzgar') rfxRzKur(alan); else if(tip === 'sampiyonluk') rfxSpKur(alan);
         }
         // --- Refleks Pod ---
         function rfxPodKur(alan) {
@@ -6017,6 +6046,183 @@
             rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxSyDogru / 2));
             let ozet = rfxSyDogru >= 12 ? 'Zihinden toplama şimşek gibi! 🔢' : rfxSyDogru >= 6 ? 'İyi! Onlukları (10+10) birlikte topla.' : 'Acele etme; önce X ve 10\'ları say.';
             let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Skor Sayımı', '🔢') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">🔢 ${rfxSyDogru} doğru hesap</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'sayim', rfxSyDogru)}</div>`;
+        }
+        // --- Kaos Altında Odaklanma (müsabaka simülatörü) ---
+        let rfxKaosBasili = false, rfxKaosHazir = false, rfxKaosTur = 0, rfxKaosBasari = 0, rfxKaosFaz = 0, rfxKaosTimer2 = null;
+        function rfxKaosKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Kaos Odak', '🌪️') + `
+                <div style="background:var(--bg-panel); border:1px solid #a855f7; border-radius:14px; padding:14px; line-height:1.55; margin-bottom:12px;">
+                    <div style="font-weight:800; color:#a855f7; margin-bottom:5px;">🌪️ Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Müsabakada flaş, ses, "<b>AT!</b>" çığlıkları seni kandırır. Gerçek sinyal <b>sadece</b> merkezdeki yeşil ışıktır. Sahteye kanma, hedefe tünel ol.</div>
+                </div>
+                <button onclick="rfxKaosOyunKur()" style="width:100%; background:#a855f7; color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (5 tur)</button>`;
+        }
+        function rfxKaosOyunKur() {
+            rfxTemizle(); rfxKaosTur = 0; rfxKaosBasari = 0; rfxKaosBasili = false; rfxKaosHazir = false;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Kaos Odak', '🌪️') + `
+                <div style="text-align:center; margin-bottom:8px;">Tur: <b><span id="rfx-kaos-tur">0</span>/5</b> · İsabet: <b id="rfx-kaos-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-kaos-ekran" style="position:relative; height:280px; border-radius:14px; border:2px solid var(--border-color); background:#0b1220; overflow:hidden; touch-action:none;">
+                    <div id="rfx-kaos-hedef" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:130px; height:130px; border-radius:50%; background:radial-gradient(circle,#fbbf24 0 16%,#fff 16% 20%,#ef4444 20% 40%,#fff 40% 44%,#3b82f6 44% 70%,#1f2937 70%); border:2px solid #fff;"></div>
+                    <div id="rfx-kaos-merkez" style="position:absolute; left:50%; top:50%; width:20px; height:20px; border-radius:50%; background:#ef4444; transform:translate(-50%,-50%); z-index:3;"></div>
+                    <div id="rfx-kaos-pin" style="position:absolute; left:50%; top:50%; width:22px; height:22px; margin:-11px 0 0 -11px; opacity:0; z-index:4;"><div style="position:absolute;left:9px;top:0;width:4px;height:22px;background:#10b981;"></div><div style="position:absolute;top:9px;left:0;width:22px;height:4px;background:#10b981;"></div></div>
+                    <div id="rfx-kaos-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:5;"></div>
+                    <div id="rfx-kaos-mesaj" style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-weight:800;font-size:14px;color:var(--text-muted);z-index:6;">Hazır mısın?</div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">BASILI tut. Sahte sinyallere <b>kanma</b>! Yalnızca merkez YEŞİL'e dön bırak.</div>
+                <button id="rfx-kaos-btn" onpointerdown="rfxKaosBasla(event)" onpointerup="rfxKaosBirak(event)" onpointerleave="rfxKaosBirak(event)" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer; touch-action:none;">🎯 NİŞAN AL (BASILI TUT)</button>`;
+        }
+        function rfxKaosBasla(e) {
+            if(e) e.preventDefault(); if(rfxKaosBasili || rfxKaosTur >= 5) return;
+            rfxKaosBasili = true; rfxAktif = true; rfxKaosHazir = false; rfxKaosFaz = 0;
+            let pin = document.getElementById('rfx-kaos-pin'), mesaj = document.getElementById('rfx-kaos-mesaj');
+            if(pin) pin.style.opacity = '1'; if(mesaj) { mesaj.innerText = 'Odaklan...'; mesaj.style.color = 'var(--text-muted)'; }
+            rfxTimer = setInterval(() => { rfxKaosFaz += 0.09; let dx = Math.sin(rfxKaosFaz * 1.2) * 24 + Math.sin(rfxKaosFaz * 0.6) * 9, dy = Math.cos(rfxKaosFaz) * 20 + Math.cos(rfxKaosFaz * 1.6) * 7; if(pin) pin.style.transform = `translate(${dx}px,${dy}px)`; }, 40);
+            rfxKaosParazit();
+            let gercek = 2500 + Math.random() * 3000;
+            rfxSbGoT = setTimeout(() => { if(!rfxKaosBasili) return; rfxKaosHazir = true; let m = document.getElementById('rfx-kaos-merkez'); if(m) m.style.background = '#10b981'; if(mesaj) { mesaj.innerHTML = '🟢 BIRAK!'; mesaj.style.color = '#10b981'; } try { sesCal(1300, 0.15); } catch(e) {} }, gercek);
+        }
+        function rfxKaosParazit() {
+            if(!rfxKaosBasili || !rfxAktif) return;
+            let ov = document.getElementById('rfx-kaos-overlay'); if(!ov) return;
+            let tip = Math.floor(Math.random() * 4);
+            if(tip === 0) { ov.style.background = 'rgba(255,255,255,0.85)'; setTimeout(() => { if(ov) ov.style.background = 'transparent'; }, 90); }
+            else if(tip === 1) { ov.innerHTML = `<div style="position:absolute;left:${10+Math.random()*70}%;top:${10+Math.random()*70}%;font-size:22px;font-weight:900;color:#ef4444;transform:translate(-50%,-50%);animation:rfxPulse .3s ease;">AT!</div>`; setTimeout(() => { if(ov) ov.innerHTML = ''; }, 320); }
+            else if(tip === 2) { let kaos = document.getElementById('rfx-kaos-ekran'); if(kaos) { kaos.style.transform = `translate(${(Math.random()-0.5)*8}px,${(Math.random()-0.5)*6}px)`; setTimeout(() => { if(kaos) kaos.style.transform = ''; }, 120); } }
+            else { ov.innerHTML = `<div style="position:absolute;font-size:32px;top:${10+Math.random()*70}%;left:${Math.random()>0.5?'-8%':'108%'};animation:rfxBurst .8s ease-out forwards;">🐦</div>`; setTimeout(() => { if(ov) ov.innerHTML = ''; }, 820); }
+            let sonraki = 600 + Math.random() * 1200;
+            rfxKaosTimer2 = setTimeout(rfxKaosParazit, sonraki);
+        }
+        function rfxKaosBirak(e) {
+            if(!rfxKaosBasili) return; rfxKaosBasili = false;
+            if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; } if(rfxSbGoT) { clearTimeout(rfxSbGoT); rfxSbGoT = null; } if(rfxKaosTimer2) { clearTimeout(rfxKaosTimer2); rfxKaosTimer2 = null; }
+            let pin = document.getElementById('rfx-kaos-pin'), mesaj = document.getElementById('rfx-kaos-mesaj'), merkez = document.getElementById('rfx-kaos-merkez'), ov = document.getElementById('rfx-kaos-overlay');
+            if(pin) pin.style.opacity = '0'; if(ov) ov.innerHTML = ''; if(merkez) merkez.style.background = '#ef4444';
+            rfxKaosTur++;
+            if(!rfxKaosHazir) { if(mesaj) { mesaj.innerHTML = '❌ DİKKATİN DAĞILDI! Sahteye kandın.'; mesaj.style.color = 'var(--neon-red)'; } try { sesCal(200, 0.25); } catch(e) {} }
+            else { rfxKaosBasari++; if(mesaj) { mesaj.innerHTML = '✅ TÜNEL ODAK! Gerçek sinyali yakaladın.'; mesaj.style.color = 'var(--neon-green)'; } try { sesCal(1200, 0.18); } catch(e) {} }
+            rfxKaosHazir = false;
+            let et = document.getElementById('rfx-kaos-tur'); if(et) et.innerText = rfxKaosTur;
+            let eb = document.getElementById('rfx-kaos-basari'); if(eb) eb.innerText = rfxKaosBasari;
+            if(rfxKaosTur >= 5) setTimeout(rfxKaosBitir, 1200);
+            else setTimeout(() => { let me = document.getElementById('rfx-kaos-mesaj'); if(me) { me.innerText = 'Tekrar bas, odaklan'; me.style.color = 'var(--text-muted)'; } }, 1200);
+        }
+        function rfxKaosBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, rfxKaosBasari * 2);
+            let ozet = rfxKaosBasari >= 5 ? 'Müsabaka odağın demir gibi! Hiçbir şey seni dağıtamadı. 🌪️' : rfxKaosBasari >= 3 ? 'İyi! Sahte sinyallere biraz daha sabret.' : 'Odağını sadece merkez yeşil ışığa ver — gerisi yok.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Kaos Odak', '🌪️') + `<div style="text-align:center; padding:36px 12px;"><div style="font-size:16px; font-weight:bold;">🌪️ 5 turda ${rfxKaosBasari} tünel odak</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'kaos', rfxKaosBasari)}</div>`;
+        }
+        // --- Rüzgar Okuyucu ---
+        let rfxRzYon = 0, rfxRzHiz = 0, rfxRzPinX = 50, rfxRzPinY = 50;
+        function rfxRzKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Rüzgar Okuyucu', '💨') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px; line-height:1.55; margin-bottom:12px;">
+                    <div style="font-weight:800; color:var(--neon-blue); margin-bottom:5px;">💨 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Rüzgar soldan esiyorsa, nişangahı <b>hedefin soluna</b> al — ok rüzgarla sürüklenip sarıya girer. Sarıya inatla nişan alırsan ok sağa kayar!</div>
+                </div>
+                <button onclick="rfxRzOyunKur()" style="width:100%; background:var(--neon-blue); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (5 atış)</button>`;
+        }
+        function rfxRzOyunKur() {
+            rfxTemizle(); rfxRzPinX = 50; rfxRzPinY = 50; rfxAktif = true;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            rfxRzYonSec();
+            alan.innerHTML = rfxBaslikHtml('Rüzgar Okuyucu', '💨') + `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div>Atış: <b><span id="rfx-rz-atis">0</span>/5</b></div><div>✅ <b id="rfx-rz-basari" style="color:var(--neon-green);">0</b></div></div>
+                <div id="rfx-rz-ruzgar" style="background:rgba(59,130,246,0.1); border:1px solid var(--neon-blue); border-radius:10px; padding:10px; text-align:center; margin-bottom:10px; font-weight:800; font-size:14px;"></div>
+                <div id="rfx-rz-alan" onpointermove="rfxRzMove(event)" onpointerdown="rfxRzMove(event)" style="position:relative; height:280px; border-radius:14px; border:2px solid var(--border-color); background:#0b1220; overflow:hidden; touch-action:none; cursor:crosshair;">
+                    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#fbbf24 0 16%,#fff 16% 20%,#ef4444 20% 40%,#fff 40% 44%,#3b82f6 44% 70%,#1f2937 70%);border:2px solid #fff;"></div>
+                    <div id="rfx-rz-pin" style="position:absolute;left:50%;top:50%;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.9);border:2px solid #10b981;transform:translate(-50%,-50%);pointer-events:none;z-index:4;"></div>
+                    <div id="rfx-rz-mesaj" style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-weight:800;font-size:13px;color:var(--text-muted);"></div>
+                </div>
+                <button onclick="rfxRzAt()" style="width:100%; margin-top:10px; background:var(--accent-orange); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">🏹 ATIŞ YAP</button>`;
+            rfxRzGuncelle();
+        }
+        function rfxRzYonSec() { rfxRzYon = (Math.random() > 0.5 ? 1 : -1); rfxRzHiz = 2 + Math.floor(Math.random() * 8); }
+        function rfxRzGuncelle() { let e = document.getElementById('rfx-rz-ruzgar'); if(e) e.innerHTML = `💨 Rüzgar: <span style="color:var(--neon-blue);">${rfxRzYon > 0 ? '→ SAĞDAN' : '← SOLDAN'} ${rfxRzHiz} km/s</span> &nbsp;|&nbsp; Nişangahı ${rfxRzYon > 0 ? 'SOLA' : 'SAĞA'} al!`; }
+        function rfxRzMove(e) { let alan = document.getElementById('rfx-rz-alan'); if(!alan) return; let r = alan.getBoundingClientRect(); rfxRzPinX = (e.clientX - r.left) / r.width * 100; rfxRzPinY = (e.clientY - r.top) / r.height * 100; let pin = document.getElementById('rfx-rz-pin'); if(pin) { pin.style.left = rfxRzPinX + '%'; pin.style.top = rfxRzPinY + '%'; } }
+        let rfxRzAtisSay = 0, rfxRzBasari = 0;
+        function rfxRzAt() {
+            if(!rfxAktif) return;
+            let cx = 50, cy = 50;
+            let offsetX = rfxRzPinX - cx; // + = sağa, - = sola
+            let bekOfs = rfxRzYon * rfxRzHiz * (-0.9); // sola rüzgar → sağa kayar → soldan nişan alınmalı
+            let finalX = rfxRzPinX + bekOfs; let dist = Math.abs(finalX - cx);
+            rfxRzAtisSay++;
+            let mesaj = document.getElementById('rfx-rz-mesaj');
+            if(dist < 12) { rfxRzBasari++; if(mesaj) { mesaj.innerHTML = '✅ MÜKEMMEL! Rüzgarı doğru hesapladın.'; mesaj.style.color = 'var(--neon-green)'; } try { sesCal(1100, 0.18); } catch(e) {} }
+            else if(Math.abs(offsetX) < 6) { if(mesaj) { mesaj.innerHTML = '❌ RÜZGARI HESABA KATMADIN! Ok kaydı.'; mesaj.style.color = 'var(--neon-red)'; } try { sesCal(220, 0.25); } catch(e) {} }
+            else { if(mesaj) { mesaj.innerHTML = '↗️ Yakın ama offset yetmedi — biraz daha al.'; mesaj.style.color = 'var(--gold)'; } try { sesCal(550, 0.15); } catch(e) {} }
+            let ea = document.getElementById('rfx-rz-atis'); if(ea) ea.innerText = rfxRzAtisSay;
+            let eb = document.getElementById('rfx-rz-basari'); if(eb) eb.innerText = rfxRzBasari;
+            if(rfxRzAtisSay >= 5) setTimeout(rfxRzBitir, 1000);
+            else { rfxRzYonSec(); setTimeout(rfxRzGuncelle, 1050); rfxRzPinX = 50; rfxRzPinY = 50; setTimeout(() => { let pin = document.getElementById('rfx-rz-pin'); if(pin) { pin.style.left = '50%'; pin.style.top = '50%'; } }, 1050); }
+        }
+        function rfxRzBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, rfxRzBasari * 2);
+            let ozet = rfxRzBasari >= 4 ? 'Rüzgar hesabın spot on! Açık havada çok işine yarar. 💨' : rfxRzBasari >= 2 ? 'İyi! Offseti biraz daha artır.' : 'Rüzgar ters yönde etkiler — sarıdan çık!';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Rüzgar Okuyucu', '💨') + `<div style="text-align:center; padding:36px 12px;"><div style="font-size:16px; font-weight:bold;">💨 5 atışta ${rfxRzBasari} doğru hesap</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'ruzgar', rfxRzBasari)}</div>`;
+        }
+        // --- Şampiyonluk Oku (adrenalin / nabız simülatörü) ---
+        let rfxSpFaz = 0, rfxSpSakin = 0, rfxSpAsan = false, rfxSpNefes = 0;
+        function rfxSpKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Şampiyonluk Oku', '🏆') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:14px; line-height:1.55; margin-bottom:12px;">
+                    <div style="font-weight:800; color:var(--neon-red); margin-bottom:5px;">🏆 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Shoot-off'da eller titrer, vizyon daralır. Panikle atarsan ıskalarsın. <b>Derin nefes</b> kalp hızını düşürür, sakinleşince at.</div>
+                </div>
+                <button onclick="rfxSpOyunKur()" style="width:100%; background:var(--neon-red); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla</button>`;
+        }
+        function rfxSpOyunKur() {
+            rfxTemizle(); rfxSpFaz = 0; rfxSpSakin = 0; rfxSpAsan = false; rfxSpNefes = 0; rfxAktif = true;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Şampiyonluk Oku', '🏆') + `
+                <div id="rfx-sp-vignette" style="position:relative; height:280px; border-radius:14px; border:2px solid var(--neon-red); background:#0b1220; overflow:hidden;">
+                    <div id="rfx-sp-karanlik" style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, transparent 28%, rgba(0,0,0,0.92) 75%);pointer-events:none;z-index:2;"></div>
+                    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#fbbf24 0 16%,#fff 16% 20%,#ef4444 20% 40%,#fff 40% 44%,#3b82f6 44% 70%,#1f2937 70%);border:2px solid #fff;z-index:1;"></div>
+                    <div id="rfx-sp-pin" style="position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;z-index:3;"><div style="position:absolute;left:9px;top:0;width:4px;height:22px;background:#ef4444;"></div><div style="position:absolute;top:9px;left:0;width:22px;height:4px;background:#ef4444;"></div></div>
+                    <div style="position:absolute;top:8px;left:0;right:0;text-align:center;font-weight:900;font-size:12px;color:#ef4444;z-index:4;">🏆 ŞAMPİYONLUK İÇİN 10 VURMAN GEREK!</div>
+                    <div id="rfx-sp-nabiz" style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;font-weight:800;color:var(--neon-red);z-index:4;"></div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Önce 3 kez derin nefes al → sakinle → ATIŞ!</div>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button id="rfx-sp-nefes-btn" onclick="rfxSpNefesAl()" style="flex:1; background:rgba(16,185,129,0.15); color:var(--neon-green); border:2px solid var(--neon-green); padding:14px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer;">🫁 DERİN NEFES AL (0/3)</button>
+                    <button id="rfx-sp-at-btn" onclick="rfxSpAt()" disabled style="flex:1; background:rgba(239,68,68,0.12); color:var(--neon-red); border:2px solid var(--neon-red); padding:14px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; opacity:0.45;">🏹 ATIŞ</button>
+                </div>`;
+            rfxSpBaslat();
+        }
+        function rfxSpBaslat() {
+            let pin = document.getElementById('rfx-sp-pin'), nabiz = document.getElementById('rfx-sp-nabiz');
+            let titreme = 32; let hizBpm = 160;
+            rfxTimer = setInterval(() => {
+                rfxSpFaz += 0.14;
+                titreme = Math.max(2, titreme - rfxSpSakin * 0.12);
+                let dx = (Math.sin(rfxSpFaz * 1.4) * titreme + (Math.random() - 0.5) * titreme * 0.6);
+                let dy = (Math.cos(rfxSpFaz) * titreme + (Math.random() - 0.5) * titreme * 0.5);
+                if(pin) pin.style.transform = `translate(${dx}px,${dy}px)`;
+                hizBpm = Math.max(60, 160 - rfxSpSakin * 8);
+                let vign = document.getElementById('rfx-sp-karanlik'); if(vign) { let r = Math.max(10, 28 - rfxSpSakin * 2); vign.style.background = `radial-gradient(circle at 50% 50%, transparent ${r}%, rgba(0,0,0,0.92) ${r + 47}%)`; }
+                if(nabiz) nabiz.innerText = `💓 ${hizBpm} bpm`;
+                if(rfxSpSakin >= 30 && !rfxSpAsan) { rfxSpAsan = true; let p = document.getElementById('rfx-sp-pin'); if(p) p.querySelector('div').style.background = '#10b981'; if(p) p.querySelectorAll('div').forEach(d => d.style.background = '#10b981'); }
+            }, 40);
+        }
+        function rfxSpNefesAl() {
+            rfxSpNefes++; rfxSpSakin += 8;
+            let btn = document.getElementById('rfx-sp-nefes-btn'); if(btn) btn.innerText = `🫁 DERİN NEFES AL (${rfxSpNefes}/3)`;
+            try { sesCal(220, 0.12); setTimeout(() => { try { sesCal(180, 0.1); } catch(e) {} }, 800); } catch(e) {}
+            if(rfxSpNefes >= 3) { let ab = document.getElementById('rfx-sp-at-btn'); if(ab) { ab.disabled = false; ab.style.opacity = '1'; } if(btn) { btn.disabled = true; btn.style.opacity = '0.5'; } }
+        }
+        function rfxSpAt() {
+            if(!rfxAktif) return; rfxTemizle();
+            let pin = document.getElementById('rfx-sp-pin'); let style = pin ? getComputedStyle(pin) : null;
+            let tx = parseFloat(pin ? pin.style.transform.match(/translate\(([^,]+)px/)?.[1] || 0 : 0);
+            let ty = parseFloat(pin ? pin.style.transform.match(/,([^)]+)px/)?.[1] || 0 : 0);
+            let dist = Math.sqrt(tx * tx + ty * ty);
+            let kazanilan, sonuc;
+            if(rfxSpNefes < 3) { kazanilan = 1; sonuc = '😰 Panikle attın! Nefes almadan acele ettin.'; }
+            else if(dist < 8) { kazanilan = 10; sonuc = '🏆 MÜKEMMEL! Tamamen sakinleşip tam ortadan vurdun!'; }
+            else if(dist < 18) { kazanilan = 7; sonuc = '✅ İyi atış! Biraz daha sakinlik kazanırsın.'; }
+            else { kazanilan = 3; sonuc = 'Nefes aldın ama henüz yeterince sakinleşmemiştin.'; }
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Şampiyonluk Oku', '🏆') + `<div style="text-align:center; padding:36px 12px;"><div style="font-size:16px; font-weight:bold;">🏆 ${rfxSpNefes}/3 nefes · titreme: ${Math.round(dist)}px</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${sonuc}</div>`, kazanilan, 'sampiyonluk', kazanilan)}</div>`;
         }
         // --- Profil (kapak fotoğrafı + rozet vitrini) ---
         function profilRender(ad) {
