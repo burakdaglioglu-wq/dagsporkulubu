@@ -350,7 +350,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v57</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v58</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -575,7 +575,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v57</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v58</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -1092,6 +1092,7 @@
         let detayKarneSporcu = '';
         let secilenSporcu = ""; let aktifCinsiyet = "K"; let aktifYay = "Klasik"; 
         let turnuvaDB = { buyukler: {}, kucukler: {} }; let takimlarDB = [];
+        let silinenlerDB = [];
         let timerId = null; let isTimerRunning = false; let timerPhase = 0;
         let elemeEslesmeleri = []; let takimElemeEslesmeleri = []; let orijinalSiraMap = {}; let aktifTur = 1; let aktifTakimTur = 1;
         let anlikAtilanOklar = []; let aktifHedefTipi = '10ring'; let aktifTreeCat = 'Klasik';
@@ -2593,6 +2594,8 @@
         function sporcuSayisi(db) { try { return Object.keys((db && db.buyukler) || {}).length + Object.keys((db && db.kucukler) || {}).length; } catch(e) { return 0; } }
         // AKILLI BİRLEŞTİRME: bulut verisini üzerine YAZMAZ, her sporcu için daha yeni olanı korur.
         // Lig bazında ayrı çalışır → büyük/küçük asla karışmaz. Tek taraftaki sporcu kaybolmaz. Eski cihaz yeni skoru ezemez.
+        function silindiMi(g, ad) { return silinenlerDB.some(s => s.grup === g && s.ad === ad); }
+        function silinenlerKaydet() { try { localStorage.setItem('okculuk_silinenler', JSON.stringify(silinenlerDB)); } catch(e) {} }
         function turnuvaDBMerge(yerel, uzak) {
             let sonuc = { buyukler: {}, kucukler: {} };
             ['buyukler', 'kucukler'].forEach(g => {
@@ -2600,6 +2603,7 @@
                 let b = (uzak && uzak[g]) || {};
                 let adlar = new Set([...Object.keys(a), ...Object.keys(b)]);
                 adlar.forEach(ad => {
+                    if(silindiMi(g, ad)) return; // silinmiş kişi geri gelmesin (mezar taşı)
                     let x = a[ad], y = b[ad];
                     if(x && !y) { sonuc[g][ad] = x; return; }
                     if(y && !x) { sonuc[g][ad] = y; return; }
@@ -2628,10 +2632,11 @@
             } catch(e) {}
         }
         function bulutDurum(txt, renk) { let el = document.getElementById('bulut-durum'); if(el) { el.innerText = txt; el.style.color = renk || 'var(--text-muted)'; } }
-        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB, aidatDB }); }
+        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB, aidatDB, silinenler: silinenlerDB.map(s => ({ ad: s.ad, grup: s.grup, tarih: s.tarih })) }); }
 
         function bulutVeriyiUygula(p) {
             guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
+            if(p.silinenler && Array.isArray(p.silinenler)) { p.silinenler.forEach(s => { if(s && s.ad && s.grup && !silindiMi(s.grup, s.ad)) silinenlerDB.push({ ad: s.ad, grup: s.grup, tarih: s.tarih || Date.now() }); }); silinenlerKaydet(); }
             if(p.turnuvaDB) turnuvaDB = turnuvaDBMerge(turnuvaDB, p.turnuvaDB); // ÜZERİNE YAZMA — birleştir
             if(p.takimlarDB) takimlarDB = p.takimlarDB;
             if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
@@ -2776,6 +2781,7 @@
             if(oyVeri) { try { otomatikYoklamaDB = JSON.parse(oyVeri) || {}; } catch(e){} }
             let adVeri = localStorage.getItem('okculuk_aidat');
             if(adVeri) { try { aidatDB = JSON.parse(adVeri) || {}; } catch(e){} }
+            try { silinenlerDB = JSON.parse(localStorage.getItem('okculuk_silinenler') || '[]') || []; } catch(e) { silinenlerDB = []; }
             try { salonModuGorunumGuncelle(); } catch(e){}
             let alVeri = localStorage.getItem('okculuk_atislog_data');
             if(alVeri) { try { atisLog = JSON.parse(alVeri) || []; } catch(e){} }
@@ -2962,7 +2968,7 @@
         let yoneticiYoklamaTip = 'bugun';
         function yoneticiNavCiz() {
             let nav = document.getElementById('yonetici-altnav'); if(!nav) return;
-            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['yedek','💾 Yedek']];
+            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['silinenler','🗑️ Silinenler'],['yedek','💾 Yedek']];
             nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:0 0 auto; white-space:nowrap; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'transparent'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">${l}</button>`).join('');
         }
         function yoneticiLigSec(g) { aktifGrup = g; yoneticiLigButonGuncelle(); yoneticiSekme(yoneticiSekmeAktif); }
@@ -2975,12 +2981,13 @@
             yoneticiSekmeAktif = k; yoneticiNavCiz();
             let arama = document.getElementById('yonetici-arama');
             let ligBar = document.getElementById('yon-lig-bar');
-            if(ligBar) ligBar.style.display = (k === 'kullanicilar' || k === 'yedek') ? 'none' : 'flex';
+            if(ligBar) ligBar.style.display = (k === 'kullanicilar' || k === 'yedek' || k === 'silinenler') ? 'none' : 'flex';
             yoneticiLigButonGuncelle();
             if(k === 'kullanicilar') { renderHedefId = 'yonetici-liste'; if(arama) arama.style.display = 'block'; yoneticiPaneliCiz(); return; }
             if(arama) arama.style.display = 'none';
             if(k === 'yoklama') { yoneticiYoklamaCiz(); return; }
             if(k === 'yedek') { yoneticiYedekCiz(); return; }
+            if(k === 'silinenler') { yoneticiSilinenlerCiz(); return; }
             renderHedefId = 'yonetici-liste';
             if(k === 'aidat') { try { egitmenRenderAidat(); } catch(e) {} }
             else if(k === 'personel') { try { egitmenRenderPersonel(); } catch(e) {} }
@@ -3102,14 +3109,56 @@
         function onayKapat() { _onayCb = null; let mod = document.getElementById('onay-modal'); if(mod) mod.style.display = 'none'; }
         function onayOnayla() { let cb = _onayCb; onayKapat(); if(typeof cb === 'function') { try { cb(); } catch(e) {} } }
         function yoneticiSil(g, ad) {
-            onayIste(`🗑️ <b>${ad}</b><br>ve tüm skorları KALICI silinecek.<br><span style="font-size:12px; color:var(--text-muted);">Bu işlem geri alınamaz.</span>`, () => {
+            onayIste(`🗑️ <b>${ad}</b><br>silinecek ve <b>Silinenler</b> sekmesine taşınacak.<br><span style="font-size:12px; color:var(--text-muted);">İstersen oradan geri alabilirsin.</span>`, () => {
+                let sp = turnuvaDB[g] && turnuvaDB[g][ad];
+                let snap = sp ? JSON.parse(JSON.stringify(sp)) : null;
+                if(!silindiMi(g, ad)) silinenlerDB.push({ ad: ad, grup: g, tarih: Date.now(), kod: sp ? (sp.kod || sp.dogumYili || '') : '', veri: snap });
+                silinenlerKaydet();
                 if(turnuvaDB[g]) delete turnuvaDB[g][ad];
                 try { if(typeof otomatikYoklamaDB !== 'undefined' && otomatikYoklamaDB[g]) delete otomatikYoklamaDB[g][ad]; } catch(e) {}
                 try { if(typeof aidatDB !== 'undefined' && aidatDB[g]) delete aidatDB[g][ad]; } catch(e) {}
                 try { yoneticiKaydet(); } catch(e) {}
-                showToast(`🗑️ ${ad} silindi.`, 'warning'); yoneticiPaneliCiz();
+                showToast(`🗑️ ${ad} silindi (Silinenler'e taşındı).`, 'warning'); yoneticiPaneliCiz();
                 try { siralamaListesiDoldur(); } catch(e) {}
             }, '🗑️ Evet, Sil');
+        }
+        function yoneticiSilinenlerCiz() {
+            let alan = document.getElementById('yonetici-liste'); if(!alan) return;
+            if(!silinenlerDB.length) { alan.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px 12px;">🗑️ Henüz silinen kişi yok.<br><span style="font-size:12px;">Kullanıcılar sekmesinden bir kişiyi sildiğinde burada görünür.</span></div>'; return; }
+            let liste = silinenlerDB.slice().sort((a, b) => (b.tarih || 0) - (a.tarih || 0));
+            let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-weight:800; color:var(--neon-red);">🗑️ Silinenler (${liste.length})</div><button onclick="yoneticiSilinenleriTemizle()" style="background:var(--bg-panel); border:1px solid var(--border-color); color:var(--text-muted); padding:6px 10px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">🧹 Listeyi Temizle</button></div>`;
+            liste.forEach(s => {
+                let adEsc = s.ad.replace(/'/g, "\\'");
+                let tar = s.tarih ? new Date(s.tarih).toLocaleDateString('tr-TR') : '';
+                let grupAd = s.grup === 'buyukler' ? '🔵 Büyükler' : '🟢 Küçükler';
+                let geriAlinir = !!s.veri;
+                html += `<div style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px; margin-bottom:7px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><span style="font-weight:bold; font-size:14px;">${s.ad}</span><span style="font-size:10px; color:var(--text-muted);">${grupAd} · ${tar}</span></div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="yoneticiGeriAl('${s.grup}','${adEsc}')" ${geriAlinir ? '' : 'disabled'} style="flex:1; background:${geriAlinir ? 'rgba(16,185,129,0.13)' : 'var(--bg-main)'}; color:var(--text-main); border:1px solid ${geriAlinir ? 'var(--neon-green)' : 'var(--border-color)'}; padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:${geriAlinir ? 'pointer' : 'default'}; opacity:${geriAlinir ? 1 : 0.45};">♻️ Geri Al</button>
+                        <button onclick="yoneticiKaliciSil('${s.grup}','${adEsc}')" style="flex:1; background:rgba(239,68,68,0.13); color:var(--neon-red); border:1px solid var(--neon-red); padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">❌ Kalıcı Kaldır</button>
+                    </div>
+                </div>`;
+            });
+            alan.innerHTML = html;
+        }
+        function yoneticiGeriAl(g, ad) {
+            let idx = silinenlerDB.findIndex(s => s.grup === g && s.ad === ad); if(idx < 0) return;
+            let s = silinenlerDB[idx];
+            if(s.veri) { if(!turnuvaDB[g]) turnuvaDB[g] = {}; turnuvaDB[g][ad] = s.veri; turnuvaDB[g][ad].lastModified = Date.now(); }
+            silinenlerDB.splice(idx, 1); silinenlerKaydet();
+            try { yoneticiKaydet(); } catch(e) {}
+            showToast(`♻️ ${ad} geri alındı.`, 'success'); yoneticiSilinenlerCiz();
+        }
+        function yoneticiKaliciSil(g, ad) {
+            onayIste(`❌ <b>${ad}</b> listeden kalıcı kaldırılsın mı?<br><span style="font-size:12px; color:var(--text-muted);">Artık geri alınamaz.</span>`, () => {
+                let idx = silinenlerDB.findIndex(s => s.grup === g && s.ad === ad); if(idx >= 0) { silinenlerDB.splice(idx, 1); silinenlerKaydet(); }
+                showToast(`❌ ${ad} kalıcı kaldırıldı.`, 'warning'); yoneticiSilinenlerCiz();
+            }, '❌ Evet, Kaldır');
+        }
+        function yoneticiSilinenleriTemizle() {
+            if(!silinenlerDB.length) return;
+            onayIste('🧹 Silinenler listesi tamamen temizlensin mi?<br><span style="font-size:12px; color:var(--text-muted);">Geri alma kayıtları kaybolur.</span>', () => { silinenlerDB = []; silinenlerKaydet(); showToast('Liste temizlendi.', 'success'); yoneticiSilinenlerCiz(); }, '🧹 Evet, Temizle');
         }
         function platformGeri() { document.getElementById('giris-lig').style.display = 'none'; let s = document.getElementById('giris-sifre'); if(s) s.style.display = 'none'; let sp = document.getElementById('giris-sporcu'); if(sp) sp.style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
         function tablariPlatformaGoreAyarla() {
