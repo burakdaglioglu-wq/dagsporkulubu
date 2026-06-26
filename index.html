@@ -13,6 +13,7 @@
         /* EVRENSEL MOBİL TAŞMA KORUMASI */
         *, *::before, *::after { box-sizing: border-box !important; }
         html, body { overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important; margin: 0; padding: 0; }
+        img, svg, canvas, video, iframe { max-width: 100%; }
 
         /* TEMA DEĞİŞKENLERİ */
         :root {
@@ -45,7 +46,7 @@
         .mini-logo { font-size: 14px; font-weight: 900; color: var(--accent-orange); border: 2px solid var(--accent-orange); padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
 
         /* GİRİŞ EKRANI */
-        #giris-ekrani { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-main); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 20px;}
+        #giris-ekrani { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-main); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 20px;}
         #btn-tema-degistir { position: absolute; top: 20px; right: 20px; background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; z-index: 10001; }
         #kapat-giris-btn { position: absolute; top: 20px; left: 20px; background: var(--neon-red); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; display: none; z-index: 10001; }
         #giris-ekrani h2 { color: var(--text-main); font-weight: 600; text-transform: uppercase; margin-bottom: 20px; text-align: center; font-size: 16px; letter-spacing: 1px;}
@@ -67,11 +68,11 @@
         .sekme-grubu { display: flex; gap: 4px; background: var(--border-color); padding: 4px; border-radius: 8px; margin-top:10px; overflow-x: auto; }
         .sekme-btn { flex: 1; min-width: 80px; padding: 8px 4px; background: transparent; color: var(--text-main); border: none; border-radius: 6px; font-weight: 600; font-size: 12px; text-align: center;}
         .sekme-btn.aktif { background: var(--accent-orange); color: white; }
-        .sekme-icerik { display: none; flex: 1; padding: 15px; overflow-y: auto; box-sizing: border-box; height: calc(100vh - 110px); }
+        .sekme-icerik { display: none; flex: 1; padding: 15px; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; height: calc(100vh - 110px); max-width: 920px; margin-left: auto; margin-right: auto; width: 100%; }
         .sekme-icerik.aktif { display: flex; flex-direction: column; }
 
         /* TAM EKRAN MODU */
-        .full-screen-mode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999 !important; margin: 0 !important; border-radius: 0 !important; background: var(--bg-main) !important; padding: 15px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important; overflow-y: auto !important; }
+        .full-screen-mode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100vh !important; z-index: 9999 !important; margin: 0 !important; border-radius: 0 !important; background: var(--bg-main) !important; padding: 15px !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important; overflow-y: auto !important; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .btn-tam-ekran-ac { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; }
         .btn-tam-ekran-kapat { background: var(--neon-red); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: bold; display: none; margin-bottom: 15px; align-self: flex-end; }
@@ -146,10 +147,14 @@
         /* İZOLE MODAL YAPISI */
         .modal-overlay { 
             display: none; position: fixed; top: 0; left: 0; 
-            width: 100vw !important; height: 100vh !important; 
+            width: 100% !important; height: 100vh !important; 
             background: rgba(0,0,0,0.85); z-index: 20000 !important; 
             align-items: center; justify-content: center; padding: 15px; box-sizing: border-box;
         }
+        #girdi-modal, #onay-modal { z-index: 31000 !important; }
+        @keyframes rfxPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
+        @keyframes rfxBurst { 0% { transform:translate(-50%,-50%) scale(0.3); opacity:0.9; } 100% { transform:translate(-50%,-50%) scale(2.4); opacity:0; } }
+        @keyframes rfxPodIn { 0% { transform:scale(0.2); opacity:0; } 60% { transform:scale(1.15); } 100% { transform:scale(1); opacity:1; } }
         .modal-content { background: var(--bg-main); border: 2px solid var(--accent-orange); border-radius: 12px; padding: 20px; width: 100%; max-width: 600px; color: var(--text-main); max-height: 90vh; overflow-y: auto; }
         #duzenle-modal, #duzenle-takim-modal { z-index: 30000 !important; }
 
@@ -345,7 +350,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v51</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v57</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -570,7 +575,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v51</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v57</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -585,6 +590,7 @@
             <button id="tab-timer" class="sekme-btn aktif" onclick="sekmeAc('timer')">⏱️ Sayaç</button>
             <button id="tab-skor" class="sekme-btn" onclick="sekmeAc('skor')">🎯 Skor</button>
             <button id="tab-liderlik" class="sekme-btn" onclick="sekmeAc('liderlik')">🏆 Liderlik</button>
+            <button id="tab-klasman" class="sekme-btn" onclick="sekmeAc('klasman')">📊 Genel Klasman</button>
             <button id="tab-egitmen" class="sekme-btn" onclick="sekmeAc('egitmen')">🎓 Eğitmen</button>
             <button id="tab-takimlar" class="sekme-btn" onclick="sekmeAc('takimlar')">🏅 Yarışmalar</button>
             <button id="tab-video" class="sekme-btn" onclick="showToast('🎥 Video Analiz yapım aşamasında — yakında!', 'warning')" style="opacity:0.55;">🎥 Video Analiz <span style="font-size:9px; background:var(--gold); color:#000; padding:1px 5px; border-radius:6px; margin-left:3px;">YAKINDA</span></button>
@@ -861,6 +867,7 @@
     </div>
 
     <!-- LİDERLİK VE TURNUVA MERKEZİ -->
+    <div id="icerik-klasman" class="sekme-icerik"></div>
     <div id="icerik-liderlik" class="sekme-icerik">
         <div class="glass-panel" id="liderlik-panel" style="border-radius: 12px; padding: 15px; flex: 1; display:flex; flex-direction:column; position:relative;">
             <button class="btn-tam-ekran-kapat" onclick="toggleFullscreen('liderlik-panel')">✖ Kapat</button>
@@ -1006,6 +1013,9 @@
         <div id="rfx-sporcu-sarmal" style="margin-bottom:12px; display:none;">
             <select id="rfx-sporcu-sec" onchange="rfxSporcuDegisti(this.value)" style="width:100%; padding:10px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; font-weight:bold;"></select>
         </div>
+        <div id="rfx-profil" style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:10px;"></div>
+        <div id="rfx-gorev" style="background:rgba(251,191,36,0.08); border:1px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:10px;"></div>
+        <button id="rfx-lider-btn" onclick="rfxLiderTablosu()" style="width:100%; margin-bottom:14px; background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#000; border:none; padding:12px; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer;">🏆 Lider Tablosu & Rozetler</button>
         <div id="rfx-menu" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px;">
             <button onclick="rfxOyunAc('pod')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔴</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Refleks Pod</div><div style="font-size:11px; color:var(--text-muted);">Çıkan hedefe hızlı dokun</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
             <button onclick="rfxOyunAc('gonogo')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🚦</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Yeşile Bas</div><div style="font-size:11px; color:var(--text-muted);">Yeşilde dokun, kırmızıda durma!</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
@@ -1016,6 +1026,11 @@
             <button onclick="rfxOyunAc('dusus')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🏹</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Mükemmel Düşüş</div><div style="font-size:11px; color:var(--text-muted);">Bırakınca yayı SIKMA</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
             <button onclick="rfxOyunAc('dinamik')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Dinamik Bırakış</div><div style="font-size:11px; color:var(--text-muted);">Geriye çekerken bırak (sırt)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
             <button onclick="rfxOyunAc('sabir')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">⏳</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Sabır (Hedef Panik)</div><div style="font-size:11px; color:var(--text-muted);">İşareti bekle, erken atma</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('nefes')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🫁</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Nefes Ritmi</div><div style="font-size:11px; color:var(--text-muted);">Sakinlik & nefes kontrolü</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('grup')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Grup At</div><div style="font-size:11px; color:var(--text-muted);">Tutarlılık / gruplama</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('takip')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">👁️</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hedef Takip</div><div style="font-size:11px; color:var(--text-muted);">Akıcı nişan / takip</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('hafiza')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🧠</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hafıza</div><div style="font-size:11px; color:var(--text-muted);">Sırayı hatırla (Simon)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('sayim')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Skor Sayımı</div><div style="font-size:11px; color:var(--text-muted);">Atış puanını hızlı topla</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
         </div>
         <div id="rfx-oyun-alani" style="display:none;"></div>
     </div>
@@ -1258,6 +1273,7 @@
             sporcuDetayGoster(ad); siralamaListesiDoldur(); sporcuListesiniYenile();
         }
         function kartSil(ad, idx) {
+            if(loggedInSporcu) { showToast('🔒 Arşiv silme yetkisi antrenörde.', 'warning'); return; }
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp || !sp.kartGecmisi || !sp.kartGecmisi[idx]) return;
             let kart = sp.kartGecmisi[idx];
             if(!confirm(`Bu arşiv kaydı KALICI olarak silinsin mi?\n\n📅 ${formatTarih(kart.tarih)} — ${kart.toplamSkor||0} P\n\nGeri alınamaz.`)) return;
@@ -2946,7 +2962,7 @@
         let yoneticiYoklamaTip = 'bugun';
         function yoneticiNavCiz() {
             let nav = document.getElementById('yonetici-altnav'); if(!nav) return;
-            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel']];
+            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['yedek','💾 Yedek']];
             nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:0 0 auto; white-space:nowrap; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'transparent'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">${l}</button>`).join('');
         }
         function yoneticiLigSec(g) { aktifGrup = g; yoneticiLigButonGuncelle(); yoneticiSekme(yoneticiSekmeAktif); }
@@ -2959,14 +2975,69 @@
             yoneticiSekmeAktif = k; yoneticiNavCiz();
             let arama = document.getElementById('yonetici-arama');
             let ligBar = document.getElementById('yon-lig-bar');
-            if(ligBar) ligBar.style.display = (k === 'kullanicilar') ? 'none' : 'flex';
+            if(ligBar) ligBar.style.display = (k === 'kullanicilar' || k === 'yedek') ? 'none' : 'flex';
             yoneticiLigButonGuncelle();
             if(k === 'kullanicilar') { renderHedefId = 'yonetici-liste'; if(arama) arama.style.display = 'block'; yoneticiPaneliCiz(); return; }
             if(arama) arama.style.display = 'none';
             if(k === 'yoklama') { yoneticiYoklamaCiz(); return; }
+            if(k === 'yedek') { yoneticiYedekCiz(); return; }
             renderHedefId = 'yonetici-liste';
             if(k === 'aidat') { try { egitmenRenderAidat(); } catch(e) {} }
             else if(k === 'personel') { try { egitmenRenderPersonel(); } catch(e) {} }
+        }
+        function yoneticiYedekCiz() {
+            let alan = document.getElementById('yonetici-liste'); if(!alan) return;
+            let sonY = 0; try { sonY = parseInt(localStorage.getItem('okculuk_son_yedek_zaman')) || 0; } catch(e) {}
+            let sonYazi = sonY ? new Date(sonY).toLocaleString('tr-TR') : 'Hiç yedek alınmadı';
+            let sporcuSayi = 0; try { sporcuSayi = Object.keys(turnuvaDB.buyukler || {}).length + Object.keys(turnuvaDB.kucukler || {}).length; } catch(e) {}
+            alan.innerHTML = `
+                <div style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+                    <div style="font-weight:800; color:var(--accent-orange); margin-bottom:6px;">💾 Veri Yedekleme</div>
+                    <div style="font-size:13px; color:var(--text-main); line-height:1.5;">Tüm sporcu, skor, yoklama, aidat ve ayar verilerini tek dosyaya indir. Telefon değişince veya veri kaybına karşı güvence.</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:10px;">📊 Kayıtlı sporcu: <b>${sporcuSayi}</b><br>🕒 Son yedek: <b>${sonYazi}</b></div>
+                    <button onclick="yedekAl()" style="width:100%; margin-top:14px; background:var(--neon-green); color:#fff; border:none; padding:13px; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer;">⬇️ Yedek Dosyası İndir</button>
+                </div>
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:12px; padding:16px; margin-top:12px;">
+                    <div style="font-weight:800; color:var(--neon-red); margin-bottom:6px;">♻️ Geri Yükle</div>
+                    <div style="font-size:13px; color:var(--text-main); line-height:1.5;">Daha önce indirdiğin yedek dosyasını seç. <b>Mevcut veriler bu yedekle değiştirilir.</b></div>
+                    <button onclick="yedekYukleSec()" style="width:100%; margin-top:14px; background:rgba(239,68,68,0.15); color:var(--text-main); border:1px solid var(--neon-red); padding:13px; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer;">⬆️ Yedek Dosyası Yükle</button>
+                </div>
+                <div style="font-size:11px; color:var(--text-muted); text-align:center; margin-top:12px;">İpucu: Her hafta bir yedek alıp telefonuna/bulutuna kaydet.</div>`;
+        }
+        function yedekAl() {
+            try {
+                let veri = {}; for(let i = 0; i < localStorage.length; i++) { let k = localStorage.key(i); veri[k] = localStorage.getItem(k); }
+                let pkg = { uygulama: 'DAG_SK_Master_OS', tarih: new Date().toISOString(), kayitSayisi: Object.keys(veri).length, veri: veri };
+                let blob = new Blob([JSON.stringify(pkg)], { type: 'application/json' });
+                let url = URL.createObjectURL(blob); let a = document.createElement('a'); a.href = url;
+                let ts = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-'); a.download = 'DAG_SK_yedek_' + ts + '.json';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1500);
+                try { localStorage.setItem('okculuk_son_yedek_zaman', Date.now()); } catch(e) {}
+                showToast('💾 Yedek indirildi.', 'success');
+                try { yoneticiYedekCiz(); } catch(e) {}
+            } catch(e) { showToast('Yedek alınamadı.', 'error'); }
+        }
+        function yedekYukleSec() { let inp = document.getElementById('yedek-dosya'); if(inp) inp.click(); }
+        function yedekYukle(e) {
+            let f = e.target.files && e.target.files[0]; if(!f) return;
+            let r = new FileReader();
+            r.onload = function(ev) {
+                try {
+                    let pkg = JSON.parse(ev.target.result); let veri = (pkg && pkg.veri) ? pkg.veri : pkg;
+                    if(!veri || typeof veri !== 'object' || !veri.okculuk_premium_data) { showToast('Geçersiz yedek dosyası.', 'error'); e.target.value = ''; return; }
+                    let tarihYazi = pkg.tarih ? new Date(pkg.tarih).toLocaleString('tr-TR') : '?';
+                    onayIste(`⚠️ <b>Geri Yükleme</b><br>Mevcut tüm veriler bu yedekle DEĞİŞTİRİLECEK.<br><span style="font-size:12px; color:var(--text-muted);">Yedek tarihi: ${tarihYazi} · ${Object.keys(veri).length} kayıt</span>`, () => {
+                        try {
+                            Object.keys(veri).forEach(k => { localStorage.setItem(k, veri[k]); });
+                            showToast('✅ Geri yüklendi, yeniden başlatılıyor...', 'success');
+                            setTimeout(() => location.reload(), 1300);
+                        } catch(err) { showToast('Geri yükleme hatası.', 'error'); }
+                    }, '✅ Evet, Geri Yükle');
+                } catch(err) { showToast('Dosya okunamadı / bozuk.', 'error'); }
+                e.target.value = '';
+            };
+            r.readAsText(f);
         }
         function yoneticiYoklamaCiz() {
             let alan = document.getElementById('yonetici-liste'); if(!alan) return;
@@ -3014,19 +3085,31 @@
             yoneticiPaneliCiz();
             try { siralamaListesiDoldur(); } catch(e) {}
         }
+        let _girdiCb = null;
+        function girdiIste(mesaj, varsayilan, cb) { _girdiCb = cb; let m = document.getElementById('girdi-mesaj'); if(m) m.innerHTML = mesaj; let i = document.getElementById('girdi-input'); if(i) i.value = varsayilan || ''; let mod = document.getElementById('girdi-modal'); if(mod) mod.style.display = 'flex'; setTimeout(() => { if(i) i.focus(); }, 100); }
+        function girdiKapat() { _girdiCb = null; let mod = document.getElementById('girdi-modal'); if(mod) mod.style.display = 'none'; }
+        function girdiKaydet() { let i = document.getElementById('girdi-input'); let v = i ? i.value : ''; let cb = _girdiCb; girdiKapat(); if(typeof cb === 'function') { try { cb(v); } catch(e) {} } }
         function yoneticiKodSifirla(g, ad) {
             let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
-            let yeni = prompt(`${ad} için yeni giriş kodu:`, sp.kod || '');
-            if(yeni === null) return;
-            sp.kod = String(yeni).trim(); sp.lastModified = Date.now();
-            yoneticiKaydet(); showToast('🔑 Kod güncellendi.', 'success'); yoneticiPaneliCiz();
+            girdiIste(`🔑 <b>${ad}</b> için yeni giriş kodu:`, sp.kod || '', (yeni) => {
+                if(yeni === null || String(yeni).trim() === '') return;
+                sp.kod = String(yeni).trim(); sp.lastModified = Date.now();
+                try { yoneticiKaydet(); } catch(e) {} showToast('🔑 Kod güncellendi.', 'success'); yoneticiPaneliCiz();
+            });
         }
+        let _onayCb = null;
+        function onayIste(mesaj, cb, btnYazi) { _onayCb = cb; let m = document.getElementById('onay-mesaj'); if(m) m.innerHTML = mesaj; let b = document.getElementById('onay-evet-btn'); if(b) b.innerText = btnYazi || 'Evet'; let mod = document.getElementById('onay-modal'); if(mod) mod.style.display = 'flex'; }
+        function onayKapat() { _onayCb = null; let mod = document.getElementById('onay-modal'); if(mod) mod.style.display = 'none'; }
+        function onayOnayla() { let cb = _onayCb; onayKapat(); if(typeof cb === 'function') { try { cb(); } catch(e) {} } }
         function yoneticiSil(g, ad) {
-            if(!confirm(`${ad} kalıcı olarak silinsin mi?`)) return;
-            if(!confirm(`SON UYARI: ${ad} ve tüm skorları silinecek. Emin misin?`)) return;
-            if(turnuvaDB[g]) delete turnuvaDB[g][ad];
-            yoneticiKaydet(); showToast(`🗑️ ${ad} silindi.`, 'warning'); yoneticiPaneliCiz();
-            try { siralamaListesiDoldur(); } catch(e) {}
+            onayIste(`🗑️ <b>${ad}</b><br>ve tüm skorları KALICI silinecek.<br><span style="font-size:12px; color:var(--text-muted);">Bu işlem geri alınamaz.</span>`, () => {
+                if(turnuvaDB[g]) delete turnuvaDB[g][ad];
+                try { if(typeof otomatikYoklamaDB !== 'undefined' && otomatikYoklamaDB[g]) delete otomatikYoklamaDB[g][ad]; } catch(e) {}
+                try { if(typeof aidatDB !== 'undefined' && aidatDB[g]) delete aidatDB[g][ad]; } catch(e) {}
+                try { yoneticiKaydet(); } catch(e) {}
+                showToast(`🗑️ ${ad} silindi.`, 'warning'); yoneticiPaneliCiz();
+                try { siralamaListesiDoldur(); } catch(e) {}
+            }, '🗑️ Evet, Sil');
         }
         function platformGeri() { document.getElementById('giris-lig').style.display = 'none'; let s = document.getElementById('giris-sifre'); if(s) s.style.display = 'none'; let sp = document.getElementById('giris-sporcu'); if(sp) sp.style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
         function tablariPlatformaGoreAyarla() {
@@ -3061,6 +3144,7 @@
             document.getElementById('icerik-' + sekmeAd).classList.add('aktif'); 
             if(sekmeAd === 'skor') skorEkraniniKapat(); 
             if(sekmeAd === 'liderlik') siralamaListesiDoldur(); 
+            if(sekmeAd === 'klasman') klasmanDoldur();
             if(sekmeAd === 'egitmen') egitmenPaneliDoldur();
             if(sekmeAd === 'takimlar') { takimDropdownDoldur(); takimListesiCiz(); maclariCiz(); takimMaclariCiz(); }
             if(sekmeAd === 'video') vaInit();
@@ -3584,6 +3668,7 @@
             okDegerleri.sort((a,b) => vMap[b] - vMap[a]);
             
             if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); grupData.sonSkorZamani = Date.now();
+            try { sporcuPuanlariYenidenHesapla(grupData); } catch(e) {}
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); showToast(`Seri Kaydedildi! (+${seriPuan})`, "success");
             try { otomatikYoklamaIsaretle(secilenSporcu); } catch(e) {}
 
@@ -3741,6 +3826,10 @@
         }
         function seriDuzenleAc(ad, idx) {
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp || !sp.seriler || !sp.seriler[idx]) return;
+            if(loggedInSporcu) {
+                if(ad !== loggedInSporcu) { showToast('Sadece kendi serini düzeltebilirsin.', 'warning'); return; }
+                if(idx !== sp.seriler.length - 1) { showToast('🏹 Sadece EN SON serini düzeltebilirsin — geçmişi değiştiremezsin.', 'warning'); return; }
+            }
             document.getElementById('seri-duz-ad').value = ad; document.getElementById('seri-duz-idx').value = idx;
             let oklar = sp.seriler[idx].oklar || [];
             let secenek = ['X','10','9','8','7','6','5','4','3','2','1','M'];
@@ -3763,6 +3852,7 @@
             sporcuDetayGoster(ad); siralamaListesiDoldur();
         }
         function seriSilModal() {
+            if(loggedInSporcu) { showToast('🔒 Seri silme yetkisi antrenörde.', 'warning'); return; }
             let ad = document.getElementById('seri-duz-ad').value; let idx = parseInt(document.getElementById('seri-duz-idx').value);
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp || !sp.seriler[idx]) return;
             if(!confirm(`Seri ${idx+1} tamamen silinsin mi?`)) return;
@@ -3855,6 +3945,38 @@
         }
 
         /* LİDERLİK TABLOSU */
+        let klasmanYay = 'hepsi';
+        function klasmanYaySec(y) { klasmanYay = y; klasmanDoldur(); }
+        function klasmanDoldur() {
+            let el = document.getElementById('icerik-klasman'); if(!el) return;
+            let fb = (y) => klasmanYay === y ? 'background:var(--accent-orange); color:#fff;' : 'background:var(--bg-panel); color:var(--text-main);';
+            let html = `<h2 style="text-align:center; margin:0 0 4px;">📊 Genel Klasman</h2>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:12px;">Tüm zamanların toplam skorları — yaş grubuna göre</div>
+                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                    <button onclick="klasmanYaySec('hepsi')" style="flex:1; ${fb('hepsi')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">Tümü</button>
+                    <button onclick="klasmanYaySec('Klasik')" style="flex:1; ${fb('Klasik')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">🏹 Klasik</button>
+                    <button onclick="klasmanYaySec('Makaralı')" style="flex:1; ${fb('Makaralı')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">⚙️ Makaralı</button>
+                </div>`;
+            [['buyukler', '🔵 BÜYÜKLER'], ['kucukler', '🟢 KÜÇÜKLER']].forEach(([g, etiket]) => {
+                let db = turnuvaDB[g] || {};
+                let arr = Object.keys(db).filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay === 'hepsi' || db[ad].yay === klasmanYay)).map(ad => {
+                    let sp = db[ad]; let seriler = sp.seriler || [];
+                    let okSay = seriler.reduce((a, s) => a + ((s.oklar || []).length), 0);
+                    let toplam = sp.toplamSkor || 0;
+                    return { ad: ad, seri: seriler.length, toplam: toplam, x: sp.xAdet || 0, okSay: okSay, ort: okSay ? (toplam / okSay) : 0, yay: sp.yay, sinif: sp.sinif };
+                }).sort((a, b) => b.toplam - a.toplam);
+                html += `<div style="font-weight:800; font-size:15px; margin:18px 0 8px; color:var(--accent-orange);">${etiket} <span style="font-size:12px; color:var(--text-muted); font-weight:600;">(${arr.length} sporcu)</span></div>`;
+                if(!arr.length) { html += '<div style="color:var(--text-muted); font-size:13px; padding:8px;">Bu grupta sporcu yok.</div>'; return; }
+                let madalya = ['🥇', '🥈', '🥉'];
+                html += '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:360px;"><tr style="color:var(--text-muted); font-size:11px; text-align:left;"><th style="padding:6px 4px;">#</th><th style="padding:6px 4px;">Sporcu</th><th style="padding:6px 4px; text-align:center;">Seri</th><th style="padding:6px 4px; text-align:center;">Ok</th><th style="padding:6px 4px; text-align:center;">X</th><th style="padding:6px 4px; text-align:center;">Ort</th><th style="padding:6px 4px; text-align:right;">Toplam</th></tr>';
+                arr.forEach((s, i) => {
+                    let yE = s.yay === 'Makaralı' ? '⚙️' : '🏹';
+                    html += `<tr style="border-top:1px solid var(--border-color); background:${i < 3 ? 'rgba(251,191,36,0.07)' : 'transparent'};"><td style="padding:8px 4px; font-weight:800; text-align:center;">${madalya[i] || (i + 1)}</td><td style="padding:8px 4px; font-weight:bold;">${yE} ${s.ad}${s.sinif ? `<span style="font-size:10px; color:var(--text-muted);"> · ${s.sinif}</span>` : ''}</td><td style="padding:8px 4px; text-align:center;">${s.seri}</td><td style="padding:8px 4px; text-align:center; color:var(--text-muted);">${s.okSay}</td><td style="padding:8px 4px; text-align:center; color:var(--neon-blue);">${s.x}</td><td style="padding:8px 4px; text-align:center; color:var(--text-muted);">${s.ort.toFixed(1)}</td><td style="padding:8px 4px; text-align:right; font-weight:900; color:var(--gold);">${s.toplam}</td></tr>`;
+                });
+                html += '</table></div>';
+            });
+            el.innerHTML = html;
+        }
         function siralamaListesiDoldur() {
             let tK = document.getElementById('sirali-tablo-klasik'); let tM = document.getElementById('sirali-tablo-makarali'); if(!tK || !tM) return;
             tK.innerHTML = ""; tM.innerHTML = ""; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
@@ -5090,14 +5212,80 @@
 
         // ===================== REFLEKS / EĞLENCE OYUNLARI (elmas kazandırır) =====================
         let rfxTimer = null, rfxSpawnT = null, rfxAktif = false, rfxSonTip = 'pod';
-        let rfxDsDusT = null, rfxSbGoT = null, rfxSbPencereT = null;
-        let rfxPodSkor = 0, rfxPodSure = 0;
-        let rfxGnSure = 0, rfxGnDogru = 0, rfxGnHata = 0, rfxGnYesil = false, rfxGnBekliyor = false;
+        let rfxDsDusT = null, rfxSbGoT = null, rfxSbPencereT = null, rfxDsFakeT = null;
+        let rfxPodSkor = 0, rfxPodSure = 0, rfxPodCombo = 0, rfxPodEnCombo = 0;
+        let rfxGnSure = 0, rfxGnDogru = 0, rfxGnHata = 0, rfxGnYesil = false, rfxGnBekliyor = false, rfxGnCombo = 0, rfxGnEnCombo = 0;
         let rfxTapSkor = 0, rfxTapKalan = 0, rfxTapBasladi = false;
-        function rfxTemizle() { rfxAktif = false; if(rfxTimer) clearInterval(rfxTimer); if(rfxSpawnT) clearTimeout(rfxSpawnT); if(rfxDsDusT) clearTimeout(rfxDsDusT); if(rfxSbGoT) clearTimeout(rfxSbGoT); if(rfxSbPencereT) clearTimeout(rfxSbPencereT); rfxTimer = null; rfxSpawnT = null; rfxDsDusT = null; rfxSbGoT = null; rfxSbPencereT = null; }
+        function rfxTemizle() { rfxAktif = false; if(rfxTimer) clearInterval(rfxTimer); if(rfxSpawnT) clearTimeout(rfxSpawnT); if(rfxDsDusT) clearTimeout(rfxDsDusT); if(rfxDsFakeT) clearTimeout(rfxDsFakeT); if(rfxSbGoT) clearTimeout(rfxSbGoT); if(rfxSbPencereT) clearTimeout(rfxSbPencereT); rfxTimer = null; rfxSpawnT = null; rfxDsDusT = null; rfxDsFakeT = null; rfxSbGoT = null; rfxSbPencereT = null; }
         function rfxAktifSporcu() { try { return oyAktifSporcu(); } catch(e) { return loggedInSporcu || ''; } }
         function rfxCoinGuncelle() { let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null; let el = document.getElementById('rfx-coin'); if(el) el.textContent = f ? (f.sp.coin || 0) : 0; }
-        function rfxSporcuDegisti(ad) { oyunSeciliSporcu = ad; rfxCoinGuncelle(); }
+        function rfxSporcuDegisti(ad) { oyunSeciliSporcu = ad; rfxCoinGuncelle(); rfxProfilCiz(); rfxGorevCiz(); }
+        // ===== Oyun istatistik / seviye / günlük görev / lider tablosu =====
+        function rfxBugun() { return new Date().toISOString().slice(0, 10); }
+        function rfxOyunStat(sp) { if(!sp.oyun) sp.oyun = { xp: 0, oynanan: 0, toplamElmas: 0, gunElmas: 0, gunTarih: '', seri: 0, seriTarih: '', gorevTarih: '', gorevBitti: false, maxYildiz: 0 }; return sp.oyun; }
+        function rfxSeviye(xp) { return Math.floor((xp || 0) / 50) + 1; }
+        function rfxSeviyeIlerleme(xp) { return ((xp || 0) % 50) / 50 * 100; }
+        function rfxUnvan(sv) { return sv >= 15 ? '🏆 Efsane Okçu' : sv >= 10 ? '🌟 Usta Okçu' : sv >= 6 ? '🎯 Okçu' : sv >= 3 ? '🏹 Acemi Okçu' : '🐣 Çırak'; }
+        const RFX_GOREVLER = [
+            { tip: 'pod', esik: 14, metin: 'Refleks Pod\'da 14 hedef vur' },
+            { tip: 'tut', esik: 80, metin: 'Nişan Tut\'ta 8 sn sabit kal' },
+            { tip: 'tap', esik: 35, metin: 'Hızlı Dokunuş\'ta 35 dokunuş yap' },
+            { tip: 'timing', esik: 40, metin: 'Tam Zamanında\'da 40 puan al' },
+            { tip: 'sabir', esik: 4, metin: 'Sabır\'da 4 isabet yap' },
+            { tip: 'gonogo', esik: 14, metin: 'Yeşile Bas\'ta 14 net doğru yap' },
+            { tip: 'odak', esik: 18, metin: 'Odak Kilidi\'nde 18 doğru dokun' },
+            { tip: 'hafiza', esik: 6, metin: 'Hafıza\'da 6. seviyeye ulaş' },
+            { tip: 'sayim', esik: 8, metin: 'Skor Sayımı\'nda 8 doğru hesapla' }
+        ];
+        function rfxGunlukGorev() { let g = new Date(); let idx = (g.getFullYear() * 372 + g.getMonth() * 31 + g.getDate()) % RFX_GOREVLER.length; return RFX_GOREVLER[idx]; }
+        function rfxTumSporcular() { let arr = []; ['buyukler', 'kucukler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(ad => { if(!db[ad].pasif && !db[ad].donduruldu) arr.push({ ad: ad, sp: db[ad] }); }); }); return arr; }
+        function rfxRozetler(sp) {
+            let st = rfxOyunStat(sp), sv = rfxSeviye(st.xp), r = [];
+            r.push({ e: '🎮', ad: 'İlk Oyun', ok: st.oynanan >= 1 });
+            r.push({ e: '🔥', ad: '10 Oyun', ok: st.oynanan >= 10 });
+            r.push({ e: '🎯', ad: '50 Oyun', ok: st.oynanan >= 50 });
+            r.push({ e: '💎', ad: '100 Elmas', ok: st.toplamElmas >= 100 });
+            r.push({ e: '⭐', ad: '3 Yıldız', ok: st.maxYildiz >= 3 });
+            r.push({ e: '🏹', ad: 'Seviye 5', ok: sv >= 5 });
+            r.push({ e: '🌟', ad: 'Seviye 10', ok: sv >= 10 });
+            r.push({ e: '📅', ad: '3 Gün Seri', ok: st.seri >= 3 });
+            return r;
+        }
+        function rfxProfilCiz() {
+            let el = document.getElementById('rfx-profil'); if(!el) return;
+            let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null;
+            if(!f) { el.innerHTML = ''; return; }
+            let st = rfxOyunStat(f.sp); let sv = rfxSeviye(st.xp);
+            el.innerHTML = `<div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,var(--accent-orange),#ff8a3d); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; color:#fff; flex-shrink:0;">${sv}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:800; font-size:13px;">${rfxUnvan(sv)} <span style="color:var(--text-muted); font-weight:600; font-size:11px;">· 🔥 ${st.seri} gün</span></div>
+                    <div style="height:8px; background:var(--bg-main); border-radius:4px; overflow:hidden; margin-top:4px; border:1px solid var(--border-color);"><div style="height:100%; width:${rfxSeviyeIlerleme(st.xp)}%; background:linear-gradient(90deg,var(--accent-orange),var(--gold));"></div></div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Seviye ${sv} · ${st.xp % 50}/50 XP · ${st.oynanan} oyun</div>
+                </div></div>`;
+        }
+        function rfxGorevCiz() {
+            let el = document.getElementById('rfx-gorev'); if(!el) return;
+            let gorev = rfxGunlukGorev(); let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null;
+            let bitti = false; if(f) { let st = rfxOyunStat(f.sp); if(st.gorevTarih === rfxBugun() && st.gorevBitti) bitti = true; }
+            el.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="font-size:24px;">${bitti ? '✅' : '🎯'}</div><div style="flex:1; min-width:0;"><div style="font-weight:800; font-size:12px; color:var(--gold);">GÜNÜN GÖREVİ ${bitti ? '— TAMAM!' : '(+5 💎)'}</div><div style="font-size:12px; color:var(--text-main);">${gorev.metin}</div></div></div>`;
+        }
+        function rfxLiderTablosu() {
+            rfxTemizle(); rfxUstGoster(false);
+            let menu = document.getElementById('rfx-menu'); if(menu) menu.style.display = 'none';
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return; alan.style.display = 'block';
+            let hepsi = rfxTumSporcular(); let bugun = rfxBugun();
+            let sampiyon = hepsi.filter(o => o.sp.oyun && o.sp.oyun.gunTarih === bugun && o.sp.oyun.gunElmas > 0).sort((a, b) => b.sp.oyun.gunElmas - a.sp.oyun.gunElmas)[0];
+            let sira = hepsi.map(o => ({ ad: o.ad, coin: o.sp.coin || 0, sv: rfxSeviye(o.sp.oyun ? o.sp.oyun.xp : 0) })).sort((a, b) => b.coin - a.coin).slice(0, 12);
+            let madalya = ['🥇', '🥈', '🥉'];
+            let satirlar = sira.map((s, i) => `<div style="display:flex; align-items:center; gap:10px; padding:9px 12px; background:${i < 3 ? 'rgba(251,191,36,0.1)' : 'var(--bg-panel)'}; border:1px solid var(--border-color); border-radius:10px; margin-bottom:6px;"><div style="width:26px; font-weight:900; text-align:center;">${madalya[i] || (i + 1)}</div><div style="flex:1; min-width:0; font-weight:bold; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.ad}</div><div style="font-size:11px; color:var(--text-muted);">Sv.${s.sv}</div><div style="font-weight:800; color:var(--gold); font-size:13px;">💎 ${s.coin}</div></div>`).join('') || '<div style="text-align:center; color:var(--text-muted); padding:20px;">Henüz sıralama yok.</div>';
+            let sampHtml = sampiyon ? `<div style="background:linear-gradient(135deg,#fbbf24,#f59e0b); border-radius:14px; padding:14px; text-align:center; color:#000; margin-bottom:14px;"><div style="font-size:13px; font-weight:800;">👑 GÜNÜN ŞAMPİYONU</div><div style="font-size:20px; font-weight:900;">${sampiyon.ad}</div><div style="font-size:12px; font-weight:700;">Bugün 💎 ${sampiyon.sp.oyun.gunElmas} elmas kazandı</div></div>` : `<div style="background:var(--bg-panel); border:1px dashed var(--border-color); border-radius:14px; padding:14px; text-align:center; color:var(--text-muted); margin-bottom:14px;">👑 Bugün henüz şampiyon yok — ilk oynayan sen ol!</div>`;
+            let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null;
+            let rozetHtml = '';
+            if(f) { let rz = rfxRozetler(f.sp); rozetHtml = `<div style="font-weight:800; font-size:13px; margin:16px 0 8px;">🏅 Rozetlerin</div><div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">${rz.map(b => `<div style="text-align:center; background:var(--bg-panel); border:1px solid ${b.ok ? 'var(--gold)' : 'var(--border-color)'}; border-radius:10px; padding:8px 4px; opacity:${b.ok ? 1 : 0.4};"><div style="font-size:22px;">${b.ok ? b.e : '🔒'}</div><div style="font-size:9px; color:var(--text-muted); margin-top:2px;">${b.ad}</div></div>`).join('')}</div>`; }
+            alan.innerHTML = rfxBaslikHtml('Lider Tablosu', '🏆') + sampHtml + `<div style="font-weight:800; font-size:13px; margin-bottom:8px;">💎 En Çok Elmas</div>${satirlar}${rozetHtml}`;
+        }
+        function rfxUstGoster(g) { ['rfx-profil', 'rfx-gorev', 'rfx-lider-btn'].forEach(id => { let e = document.getElementById(id); if(e) e.style.display = g ? '' : 'none'; }); }
         function rfxPaneliDoldur() {
             rfxTemizle();
             let sarmal = document.getElementById('rfx-sporcu-sarmal'), sel = document.getElementById('rfx-sporcu-sec');
@@ -5106,102 +5294,149 @@
             else { if(sarmal) sarmal.style.display = 'block'; if(!oyunSeciliSporcu || liste.indexOf(oyunSeciliSporcu) < 0) oyunSeciliSporcu = liste[0] || ''; if(sel) sel.innerHTML = liste.length ? liste.map(n => `<option value="${n}" ${n===oyunSeciliSporcu?'selected':''}>${n}</option>`).join('') : '<option value="">Sporcu yok</option>'; }
             let menu = document.getElementById('rfx-menu'), alan = document.getElementById('rfx-oyun-alani');
             if(menu) menu.style.display = 'grid'; if(alan) { alan.style.display = 'none'; alan.innerHTML = ''; }
-            rfxCoinGuncelle();
+            rfxUstGoster(true);
+            try {
+                let ad = rfxAktifSporcu(); if(ad) { let f = basariSporcuBul(ad); if(f) { let st = rfxOyunStat(f.sp); let b = rfxBugun(); if(st.seriTarih !== b) { let dun = new Date(Date.now() - 86400000).toISOString().slice(0, 10); st.seri = (st.seriTarih === dun) ? (st.seri + 1) : 1; st.seriTarih = b; oyVeriKaydet(); } } }
+            } catch(e) {}
+            rfxProfilCiz(); rfxGorevCiz(); rfxCoinGuncelle();
         }
         function rfxMenuyeDon() { rfxTemizle(); rfxPaneliDoldur(); }
         function rfxBaslikHtml(ad, ikon) { return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><button onclick="rfxMenuyeDon()" style="background:var(--bg-panel); border:1px solid var(--border-color); color:var(--text-main); padding:7px 12px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">← Geri</button><span style="font-weight:800; font-size:15px;">${ikon} ${ad}</span><div style="width:54px;"></div></div>`; }
-        function rfxBitisIc(mesaj, kazanilan, tip) {
-            let ad = rfxAktifSporcu(), coinTxt = '';
-            if(ad && kazanilan > 0) { try { coinEkle(ad, kazanilan, true); } catch(e) {} rfxCoinGuncelle(); coinTxt = `<div style="color:var(--gold); font-weight:800; font-size:20px; margin:8px 0;">💎 +${kazanilan} elmas!</div>`; }
-            else if(!ad) coinTxt = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Elmas için önce sporcu girişi yap.</div>`;
-            else coinTxt = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Biraz daha hızlı, elmas kapındaydı! 💪</div>`;
-            return `<div style="font-size:17px; font-weight:bold;">${mesaj}</div>${coinTxt}<div style="display:flex; gap:8px; justify-content:center; margin-top:8px;"><button onclick="rfxOyunAc('${tip}')" style="background:var(--accent-orange); color:#fff; border:none; padding:11px 18px; border-radius:10px; font-weight:bold; cursor:pointer;">🔄 Tekrar</button><button onclick="rfxMenuyeDon()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:11px 18px; border-radius:10px; font-weight:bold; cursor:pointer;">Menü</button></div>`;
+        function rfxRekorAl(tip) { try { let d = JSON.parse(localStorage.getItem('okculuk_oyun_rekor') || '{}'); return d[tip] || 0; } catch(e) { return 0; } }
+        function rfxRekorYaz(tip, puan) { try { let d = JSON.parse(localStorage.getItem('okculuk_oyun_rekor') || '{}'); if(puan > (d[tip] || 0)) { d[tip] = puan; localStorage.setItem('okculuk_oyun_rekor', JSON.stringify(d)); return true; } } catch(e) {} return false; }
+        function rfxBitisIc(mesaj, kazanilan, tip, puan) {
+            if(puan === undefined) puan = kazanilan;
+            let ad = rfxAktifSporcu();
+            if(ad && kazanilan > 0) { try { coinEkle(ad, kazanilan, true); } catch(e) {} rfxCoinGuncelle(); }
+            let bonusTxt = '';
+            if(ad) { let f = basariSporcuBul(ad); if(f) { let sp = f.sp; let st = rfxOyunStat(sp);
+                st.xp += kazanilan; st.oynanan += 1; st.toplamElmas += kazanilan;
+                if(st.gunTarih !== rfxBugun()) { st.gunTarih = rfxBugun(); st.gunElmas = 0; } st.gunElmas += kazanilan;
+                let yld = kazanilan >= 9 ? 3 : kazanilan >= 5 ? 2 : kazanilan >= 1 ? 1 : 0; if(yld > st.maxYildiz) st.maxYildiz = yld;
+                if(st.gorevTarih !== rfxBugun()) { st.gorevTarih = rfxBugun(); st.gorevBitti = false; }
+                let gorev = rfxGunlukGorev();
+                if(!st.gorevBitti && tip === gorev.tip && puan >= gorev.esik) { st.gorevBitti = true; try { coinEkle(ad, 5, true); } catch(e) {} rfxCoinGuncelle(); bonusTxt = `<div style="color:var(--neon-green); font-weight:800; font-size:13px; margin-top:4px;">🎯 Günlük görev tamam! +5 bonus 💎</div>`; }
+                try { oyVeriKaydet(); } catch(e) {}
+            } }
+            let yildiz = kazanilan >= 9 ? 3 : kazanilan >= 5 ? 2 : kazanilan >= 1 ? 1 : 0;
+            let yildizHtml = `<div style="font-size:30px; letter-spacing:5px; margin:6px 0; filter:drop-shadow(0 0 6px rgba(251,191,36,0.6));">${'⭐'.repeat(yildiz)}<span style="opacity:.22;">${'☆'.repeat(3 - yildiz)}</span></div>`;
+            let yeniRekor = rfxRekorYaz(tip, puan); let rekor = rfxRekorAl(tip);
+            let rekorHtml = yeniRekor ? `<div style="color:var(--gold); font-weight:900; font-size:14px; margin-top:2px; animation:rfxPulse 1s ease infinite;">🏆 YENİ REKOR!</div>` : `<div style="color:var(--text-muted); font-size:12px; margin-top:2px;">🏆 Rekorun: ${rekor}</div>`;
+            let coinHtml;
+            if(ad && kazanilan > 0) coinHtml = `<div style="color:var(--gold); font-weight:900; font-size:24px; margin:8px 0; filter:drop-shadow(0 0 8px rgba(251,191,36,0.5));">💎 +${kazanilan} <span style="font-size:15px;">elmas</span></div>`;
+            else if(!ad) coinHtml = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Elmas için önce sporcu girişi yap.</div>`;
+            else coinHtml = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Biraz daha çalış, elmas kapıda! 💪</div>`;
+            return `${yildizHtml}<div style="font-size:17px; font-weight:bold;">${mesaj}</div>${coinHtml}${bonusTxt}${rekorHtml}<div style="display:flex; gap:8px; justify-content:center; margin-top:14px;"><button onclick="rfxOyunAc('${tip}')" style="background:linear-gradient(135deg,var(--accent-orange),#ff8a3d); color:#fff; border:none; padding:12px 20px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(255,98,0,0.3);">🔄 Tekrar</button><button onclick="rfxMenuyeDon()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">Menü</button></div>`;
         }
         function rfxOyunAc(tip) {
-            rfxTemizle(); rfxSonTip = tip;
+            rfxTemizle(); rfxSonTip = tip; rfxUstGoster(false);
             let menu = document.getElementById('rfx-menu'); if(menu) menu.style.display = 'none';
             let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return; alan.style.display = 'block';
             if(tip === 'pod') rfxPodKur(alan); else if(tip === 'gonogo') rfxGnKur(alan); else if(tip === 'tap') rfxTapKur(alan);
             else if(tip === 'timing') rfxTimKur(alan); else if(tip === 'tut') rfxTutKur(alan); else if(tip === 'odak') rfxOdkKur(alan);
             else if(tip === 'dusus') rfxDsKur(alan); else if(tip === 'dinamik') rfxDnKur(alan); else if(tip === 'sabir') rfxSbKur(alan);
+            else if(tip === 'nefes') rfxNfKur(alan); else if(tip === 'grup') rfxGrKur(alan); else if(tip === 'takip') rfxTkKur(alan);
+            else if(tip === 'hafiza') rfxHfKur(alan); else if(tip === 'sayim') rfxSyKur(alan);
         }
         // --- Refleks Pod ---
         function rfxPodKur(alan) {
             alan.innerHTML = rfxBaslikHtml('Refleks Pod', '🔴') + `
-                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-pod-sure">20</span>s</div><div>🎯 <span id="rfx-pod-skor">0</span></div></div>
-                <div id="rfx-pod-alan" style="position:relative; width:100%; height:320px; background:radial-gradient(circle, rgba(255,255,255,0.04), rgba(0,0,0,0.25)); border:2px solid var(--border-color); border-radius:14px; overflow:hidden;"><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><button onclick="rfxPodBaslat()" style="background:var(--neon-red); color:#fff; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button></div></div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Çıkan kırmızı hedefe hızlıca dokun!</div>`;
+                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-pod-sure">20</span>s</div><div>🎯 <span id="rfx-pod-skor">0</span></div><div>🔥 <span id="rfx-pod-combo" style="color:var(--accent-orange);">0</span></div></div>
+                <div id="rfx-pod-alan" style="position:relative; width:100%; height:320px; background:radial-gradient(circle at 50% 50%, rgba(59,130,246,0.06), rgba(0,0,0,0.3)); border:2px solid var(--border-color); border-radius:14px; overflow:hidden;"><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><button onclick="rfxPodBaslat()" style="background:var(--neon-red); color:#fff; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button></div></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Hedefe hızlı dokun! Üst üste vurdukça <b>küçülür</b> ve combo büyür. Kaçırırsan combo sıfırlanır.</div>`;
         }
         function rfxPodBaslat() {
-            rfxTemizle(); rfxAktif = true; rfxPodSkor = 0; rfxPodSure = 20;
-            document.getElementById('rfx-pod-skor').innerText = '0'; document.getElementById('rfx-pod-sure').innerText = '20';
+            rfxTemizle(); rfxAktif = true; rfxPodSkor = 0; rfxPodSure = 20; rfxPodCombo = 0; rfxPodEnCombo = 0;
+            document.getElementById('rfx-pod-skor').innerText = '0'; document.getElementById('rfx-pod-sure').innerText = '20'; let c = document.getElementById('rfx-pod-combo'); if(c) c.innerText = '0';
+            let a = document.getElementById('rfx-pod-alan'); if(a) a.innerHTML = '';
             rfxPodHedef();
             rfxTimer = setInterval(() => { rfxPodSure--; let e = document.getElementById('rfx-pod-sure'); if(e) e.innerText = rfxPodSure; if(rfxPodSure <= 0) rfxPodBitir(); }, 1000);
         }
         function rfxPodHedef() {
             let a = document.getElementById('rfx-pod-alan'); if(!a || !rfxAktif) return;
-            let b = 58, w = Math.max(10, a.clientWidth - b), h = Math.max(10, a.clientHeight - b);
+            let b = Math.max(34, 66 - rfxPodCombo * 3);
+            let w = Math.max(10, a.clientWidth - b), h = Math.max(10, a.clientHeight - b);
             let x = Math.random() * w, y = Math.random() * h;
-            a.innerHTML = `<button onclick="rfxPodVur(event)" style="position:absolute; left:${x}px; top:${y}px; width:${b}px; height:${b}px; border-radius:50%; border:3px solid #fff; background:radial-gradient(circle,#fff 16%,#ef4444 17%); cursor:pointer; box-shadow:0 0 14px rgba(239,68,68,0.7);"></button>`;
+            let renkler = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6']; let rk = renkler[Math.min(3, Math.floor(rfxPodCombo / 3))];
+            a.innerHTML = `<button onclick="rfxPodVur(event)" style="position:absolute; left:${x}px; top:${y}px; width:${b}px; height:${b}px; border-radius:50%; border:3px solid #fff; background:radial-gradient(circle, #fff 0 14%, ${rk} 15% 38%, #fff 39% 46%, ${rk} 47%); cursor:pointer; box-shadow:0 0 16px ${rk}; animation:rfxPodIn .18s ease-out;"></button>`;
+            let pencere = Math.max(650, 1500 - rfxPodSkor * 22);
+            if(rfxSpawnT) clearTimeout(rfxSpawnT);
+            rfxSpawnT = setTimeout(() => { if(!rfxAktif) return; rfxPodCombo = 0; let c = document.getElementById('rfx-pod-combo'); if(c) c.innerText = '0'; try { sesCal(180, 0.1); } catch(_) {} rfxPodHedef(); }, pencere);
         }
-        function rfxPodVur(e) { if(e) e.stopPropagation(); if(!rfxAktif) return; rfxPodSkor++; let s = document.getElementById('rfx-pod-skor'); if(s) s.innerText = rfxPodSkor; try { sesCal(900, 0.05); } catch(_) {} rfxPodHedef(); }
+        function rfxPodVur(e) {
+            if(e) e.stopPropagation(); if(!rfxAktif) return;
+            if(rfxSpawnT) { clearTimeout(rfxSpawnT); rfxSpawnT = null; }
+            rfxPodSkor++; rfxPodCombo++; if(rfxPodCombo > rfxPodEnCombo) rfxPodEnCombo = rfxPodCombo;
+            let s = document.getElementById('rfx-pod-skor'); if(s) s.innerText = rfxPodSkor;
+            let c = document.getElementById('rfx-pod-combo'); if(c) c.innerText = rfxPodCombo;
+            let a = document.getElementById('rfx-pod-alan'); let btn = a ? a.querySelector('button') : null;
+            if(a && btn) { let bx = btn.style.left, by = btn.style.top, bs = btn.style.width; let burst = document.createElement('div'); burst.style.cssText = `position:absolute; left:calc(${bx} + ${bs}/2); top:calc(${by} + ${bs}/2); width:${bs}; height:${bs}; border-radius:50%; border:3px solid #fbbf24; pointer-events:none; animation:rfxBurst .4s ease-out forwards;`; a.appendChild(burst); setTimeout(() => { if(burst.parentNode) burst.parentNode.removeChild(burst); }, 420); }
+            try { sesCal(880 + Math.min(600, rfxPodCombo * 40), 0.05); } catch(_) {}
+            rfxPodHedef();
+        }
         function rfxPodBitir() {
             rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxPodSkor / 2));
-            let a = document.getElementById('rfx-pod-alan'); if(a) a.innerHTML = `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px;"><div>${rfxBitisIc(`🎯 ${rfxPodSkor} hedef vurdun!`, kazanilan, 'pod')}</div></div>`;
+            let ozet = rfxPodSkor >= 18 ? 'Refleksin yıldırım gibi! ⚡' : rfxPodSkor >= 10 ? 'İyi refleks! Comboyu korumaya çalış.' : 'Hedefe odaklan, daha hızlı dokun.';
+            let a = document.getElementById('rfx-oyun-alani'); if(a) a.innerHTML = rfxBaslikHtml('Refleks Pod', '🔴') + `<div style="text-align:center; padding:30px 12px;"><div style="font-size:16px; font-weight:bold;">🎯 ${rfxPodSkor} hedef · 🔥 en yüksek combo ${rfxPodEnCombo}</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'pod', rfxPodSkor)}</div>`;
         }
         // --- Yeşile Bas (Go/No-Go) ---
         function rfxGnKur(alan) {
             alan.innerHTML = rfxBaslikHtml('Yeşile Bas', '🚦') + `
-                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-gn-sure">20</span>s</div><div>✅ <span id="rfx-gn-dogru">0</span></div><div>❌ <span id="rfx-gn-hata">0</span></div></div>
+                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-gn-sure">20</span>s</div><div>✅ <span id="rfx-gn-dogru">0</span></div><div>❌ <span id="rfx-gn-hata">0</span></div><div>🔥 <span id="rfx-gn-combo" style="color:var(--accent-orange);">0</span></div></div>
                 <div id="rfx-gn-alan" onclick="rfxGnDokun()" style="width:100%; height:320px; border-radius:14px; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; background:#1f2937; font-size:24px; font-weight:900; color:#fff;"><button onclick="event.stopPropagation(); rfxGnBaslat()" style="background:var(--neon-green); color:#fff; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button></div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">YEŞİL olunca dokun, KIRMIZIda dokunma!</div>`;
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">YEŞİL olunca dokun, KIRMIZIda dokunma! Hız arttıkça süre kısalır.</div>`;
         }
         function rfxGnBaslat() {
-            rfxTemizle(); rfxAktif = true; rfxGnSure = 20; rfxGnDogru = 0; rfxGnHata = 0;
-            document.getElementById('rfx-gn-dogru').innerText = '0'; document.getElementById('rfx-gn-hata').innerText = '0'; document.getElementById('rfx-gn-sure').innerText = '20';
+            rfxTemizle(); rfxAktif = true; rfxGnSure = 20; rfxGnDogru = 0; rfxGnHata = 0; rfxGnCombo = 0; rfxGnEnCombo = 0;
+            document.getElementById('rfx-gn-dogru').innerText = '0'; document.getElementById('rfx-gn-hata').innerText = '0'; document.getElementById('rfx-gn-sure').innerText = '20'; let c = document.getElementById('rfx-gn-combo'); if(c) c.innerText = '0';
             rfxGnDongu();
             rfxTimer = setInterval(() => { rfxGnSure--; let e = document.getElementById('rfx-gn-sure'); if(e) e.innerText = rfxGnSure; if(rfxGnSure <= 0) rfxGnBitir(); }, 1000);
         }
         function rfxGnDongu() {
             if(!rfxAktif) return; let a = document.getElementById('rfx-gn-alan'); if(!a) return;
             rfxGnBekliyor = false; rfxGnYesil = false; a.style.background = '#1f2937'; a.innerHTML = '<span style="color:#64748b;">Hazır ol...</span>';
+            let goster = Math.max(430, 850 - rfxGnDogru * 18);
             rfxSpawnT = setTimeout(() => {
-                if(!rfxAktif) return; let yesil = Math.random() < 0.6; rfxGnYesil = yesil; rfxGnBekliyor = true;
+                if(!rfxAktif) return; let yesil = Math.random() < 0.58; rfxGnYesil = yesil; rfxGnBekliyor = true;
                 a.style.background = yesil ? '#10b981' : '#ef4444'; a.innerHTML = yesil ? 'DOKUN!' : 'DURMA ✋';
                 try { sesCal(yesil ? 900 : 400, 0.1); } catch(e) {}
-                rfxSpawnT = setTimeout(() => { if(!rfxAktif) return; rfxGnBekliyor = false; rfxGnDongu(); }, 850);
-            }, 500 + Math.random() * 700);
+                rfxSpawnT = setTimeout(() => { if(!rfxAktif) return; rfxGnBekliyor = false; rfxGnDongu(); }, goster);
+            }, 380 + Math.random() * 620);
         }
         function rfxGnDokun() {
             if(!rfxAktif || !rfxGnBekliyor) return;
-            if(rfxGnYesil) { rfxGnDogru++; document.getElementById('rfx-gn-dogru').innerText = rfxGnDogru; try { sesCal(1100, 0.05); } catch(e) {} }
-            else { rfxGnHata++; document.getElementById('rfx-gn-hata').innerText = rfxGnHata; try { sesCal(250, 0.15); } catch(e) {} }
+            if(rfxGnYesil) { rfxGnDogru++; rfxGnCombo++; if(rfxGnCombo > rfxGnEnCombo) rfxGnEnCombo = rfxGnCombo; document.getElementById('rfx-gn-dogru').innerText = rfxGnDogru; let c = document.getElementById('rfx-gn-combo'); if(c) c.innerText = rfxGnCombo; try { sesCal(1000 + Math.min(500, rfxGnCombo * 35), 0.05); } catch(e) {} }
+            else { rfxGnHata++; rfxGnCombo = 0; document.getElementById('rfx-gn-hata').innerText = rfxGnHata; let c = document.getElementById('rfx-gn-combo'); if(c) c.innerText = '0'; try { sesCal(250, 0.15); } catch(e) {} }
             rfxGnBekliyor = false; if(rfxSpawnT) clearTimeout(rfxSpawnT); rfxGnDongu();
         }
         function rfxGnBitir() {
             rfxTemizle(); let net = Math.max(0, rfxGnDogru - rfxGnHata); let kazanilan = Math.min(10, Math.ceil(net / 2));
-            let a = document.getElementById('rfx-gn-alan'); if(a) { a.style.background = '#1f2937'; a.innerHTML = `<div style="padding:14px;">${rfxBitisIc(`✅ ${rfxGnDogru} doğru · ❌ ${rfxGnHata} hata`, kazanilan, 'gonogo')}</div>`; }
+            let ozet = net >= 18 ? 'Karar hızın ve kontrolün harika! 🚦' : net >= 9 ? 'İyi! Kırmızıda durmaya dikkat et.' : 'Acele etme, önce rengi gör sonra dokun.';
+            let a = document.getElementById('rfx-gn-alan'); if(a) { a.style.background = '#1f2937'; a.innerHTML = `<div style="padding:14px;"><div style="font-size:15px; font-weight:bold; color:#fff;">✅ ${rfxGnDogru} · ❌ ${rfxGnHata} · 🔥 ${rfxGnEnCombo}</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'gonogo', net)}</div>`; }
         }
         // --- Hızlı Dokunuş (Max Tapping) ---
         function rfxTapKur(alan) {
             rfxTapBasladi = false;
             alan.innerHTML = rfxBaslikHtml('Hızlı Dokunuş', '💥') + `
                 <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-tap-sure">5.0</span>s</div><div>💥 <span id="rfx-tap-skor">0</span></div></div>
-                <button id="rfx-tap-btn" onclick="rfxTapDokun()" style="width:100%; height:320px; border-radius:14px; border:3px solid var(--accent-orange); background:radial-gradient(circle, rgba(255,98,0,0.25), rgba(0,0,0,0.2)); color:var(--text-main); font-size:22px; font-weight:900; cursor:pointer;">▶️ Başlamak için DOKUN</button>`;
+                <button id="rfx-tap-btn" onclick="rfxTapDokun(event)" style="position:relative; overflow:hidden; width:100%; height:320px; border-radius:14px; border:3px solid var(--accent-orange); background:radial-gradient(circle, rgba(255,98,0,0.25), rgba(0,0,0,0.2)); color:var(--text-main); font-size:22px; font-weight:900; cursor:pointer;">▶️ Başlamak için DOKUN</button>`;
         }
-        function rfxTapDokun() {
+        function rfxTapDokun(e) {
             if(!rfxTapBasladi) { rfxTapBaslat(); return; }
-            if(!rfxAktif) return; rfxTapSkor++; let s = document.getElementById('rfx-tap-skor'); if(s) s.innerText = rfxTapSkor; try { sesCal(800, 0.03); } catch(e) {}
+            if(!rfxAktif) return; rfxTapSkor++; let s = document.getElementById('rfx-tap-skor'); if(s) s.innerText = rfxTapSkor; try { sesCal(820, 0.03); } catch(err) {}
+            let btn = document.getElementById('rfx-tap-btn');
+            if(btn && e) { let r = btn.getBoundingClientRect(); let x = (e.clientX != null ? e.clientX : r.left + r.width / 2) - r.left, y = (e.clientY != null ? e.clientY : r.top + r.height / 2) - r.top; let rip = document.createElement('div'); rip.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:64px; height:64px; border-radius:50%; background:rgba(255,138,61,0.55); pointer-events:none; animation:rfxBurst .45s ease-out forwards;`; btn.appendChild(rip); setTimeout(() => { if(rip.parentNode) rip.parentNode.removeChild(rip); }, 460); }
         }
         function rfxTapBaslat() {
             rfxTemizle(); rfxAktif = true; rfxTapBasladi = true; rfxTapSkor = 0; rfxTapKalan = 5.0;
-            let btn = document.getElementById('rfx-tap-btn'); if(btn) btn.innerText = 'DOKUN! DOKUN!';
+            let btn = document.getElementById('rfx-tap-btn'); if(btn) btn.innerHTML = 'DOKUN! DOKUN!';
             document.getElementById('rfx-tap-skor').innerText = '0';
             rfxTimer = setInterval(() => { rfxTapKalan -= 0.1; if(rfxTapKalan < 0) rfxTapKalan = 0; let e = document.getElementById('rfx-tap-sure'); if(e) e.innerText = rfxTapKalan.toFixed(1); if(rfxTapKalan <= 0) rfxTapBitir(); }, 100);
         }
         function rfxTapBitir() {
-            rfxTemizle(); rfxTapBasladi = false; let kazanilan = Math.min(10, Math.round(rfxTapSkor / 4));
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Hızlı Dokunuş', '💥') + `<div style="text-align:center; padding:50px 12px;">${rfxBitisIc(`💥 ${rfxTapSkor} dokunuş!`, kazanilan, 'tap')}</div>`;
+            rfxTemizle(); rfxTapBasladi = false; let kazanilan = Math.min(10, Math.round(rfxTapSkor / 4)); let hiz = (rfxTapSkor / 5).toFixed(1);
+            let ozet = rfxTapSkor >= 40 ? 'Patlayıcı hız! Parmakların şimşek gibi. ⚡' : rfxTapSkor >= 25 ? 'İyi tempo! Ritmi koru.' : 'Daha hızlı — bileğini gevşek tut.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Hızlı Dokunuş', '💥') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">💥 ${rfxTapSkor} dokunuş · ${hiz}/sn</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'tap', rfxTapSkor)}</div>`;
         }
         // --- Tam Zamanında (bırakış zamanlaması / clicker) ---
         let rfxTimPos = 0, rfxTimYon = 1, rfxTimAtisSay = 0, rfxTimPuan = 0, rfxTimBasladi = false;
@@ -5238,7 +5473,7 @@
         }
         function rfxTimBitir() {
             rfxTemizle(); rfxTimBasladi = false; let kazanilan = Math.min(10, Math.ceil(rfxTimPuan / 10));
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Tam Zamanında', '⏱️') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`⏱️ Toplam ${rfxTimPuan} puan!`, kazanilan, 'timing')}</div>`;
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Tam Zamanında', '⏱️') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`⏱️ Toplam ${rfxTimPuan} puan!`, kazanilan, 'timing', rfxTimPuan)}</div>`;
         }
         // --- Nişan Tut (sabit tutuş / steady hold) ---
         let rfxTutSure = 0, rfxTutSkor = 0, rfxTutBasili = false, rfxTutLastX = 0, rfxTutLastY = 0, rfxTutJitter = 0;
@@ -5268,7 +5503,7 @@
         }
         function rfxTutBitir() {
             rfxTemizle(); rfxTutBasili = false; let kazanilan = Math.min(10, Math.round(rfxTutSkor / 1.5));
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Nişan Tut', '🎯') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🎯 ${rfxTutSkor.toFixed(1)} sn sabit kaldın!`, kazanilan, 'tut')}</div>`;
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Nişan Tut', '🎯') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🎯 ${rfxTutSkor.toFixed(1)} sn sabit kaldın!`, kazanilan, 'tut', Math.round(rfxTutSkor*10))}</div>`;
         }
         // --- Odak Kilidi (Schulte / tarama-odak) ---
         let rfxOdkSure = 0, rfxOdkSkor = 0, rfxOdkHedef = 1;
@@ -5304,144 +5539,436 @@
         }
         function rfxOdkBitir() {
             rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxOdkSkor / 4));
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Odak Kilidi', '🔢') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🔢 ${rfxOdkSkor} doğru dokunuş!`, kazanilan, 'odak')}</div>`;
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Odak Kilidi', '🔢') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🔢 ${rfxOdkSkor} doğru dokunuş!`, kazanilan, 'odak', rfxOdkSkor)}</div>`;
         }
         // --- Mükemmel Düşüş (bırakıştan sonra yayı sıkmama) ---
-        let rfxDsAtis = 0, rfxDsBasari = 0, rfxDsAsama = 'hazir', rfxDsBar = 0;
+        let rfxDsAtis = 0, rfxDsBasari = 0, rfxDsAsama = 'hazir', rfxDsBar = 0, rfxDsVurus = [];
         function rfxDsKur(alan) {
-            rfxDsAtis = 0; rfxDsBasari = 0; rfxDsAsama = 'hazir'; rfxDsBar = 0;
             alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `
-                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-ds-atis">0</span>/3</b> · Mükemmel: <b id="rfx-ds-basari" style="color:var(--neon-green);">0</b></div>
-                <div id="rfx-ds-sahne" style="position:relative; height:230px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#111827); overflow:hidden; display:flex; align-items:center; justify-content:center; touch-action:none;">
-                    <div id="rfx-ds-yay" style="font-size:74px; transition:transform .12s;">🏹</div>
-                    <div id="rfx-ds-mesaj" style="position:absolute; top:12px; left:0; right:0; text-align:center; font-weight:800; font-size:15px;"></div>
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--neon-green); margin-bottom:6px;">🎯 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Ok atıldıktan sonra yay <b>doğal olarak öne düşer</b>. İyi okçu yay kolunu <b>gevşek</b> tutar, yayı yakalamaz. Refleksle tutarsan <b>tork</b> oluşur ve ok sapar.</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:10px;">▸ "YAYI GER"e basılı tut, çubuk <b style="color:var(--neon-green);">yeşil</b> alana gelince bırak.<br>▸ Ok gidene kadar ekrana <b>DOKUNMA</b> — yay düşsün, sen tutma.</div>
+                </div>
+                <button onclick="rfxDsOyunKur()" style="width:100%; margin-top:14px; background:var(--neon-green); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (5 atış)</button>`;
+        }
+        function rfxDsOyunKur() {
+            rfxTemizle(); rfxDsAtis = 0; rfxDsBasari = 0; rfxDsAsama = 'hazir'; rfxDsBar = 0; rfxDsVurus = [];
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `
+                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-ds-atis">0</span>/5</b> · Mükemmel: <b id="rfx-ds-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-ds-sahne" style="position:relative; height:230px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#0e1626); overflow:hidden; touch-action:none;">
+                    <div style="position:absolute; right:20px; top:50%; transform:translateY(-50%); width:92px; height:92px; border-radius:50%; background:radial-gradient(circle, #fbbf24 0 18%, #fff 18% 22%, #ef4444 22% 42%, #fff 42% 46%, #3b82f6 46% 70%, #1f2937 70%); border:2px solid #fff;"></div>
+                    <div id="rfx-ds-yay" style="position:absolute; left:22px; top:50%; transform:translateY(-50%); font-size:58px; transition:transform .15s;">🏹</div>
+                    <div id="rfx-ds-ok" style="position:absolute; left:64px; top:50%; transform:translateY(-50%); font-size:24px; opacity:0; color:#fbbf24;">➤</div>
+                    <div id="rfx-ds-mesaj" style="position:absolute; top:10px; left:0; right:0; text-align:center; font-weight:800; font-size:14px; padding:0 8px;"></div>
                 </div>
                 <div style="height:22px; background:var(--bg-main); border-radius:11px; margin-top:10px; overflow:hidden; position:relative; border:1px solid var(--border-color);">
                     <div style="position:absolute; left:70%; right:6%; top:0; bottom:0; background:rgba(16,185,129,0.35);"></div>
                     <div id="rfx-ds-bar" style="height:100%; width:0%; background:var(--accent-orange);"></div>
                 </div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Yeşil alanda bırak. Bıraktıktan sonra <b>SAKIN DOKUNMA</b> — yayı sıkma, düşmesine izin ver!</div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Yeşilde bırak → ok gidene kadar DOKUNMA!</div>
                 <button id="rfx-ds-btn" onpointerdown="rfxDsCekBasla(event)" onpointerup="rfxDsBirak(event)" onpointerleave="rfxDsBirak(event)" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer; touch-action:none;">🏹 YAYI GER (BASILI TUT)</button>`;
         }
         function rfxDsCekBasla(e) {
             if(e) e.preventDefault();
-            if(rfxDsAsama !== 'hazir' || rfxDsAtis >= 3) return;
+            if(rfxDsAsama !== 'hazir' || rfxDsAtis >= 5) return;
             rfxDsAsama = 'cekiliyor'; rfxDsBar = 0; rfxAktif = true;
             let mesaj = document.getElementById('rfx-ds-mesaj'); if(mesaj) mesaj.innerText = '';
-            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'scale(1.12)';
+            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'translateY(-50%) scale(1.12)';
+            let ok = document.getElementById('rfx-ds-ok'); if(ok) { ok.style.transition = 'none'; ok.style.opacity = '0'; ok.style.left = '64px'; ok.style.top = '50%'; ok.style.transform = 'translateY(-50%) rotate(0deg)'; }
             rfxTimer = setInterval(() => { rfxDsBar += 2; if(rfxDsBar > 100) rfxDsBar = 100; let b = document.getElementById('rfx-ds-bar'); if(b) b.style.width = rfxDsBar + '%'; }, 30);
         }
         function rfxDsBirak(e) {
             if(rfxDsAsama !== 'cekiliyor') return;
             if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
             let mesaj = document.getElementById('rfx-ds-mesaj'), yay = document.getElementById('rfx-ds-yay');
-            if(rfxDsBar < 70) { rfxDsAsama = 'hazir'; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Çok erken bıraktın, tekrar dene</span>'; let b = document.getElementById('rfx-ds-bar'); if(b) b.style.width = '0%'; if(yay) yay.style.transform = 'scale(1)'; return; }
+            if(rfxDsBar < 70) { rfxDsAsama = 'hazir'; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Çok erken bıraktın — tam çekişe ulaş (yeşil)</span>'; let b = document.getElementById('rfx-ds-bar'); if(b) b.style.width = '0%'; if(yay) yay.style.transform = 'translateY(-50%) scale(1)'; return; }
             rfxDsAsama = 'dusus';
             if(mesaj) mesaj.innerHTML = '<span style="color:var(--gold);">Ok atıldı... DOKUNMA!</span>';
-            let salla = 0; rfxTimer = setInterval(() => { salla++; if(yay) yay.style.transform = `rotate(${Math.sin(salla / 2) * 20}deg)`; }, 60);
+            let salla = 0; rfxTimer = setInterval(() => { salla++; if(yay) yay.style.transform = `translateY(-50%) rotate(${Math.sin(salla / 2) * 22}deg)`; }, 60);
             let sahne = document.getElementById('rfx-ds-sahne'); if(sahne) sahne.onpointerdown = () => { if(rfxDsAsama === 'dusus') rfxDsSonuc(false); };
+            if(rfxDsAtis >= 2) { rfxDsFakeT = setTimeout(() => { try { sesCal(520, 0.12); } catch(e) {} }, 760); }
             rfxDsDusT = setTimeout(() => { rfxDsSonuc(true); }, 1800);
         }
         function rfxDsSonuc(basarili) {
             if(rfxDsAsama !== 'dusus') return;
             rfxDsAsama = 'hazir';
-            if(rfxDsDusT) { clearTimeout(rfxDsDusT); rfxDsDusT = null; } if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
+            if(rfxDsDusT) { clearTimeout(rfxDsDusT); rfxDsDusT = null; } if(rfxDsFakeT) { clearTimeout(rfxDsFakeT); rfxDsFakeT = null; } if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
             let sahne = document.getElementById('rfx-ds-sahne'); if(sahne) sahne.onpointerdown = null;
-            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'rotate(0deg) scale(1)';
-            let bar = document.getElementById('rfx-ds-bar'); if(bar) bar.style.width = '0%';
-            rfxDsAtis++; let mesaj = document.getElementById('rfx-ds-mesaj');
-            if(basarili) { rfxDsBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">✅ MÜKEMMEL DÜŞÜŞ! Tam onikiden!</span>'; try { sesCal(1100, 0.25); } catch(e) {} }
-            else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ TORK HATASI – YAYI SIKTIN! Iska.</span>'; try { sesCal(200, 0.3); } catch(e) {} }
+            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'translateY(-50%) rotate(0deg)';
+            let ok = document.getElementById('rfx-ds-ok'), mesaj = document.getElementById('rfx-ds-mesaj');
+            rfxDsAtis++;
+            if(basarili) {
+                rfxDsBasari++;
+                rfxDsVurus.push({ x: 38 + Math.random() * 24, y: 30 + Math.random() * 26, ok: true });
+                if(ok) { ok.style.transition = 'left .5s ease-out'; ok.style.left = 'calc(100% - 66px)'; ok.style.opacity = '1'; }
+                if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">✅ MÜKEMMEL DÜŞÜŞ! Yay doğal düştü, eline güvendin.</span>';
+                try { sesCal(1100, 0.25); } catch(e) {}
+            } else {
+                rfxDsVurus.push({ x: 8 + Math.random() * 22, y: 8 + Math.random() * 18, ok: false });
+                if(ok) { ok.style.transition = 'left .45s, top .45s, transform .45s'; ok.style.left = 'calc(100% - 30px)'; ok.style.top = '14%'; ok.style.transform = 'translateY(-50%) rotate(-38deg)'; ok.style.opacity = '1'; }
+                if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ TORK HATASI! Yayı yakaladın → ok saptı. Yay kolu gevşek kalmalı.</span>';
+                try { sesCal(200, 0.3); } catch(e) {}
+            }
             let ea = document.getElementById('rfx-ds-atis'); if(ea) ea.innerText = rfxDsAtis;
             let eb = document.getElementById('rfx-ds-basari'); if(eb) eb.innerText = rfxDsBasari;
-            if(rfxDsAtis >= 3) setTimeout(rfxDsBitir, 1300);
+            if(rfxDsAtis >= 5) setTimeout(rfxDsBitir, 1500);
         }
         function rfxDsBitir() {
-            rfxTemizle(); let kazanilan = Math.min(10, rfxDsBasari * 4);
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`🏹 3 atışta ${rfxDsBasari} mükemmel düşüş!`, kazanilan, 'dusus')}</div>`;
+            rfxTemizle(); let kazanilan = Math.min(10, rfxDsBasari * 2);
+            let ozet = rfxDsBasari >= 5 ? 'Bırakış kontrolün profesyonel seviyede — yay koluna tam güveniyorsun! 🎯' : rfxDsBasari >= 3 ? 'İyi gidiyorsun. Takip hareketini biraz daha sabit tut, refleksle tutma.' : 'Bıraktıktan sonra eli serbest bırak — yay kendi düşsün. Tekrar dene!';
+            let nokta = rfxDsVurus.map(v => `<div style="position:absolute; left:${v.x}%; top:${v.y}%; width:9px; height:9px; border-radius:50%; background:${v.ok ? '#fff' : 'var(--neon-red)'}; border:1px solid #000; transform:translate(-50%,-50%);"></div>`).join('');
+            let hedef = `<div style="position:relative; width:120px; height:120px; margin:12px auto; border-radius:50%; background:radial-gradient(circle, #fbbf24 0 18%, #fff 18% 22%, #ef4444 22% 42%, #fff 42% 46%, #3b82f6 46% 70%, #1f2937 70%); border:2px solid #fff;">${nokta}</div>`;
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `<div style="text-align:center; padding:14px 12px;"><div style="font-size:16px; font-weight:bold;">🏹 5 atışta ${rfxDsBasari} mükemmel düşüş</div>${hedef}${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:0 auto;">${ozet}</div>`, kazanilan, 'dusus', rfxDsBasari)}</div>`;
         }
         // --- Dinamik Bırakış (sırt gerginliği / ölü bırakış düzeltme) ---
-        let rfxDnAtis = 0, rfxDnBasari = 0, rfxDnBasili = false, rfxDnX0 = 0, rfxDnSon = [];
+        let rfxDnAtis = 0, rfxDnBasari = 0, rfxDnBasili = false, rfxDnX0 = 0, rfxDnSon = [], rfxDnMaxCek = 0;
         function rfxDnKur(alan) {
-            rfxDnAtis = 0; rfxDnBasari = 0; rfxDnBasili = false;
             alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `
-                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-dn-atis">0</span>/3</b> · Dinamik: <b id="rfx-dn-basari" style="color:var(--neon-green);">0</b></div>
-                <div id="rfx-dn-sahne" onpointerdown="rfxDnDown(event)" onpointermove="rfxDnMove(event)" onpointerup="rfxDnUp(event)" onpointerleave="rfxDnUp(event)" style="position:relative; height:220px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#111827); overflow:hidden; touch-action:none; user-select:none;">
-                    <div style="position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:60px;">🏹</div>
-                    <div id="rfx-dn-nock" style="position:absolute; top:50%; right:78px; transform:translateY(-50%); width:26px; height:26px; border-radius:50%; background:var(--accent-orange); box-shadow:0 0 12px var(--accent-orange);"></div>
-                    <div id="rfx-dn-mesaj" style="position:absolute; top:12px; left:0; right:0; text-align:center; font-weight:800; font-size:15px;"></div>
+                <div style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--accent-orange); margin-bottom:6px;">💪 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Doğru bırakış <b>parmak açmak değildir</b>. Sırtını kasıp <b>geriye çekmeye devam ederken</b> el gevşer (genleşme). Durup bırakırsan "<b>ölü bırakış</b>", ok zayıf çıkar.</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:10px;">▸ Sahnede basılı tutup parmağını <b>SOLA</b> çek, "tam çekiş" çizgisini geç.<br>▸ Geri çekmeye <b>devam ederken</b> bırak → dinamik!</div>
                 </div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Basılı tut, parmağını <b>SOLA</b> çek (sırtını kas). Geriye çekmeye DEVAM ederken bırak → dinamik. Durup bırakırsan ölü bırakış, ok düşer.</div>`;
+                <button onclick="rfxDnOyunKur()" style="width:100%; margin-top:14px; background:var(--accent-orange); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (5 atış)</button>`;
         }
-        function rfxDnDown(e) { if(e) e.preventDefault(); if(rfxDnAtis >= 3) return; rfxAktif = true; rfxDnBasili = true; rfxDnX0 = e.clientX; rfxDnSon = [{ x: e.clientX, t: performance.now() }]; let m = document.getElementById('rfx-dn-mesaj'); if(m) m.innerText = ''; }
+        function rfxDnOyunKur() {
+            rfxTemizle(); rfxDnAtis = 0; rfxDnBasari = 0; rfxDnBasili = false; rfxDnMaxCek = 0;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `
+                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-dn-atis">0</span>/5</b> · Dinamik: <b id="rfx-dn-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-dn-sahne" onpointerdown="rfxDnDown(event)" onpointermove="rfxDnMove(event)" onpointerup="rfxDnUp(event)" onpointerleave="rfxDnUp(event)" style="position:relative; height:220px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#0e1626); overflow:hidden; touch-action:none; user-select:none;">
+                    <div style="position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:56px;">🏹</div>
+                    <div style="position:absolute; left:90px; top:0; bottom:0; width:2px; background:repeating-linear-gradient(#10b981,#10b981 6px,transparent 6px,transparent 12px);"></div>
+                    <div style="position:absolute; left:70px; top:8px; font-size:10px; color:var(--neon-green);">tam çekiş</div>
+                    <div id="rfx-dn-ip" style="position:absolute; top:50%; right:78px; height:3px; background:#9ca3af; width:0; transform:translateY(-50%);"></div>
+                    <div id="rfx-dn-nock" style="position:absolute; top:50%; right:78px; transform:translateY(-50%); width:24px; height:24px; border-radius:50%; background:var(--accent-orange); box-shadow:0 0 12px var(--accent-orange);"></div>
+                    <div id="rfx-dn-mesaj" style="position:absolute; top:10px; left:0; right:0; text-align:center; font-weight:800; font-size:14px; padding:0 8px;"></div>
+                </div>
+                <div style="margin-top:10px;"><div style="font-size:11px; color:var(--text-muted);">Sırt gerginliği</div><div style="height:14px; background:var(--bg-main); border-radius:7px; overflow:hidden; border:1px solid var(--border-color);"><div id="rfx-dn-bar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--accent-orange),var(--neon-green));"></div></div></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">SOLA çek, çizgiyi geç, çekerken bırak.</div>`;
+        }
+        function rfxDnDown(e) { if(e) e.preventDefault(); if(rfxDnAtis >= 5) return; rfxAktif = true; rfxDnBasili = true; rfxDnX0 = e.clientX; rfxDnMaxCek = 0; rfxDnSon = [{ x: e.clientX, t: performance.now() }]; let m = document.getElementById('rfx-dn-mesaj'); if(m) m.innerText = ''; }
         function rfxDnMove(e) {
             if(!rfxDnBasili) return; let x = e.clientX; rfxDnSon.push({ x: x, t: performance.now() }); if(rfxDnSon.length > 6) rfxDnSon.shift();
-            let cek = Math.max(0, rfxDnX0 - x); let n = document.getElementById('rfx-dn-nock'); if(n) n.style.right = (78 + Math.min(cek, 170)) + 'px';
+            let cek = Math.max(0, rfxDnX0 - x); if(cek > rfxDnMaxCek) rfxDnMaxCek = cek;
+            let n = document.getElementById('rfx-dn-nock'), ip = document.getElementById('rfx-dn-ip'), bar = document.getElementById('rfx-dn-bar');
+            let g = Math.min(cek, 180);
+            if(n) n.style.right = (78 + g) + 'px'; if(ip) ip.style.width = g + 'px'; if(bar) bar.style.width = Math.min(100, cek / 1.6) + '%';
         }
         function rfxDnUp(e) {
             if(!rfxDnBasili) return; rfxDnBasili = false;
             let x = (e && e.clientX != null) ? e.clientX : (rfxDnSon.length ? rfxDnSon[rfxDnSon.length - 1].x : rfxDnX0);
-            let cekMesafe = Math.max(0, rfxDnX0 - x);
+            let cekMesafe = Math.max(rfxDnMaxCek, Math.max(0, rfxDnX0 - x));
             let vx = 0, now = performance.now(), last = rfxDnSon[rfxDnSon.length - 1];
             if(last && (now - last.t) <= 90 && rfxDnSon.length >= 2) { let a = rfxDnSon[rfxDnSon.length - 2]; vx = (last.x - a.x) / ((last.t - a.t) || 16); }
             let n = document.getElementById('rfx-dn-nock'), mesaj = document.getElementById('rfx-dn-mesaj');
             rfxDnAtis++;
-            if(cekMesafe < 50) { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Yeterince çekmedin!</span>'; try { sesCal(200, 0.2); } catch(e) {} }
-            else if(vx < -0.05) { rfxDnBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">💪 DİNAMİK BIRAKIŞ! +bonus</span>'; if(n) n.style.right = '230px'; try { sesCal(1100, 0.2); } catch(e) {} }
-            else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ ÖLÜ BIRAKIŞ! Ok düştü.</span>'; if(n) { n.style.transition = 'top .4s'; n.style.top = '88%'; } try { sesCal(250, 0.3); } catch(e) {} }
-            setTimeout(() => { let nn = document.getElementById('rfx-dn-nock'); if(nn) { nn.style.transition = ''; nn.style.top = '50%'; nn.style.right = '78px'; } }, 700);
+            if(cekMesafe < 70) { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Tam çekmedin — çizgiyi geç!</span>'; try { sesCal(200, 0.2); } catch(e) {} }
+            else if(vx < -0.12) { rfxDnBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">💪 SÜPER DİNAMİK! Sırtın çalıştı, ok fırladı.</span>'; if(n) n.style.right = '245px'; try { sesCal(1250, 0.2); } catch(e) {} }
+            else if(vx < -0.05) { rfxDnBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">✅ Dinamik bırakış. Biraz daha net geri çek.</span>'; if(n) n.style.right = '215px'; try { sesCal(1000, 0.18); } catch(e) {} }
+            else if(vx > 0.05) { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ Öne ittin (collapse) — gevşedin, ok zayıf.</span>'; if(n) { n.style.transition = 'top .4s, right .4s'; n.style.top = '85%'; } try { sesCal(250, 0.3); } catch(e) {} }
+            else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ Ölü bırakış — durdun, sırtı bıraktın. Çekerken bırak!</span>'; if(n) { n.style.transition = 'top .4s'; n.style.top = '85%'; } try { sesCal(250, 0.3); } catch(e) {} }
+            setTimeout(() => { let nn = document.getElementById('rfx-dn-nock'), ip = document.getElementById('rfx-dn-ip'), bar = document.getElementById('rfx-dn-bar'); if(nn) { nn.style.transition = ''; nn.style.top = '50%'; nn.style.right = '78px'; } if(ip) ip.style.width = '0'; if(bar) bar.style.width = '0%'; }, 750);
             let ea = document.getElementById('rfx-dn-atis'); if(ea) ea.innerText = rfxDnAtis;
             let eb = document.getElementById('rfx-dn-basari'); if(eb) eb.innerText = rfxDnBasari;
-            if(rfxDnAtis >= 3) setTimeout(rfxDnBitir, 900);
+            if(rfxDnAtis >= 5) setTimeout(rfxDnBitir, 950);
         }
         function rfxDnBitir() {
-            rfxTemizle(); let kazanilan = Math.min(10, rfxDnBasari * 4);
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`💪 3 atışta ${rfxDnBasari} dinamik bırakış!`, kazanilan, 'dinamik')}</div>`;
+            rfxTemizle(); let kazanilan = Math.min(10, rfxDnBasari * 2);
+            let ozet = rfxDnBasari >= 5 ? 'Sırt gerginliğin oturmuş — her atışta çekerek bıraktın! 💪' : rfxDnBasari >= 3 ? 'Güzel! Bırakış anında geri çekmeyi biraz daha belirginleştir.' : 'Bırakırken durma — sırtını kasıp geriye çekmeye devam et. Tekrar dene!';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `<div style="text-align:center; padding:30px 12px;"><div style="font-size:16px; font-weight:bold;">💪 5 atışta ${rfxDnBasari} dinamik bırakış</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'dinamik', rfxDnBasari)}</div>`;
         }
         // --- Sabır (Hedef Panik): işareti bekle, erken atma ---
-        let rfxSbTur = 0, rfxSbBasari = 0, rfxSbHazir = false, rfxSbBasili = false, rfxSbGoZaman = 0;
+        let rfxSbTur = 0, rfxSbBasari = 0, rfxSbHazir = false, rfxSbBasili = false, rfxSbGoZaman = 0, rfxSbTepkiler = [], rfxSbFaz = 0, rfxSbPinX = 0, rfxSbPinY = 0;
         function rfxSbKur(alan) {
-            rfxSbTur = 0; rfxSbBasari = 0; rfxSbHazir = false; rfxSbBasili = false;
+            alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--gold); margin-bottom:6px;">⏳ Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Hedef panik: sarıyı görünce <b>istemsizce</b> atmak. Çözüm: nişanı <b>bırak süzülsün</b> (float), aceleyle atma. Atış <b>komutla</b> olur — sabretmeyi öğren.</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:10px;">▸ "NİŞAN AL"a basılı tut, nişangah süzülürken sabret.<br>▸ <b>Sarı işaret</b> gelmeden bırakma. Gelince hemen bırak!</div>
+                </div>
+                <button onclick="rfxSbOyunKur()" style="width:100%; margin-top:14px; background:var(--gold); color:#000; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (5 tur)</button>`;
+        }
+        function rfxSbOyunKur() {
+            rfxTemizle(); rfxSbTur = 0; rfxSbBasari = 0; rfxSbHazir = false; rfxSbBasili = false; rfxSbTepkiler = [];
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
             alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `
                 <div style="text-align:center; margin-bottom:8px;">Tur: <b><span id="rfx-sb-tur">0</span>/5</b> · İsabet: <b id="rfx-sb-basari" style="color:var(--neon-green);">0</b></div>
-                <div id="rfx-sb-ekran" style="height:240px; border-radius:14px; border:2px solid var(--border-color); background:#1f2937; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; transition:background .1s;">
-                    <div style="font-size:56px;">🎯</div>
-                    <div id="rfx-sb-mesaj" style="font-weight:800; font-size:16px; margin-top:10px; color:var(--text-muted);">Hazır mısın?</div>
+                <div id="rfx-sb-ekran" style="position:relative; height:240px; border-radius:14px; border:2px solid var(--border-color); background:#111827; overflow:hidden; transition:background .12s;">
+                    <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:140px; height:140px; border-radius:50%; background:radial-gradient(circle, #fbbf24 0 16%, #fff 16% 20%, #ef4444 20% 40%, #fff 40% 44%, #3b82f6 44% 70%, #1f2937 70%); border:2px solid #fff;"></div>
+                    <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:68px; height:68px; border-radius:50%; border:2px dashed rgba(255,255,255,0.5); pointer-events:none;"></div>
+                    <div id="rfx-sb-pin" style="position:absolute; left:50%; top:50%; width:26px; height:26px; margin:-13px 0 0 -13px; opacity:0;"><div style="position:absolute; left:11px; top:0; width:4px; height:26px; background:#10b981;"></div><div style="position:absolute; top:11px; left:0; width:26px; height:4px; background:#10b981;"></div></div>
+                    <div id="rfx-sb-mesaj" style="position:absolute; bottom:10px; left:0; right:0; text-align:center; font-weight:800; font-size:15px; color:var(--text-muted);">Hazır mısın?</div>
                 </div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">"NİŞAN AL"a BASILI tut, sarı işareti bekle. Erken bırakırsan ACELE etmiş olursun; işaret gelince hemen bırak!</div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">BASILI tut, sarı komutu bekle; sonra nişangahı SARIYA getirip bırak!</div>
                 <button id="rfx-sb-btn" onpointerdown="rfxSbBasla(event)" onpointerup="rfxSbBirak(event)" onpointerleave="rfxSbBirak(event)" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer; touch-action:none;">🎯 NİŞAN AL (BASILI TUT)</button>`;
         }
         function rfxSbBasla(e) {
             if(e) e.preventDefault();
             if(rfxSbBasili || rfxSbTur >= 5) return;
-            rfxSbBasili = true; rfxAktif = true; rfxSbHazir = false;
-            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj');
-            if(ekran) ekran.style.background = '#1f2937'; if(mesaj) { mesaj.innerText = 'Nişan alınıyor... sabret'; mesaj.style.color = 'var(--text-muted)'; }
-            let bekle = 1500 + Math.random() * 3500;
+            rfxSbBasili = true; rfxAktif = true; rfxSbHazir = false; rfxSbFaz = 0;
+            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj'), pin = document.getElementById('rfx-sb-pin');
+            if(ekran) ekran.style.background = '#111827'; if(mesaj) { mesaj.innerText = 'Süzülüyor... sabret 🫧'; mesaj.style.color = 'var(--text-muted)'; }
+            if(pin) pin.style.opacity = '1';
+            rfxTimer = setInterval(() => { rfxSbFaz += 0.08; let dx = Math.sin(rfxSbFaz * 1.3) * 26 + Math.sin(rfxSbFaz * 0.7) * 10, dy = Math.cos(rfxSbFaz) * 22 + Math.cos(rfxSbFaz * 1.7) * 8; rfxSbPinX = dx; rfxSbPinY = dy; if(pin) pin.style.transform = `translate(${dx}px, ${dy}px)`; }, 40);
+            let bekle = 1600 + Math.random() * 3400;
             rfxSbGoT = setTimeout(() => {
                 if(!rfxSbBasili) return; rfxSbHazir = true; rfxSbGoZaman = performance.now();
-                if(ekran) ekran.style.background = '#10b981'; if(mesaj) { mesaj.innerHTML = '🟡 ŞİMDİ BIRAK!'; mesaj.style.color = '#fff'; }
+                if(ekran) ekran.style.background = '#1e3a2f'; if(mesaj) { mesaj.innerHTML = '🟡 SERBEST! Sarıya getir, BIRAK'; mesaj.style.color = '#fff'; }
                 try { sesCal(1200, 0.15); } catch(e) {}
             }, bekle);
         }
         function rfxSbBirak(e) {
             if(!rfxSbBasili) return; rfxSbBasili = false;
-            if(rfxSbGoT) { clearTimeout(rfxSbGoT); rfxSbGoT = null; } if(rfxSbPencereT) { clearTimeout(rfxSbPencereT); rfxSbPencereT = null; }
-            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj');
+            if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
+            if(rfxSbGoT) { clearTimeout(rfxSbGoT); rfxSbGoT = null; }
+            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj'), pin = document.getElementById('rfx-sb-pin');
+            if(pin) pin.style.opacity = '0';
             rfxSbTur++;
-            if(!rfxSbHazir) { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '❌ ACELE ETTİN! Sabret.'; mesaj.style.color = '#fff'; } try { sesCal(200, 0.3); } catch(e) {} }
-            else { let tepki = performance.now() - rfxSbGoZaman; if(tepki <= 1200) { rfxSbBasari++; if(ekran) ekran.style.background = '#065f46'; if(mesaj) { mesaj.innerHTML = `✅ İSABET! (${Math.round(tepki)}ms)`; mesaj.style.color = '#fff'; } try { sesCal(1100, 0.15); } catch(e) {} } else { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '⏰ Geç kaldın!'; mesaj.style.color = '#fff'; } try { sesCal(300, 0.2); } catch(e) {} } }
+            if(!rfxSbHazir) { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '❌ ACELE ETTİN! (hedef panik) Komutu bekle.'; mesaj.style.color = '#fff'; } try { sesCal(200, 0.3); } catch(e) {} }
+            else { let d = Math.sqrt(rfxSbPinX * rfxSbPinX + rfxSbPinY * rfxSbPinY);
+                if(d < 16) { rfxSbBasari++; if(ekran) ekran.style.background = '#065f46'; if(mesaj) { mesaj.innerHTML = '🎯 TAM SARI! Mükemmel atış!'; mesaj.style.color = '#fff'; } try { sesCal(1320, 0.18); } catch(e) {} }
+                else if(d < 34) { rfxSbBasari++; if(ekran) ekran.style.background = '#10b981'; if(mesaj) { mesaj.innerHTML = '✅ İSABET! Sarıya değdi.'; mesaj.style.color = '#fff'; } try { sesCal(1080, 0.15); } catch(e) {} }
+                else { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '❌ Sarıyı tutturamadın — nişangahı merkeze getir.'; mesaj.style.color = '#fff'; } try { sesCal(320, 0.2); } catch(e) {} }
+            }
             rfxSbHazir = false;
             let et = document.getElementById('rfx-sb-tur'); if(et) et.innerText = rfxSbTur;
             let eb = document.getElementById('rfx-sb-basari'); if(eb) eb.innerText = rfxSbBasari;
-            if(rfxSbTur >= 5) setTimeout(rfxSbBitir, 1100);
-            else setTimeout(() => { let ek = document.getElementById('rfx-sb-ekran'), me = document.getElementById('rfx-sb-mesaj'); if(ek) ek.style.background = '#1f2937'; if(me) { me.innerText = 'Tekrar bas, nişan al'; me.style.color = 'var(--text-muted)'; } }, 1100);
+            if(rfxSbTur >= 5) setTimeout(rfxSbBitir, 1200);
+            else setTimeout(() => { let ek = document.getElementById('rfx-sb-ekran'), me = document.getElementById('rfx-sb-mesaj'); if(ek) ek.style.background = '#111827'; if(me) { me.innerText = 'Tekrar bas, nişan al'; me.style.color = 'var(--text-muted)'; } }, 1200);
         }
         function rfxSbBitir() {
             rfxTemizle(); let kazanilan = Math.min(10, rfxSbBasari * 2);
-            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`⏳ 5 turda ${rfxSbBasari} isabet!`, kazanilan, 'sabir')}</div>`;
+            let ozet = rfxSbBasari >= 5 ? 'Sabır + nişan kusursuz! Komutla sarıya bıraktın. ⏳🎯' : rfxSbBasari >= 3 ? 'İyi! Komut gelince acele etme, nişangahı merkeze getir.' : 'Önce sarı komutu bekle, sonra nişangahı sarıya getirip bırak.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `<div style="text-align:center; padding:30px 12px;"><div style="font-size:16px; font-weight:bold;">⏳ 5 turda ${rfxSbBasari} isabet</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'sabir', rfxSbBasari)}</div>`;
         }
-
+        // --- Nefes Ritmi (sakinlik / nefes kontrolü) ---
+        let rfxNfFaz = 0, rfxNfIyi = 0, rfxNfSure = 0, rfxNfSonIyi = 0;
+        function rfxNfKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Nefes Ritmi', '🫁') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--neon-blue); margin-bottom:6px;">🫁 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Atıştan önce <b>sakin nefes</b> kalp atışını düşürür, eli sabitler. Daire büyürken nefes <b>AL</b>, küçülürken <b>VER</b>. Tam tepe/dip anında dokun.</div>
+                </div>
+                <button onclick="rfxNfOyunKur()" style="width:100%; margin-top:14px; background:var(--neon-blue); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (25 sn)</button>`;
+        }
+        function rfxNfOyunKur() {
+            rfxTemizle(); rfxAktif = true; rfxNfFaz = 0; rfxNfIyi = 0; rfxNfSure = 25; rfxNfSonIyi = 0;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Nefes Ritmi', '🫁') + `
+                <div style="text-align:center; margin-bottom:8px;">⏱️ <span id="rfx-nf-sure">25</span>s · Ritim: <b id="rfx-nf-iyi" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-nf-alan" onclick="rfxNfDokun()" style="position:relative; height:300px; border-radius:14px; border:2px solid var(--border-color); background:#0b1220; display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer;">
+                    <div id="rfx-nf-daire" style="width:90px; height:90px; border-radius:50%; background:radial-gradient(circle, rgba(59,130,246,0.5), rgba(59,130,246,0.1)); border:3px solid var(--neon-blue); transition:transform .08s linear; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff;"></div>
+                    <div id="rfx-nf-mesaj" style="position:absolute; bottom:12px; left:0; right:0; text-align:center; font-weight:800; font-size:14px; color:var(--text-muted);">Tepe/dip anında DOKUN</div>
+                </div>`;
+            let daire = document.getElementById('rfx-nf-daire');
+            let tickSay = 0;
+            rfxTimer = setInterval(() => {
+                rfxNfFaz += 0.05; let val = Math.sin(rfxNfFaz);
+                let scale = 1 + 0.6 * val;
+                if(daire) { daire.style.transform = `scale(${scale})`; daire.innerText = val >= 0 ? 'AL' : 'VER'; }
+                tickSay++;
+                if(tickSay % 20 === 0) { rfxNfSure--; let su = document.getElementById('rfx-nf-sure'); if(su) su.innerText = rfxNfSure; if(rfxNfSure <= 0) rfxNfBitir(); }
+            }, 50);
+        }
+        function rfxNfDokun() {
+            if(!rfxAktif) return; let val = Math.sin(rfxNfFaz); let now = performance.now();
+            let mesaj = document.getElementById('rfx-nf-mesaj');
+            if(Math.abs(val) > 0.85 && (now - rfxNfSonIyi) > 1300) {
+                rfxNfIyi++; rfxNfSonIyi = now; let e = document.getElementById('rfx-nf-iyi'); if(e) e.innerText = rfxNfIyi;
+                if(mesaj) { mesaj.innerHTML = '<span style="color:var(--neon-green);">✓ Tam ritimde!</span>'; }
+                try { sesCal(880, 0.08); } catch(_) {}
+            } else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--text-muted);">Tepe/dip anını bekle...</span>'; }
+        }
+        function rfxNfBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxNfIyi / 2));
+            let ozet = rfxNfIyi >= 16 ? 'Nefes ritmin çok iyi — atıştan önce bu sakinliği kullan! 🫁' : rfxNfIyi >= 8 ? 'Güzel. Nefesi yavaşlat, tepe/dibi hisset.' : 'Acele etme; daireyle birlikte yavaş nefes al-ver.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Nefes Ritmi', '🫁') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">🫁 ${rfxNfIyi} ritimli nefes</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'nefes', rfxNfIyi)}</div>`;
+        }
+        // --- Grup At (tutarlılık / gruplama) ---
+        let rfxGrNoktalar = [], rfxGrKalan = 6;
+        function rfxGrKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Grup At', '🎯') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--neon-green); margin-bottom:6px;">🎯 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Okçulukta puan <b>tutarlılıktan</b> gelir. Nereye attığın değil, <b>hep aynı yere</b> atabilmen önemli. 6 oku <b>aynı noktaya</b> topla — grup ne kadar küçükse o kadar iyi!</div>
+                </div>
+                <button onclick="rfxGrOyunKur()" style="width:100%; margin-top:14px; background:var(--neon-green); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (6 ok)</button>`;
+        }
+        function rfxGrOyunKur() {
+            rfxTemizle(); rfxAktif = true; rfxGrNoktalar = []; rfxGrKalan = 6;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Grup At', '🎯') + `
+                <div style="text-align:center; margin-bottom:8px;">Kalan ok: <b id="rfx-gr-kalan" style="color:var(--accent-orange);">6</b></div>
+                <div id="rfx-gr-alan" onclick="rfxGrAt(event)" style="position:relative; height:320px; border-radius:14px; border:2px solid var(--border-color); background:radial-gradient(circle at 50% 50%, #1f2937 0 30px, #111827 30px 32px, #1f2937 32px 60px, #111827 60px 62px); cursor:crosshair; overflow:hidden;"></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Aynı noktaya 6 kez dokun. Hız değil, tutarlılık!</div>`;
+        }
+        function rfxGrAt(e) {
+            if(!rfxAktif || rfxGrKalan <= 0) return;
+            let alan = document.getElementById('rfx-gr-alan'); if(!alan) return;
+            let r = alan.getBoundingClientRect(); let x = e.clientX - r.left, y = e.clientY - r.top;
+            rfxGrNoktalar.push({ x: x, y: y }); rfxGrKalan--;
+            let dot = document.createElement('div'); dot.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:12px; height:12px; border-radius:50%; background:#fbbf24; border:1px solid #000; transform:translate(-50%,-50%); box-shadow:0 0 6px #fbbf24;`;
+            alan.appendChild(dot); try { sesCal(700, 0.05); } catch(_) {}
+            let k = document.getElementById('rfx-gr-kalan'); if(k) k.innerText = rfxGrKalan;
+            if(rfxGrKalan <= 0) setTimeout(rfxGrBitir, 500);
+        }
+        function rfxGrBitir() {
+            rfxAktif = false;
+            let cx = rfxGrNoktalar.reduce((a, p) => a + p.x, 0) / rfxGrNoktalar.length;
+            let cy = rfxGrNoktalar.reduce((a, p) => a + p.y, 0) / rfxGrNoktalar.length;
+            let mesafeler = rfxGrNoktalar.map(p => Math.sqrt((p.x - cx) ** 2 + (p.y - cy) ** 2));
+            let ortMesafe = mesafeler.reduce((a, b) => a + b, 0) / mesafeler.length;
+            let maxMesafe = Math.max(...mesafeler);
+            let kazanilan = Math.max(1, Math.min(10, Math.round(11 - ortMesafe / 9)));
+            let alan = document.getElementById('rfx-gr-alan');
+            let noktaHtml = rfxGrNoktalar.map(p => `<div style="position:absolute; left:${p.x}px; top:${p.y}px; width:11px; height:11px; border-radius:50%; background:#fbbf24; border:1px solid #000; transform:translate(-50%,-50%);"></div>`).join('');
+            let cember = `<div style="position:absolute; left:${cx}px; top:${cy}px; width:${maxMesafe * 2}px; height:${maxMesafe * 2}px; border:2px dashed var(--neon-green); border-radius:50%; transform:translate(-50%,-50%);"></div>`;
+            let ozet = ortMesafe < 18 ? 'İnanılmaz sıkı grup — tutarlılığın profesyonel! 🎯' : ortMesafe < 40 ? 'İyi grup! Aynı rutini tekrarlamaya devam et.' : 'Grup biraz dağınık — her ok için aynı hedef noktasına odaklan.';
+            if(alan) alan.innerHTML = noktaHtml + cember;
+            let kapsayici = document.getElementById('rfx-oyun-alani');
+            if(kapsayici) kapsayici.innerHTML = rfxBaslikHtml('Grup At', '🎯') + `<div style="text-align:center;"><div style="font-size:15px; font-weight:bold; margin-bottom:6px;">🎯 Grup çapı: ${Math.round(maxMesafe * 2)} px</div><div id="rfx-gr-alan" style="position:relative; height:240px; border-radius:14px; border:2px solid var(--border-color); background:radial-gradient(circle at 50% 50%, #1f2937 0 30px, #111827 30px 32px, #1f2937 32px 60px, #111827 60px 62px); overflow:hidden;">${noktaHtml}${cember}</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'grup')}</div>`;
+        }
+        // --- Hedef Takip (akıcı nişan / smooth tracking) ---
+        let rfxTkSure = 0, rfxTkOnHedef = 0, rfxTkFaz = 0, rfxTkTx = 0, rfxTkTy = 0, rfxTkFx = -999, rfxTkFy = -999;
+        function rfxTkKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Hedef Takip', '👁️') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:15px; line-height:1.55;">
+                    <div style="font-weight:800; color:var(--neon-purple, #a855f7); margin-bottom:6px;">👁️ Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">İyi nişan <b>akıcıdır</b>, ani-sert değil. Hareket eden altın noktayı parmağınla <b>yumuşakça takip et</b>, üstünde kal. Bu, atış anında sakin ve kontrollü nişanı geliştirir.</div>
+                </div>
+                <button onclick="rfxTkOyunKur()" style="width:100%; margin-top:14px; background:var(--neon-purple, #a855f7); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (20 sn)</button>`;
+        }
+        function rfxTkOyunKur() {
+            rfxTemizle(); rfxAktif = true; rfxTkSure = 20; rfxTkOnHedef = 0; rfxTkFaz = 0; rfxTkFx = -999; rfxTkFy = -999;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Hedef Takip', '👁️') + `
+                <div style="text-align:center; margin-bottom:8px;">⏱️ <span id="rfx-tk-sure">20</span>s · Üstünde: <b id="rfx-tk-skor" style="color:var(--neon-green);">0.0</b>s</div>
+                <div id="rfx-tk-alan" onpointermove="rfxTkMove(event)" onpointerdown="rfxTkMove(event)" style="position:relative; height:320px; border-radius:14px; border:2px solid var(--border-color); background:#0b1220; overflow:hidden; touch-action:none; cursor:crosshair;">
+                    <div id="rfx-tk-hedef" style="position:absolute; width:72px; height:72px; border-radius:50%; background:radial-gradient(circle,#fbbf24 30%,rgba(251,191,36,0.2)); border:2px solid #fbbf24; transform:translate(-50%,-50%); left:50%; top:50%;"></div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Parmağını altın noktanın üstünde tut, akıcı takip et.</div>`;
+            let alanEl = document.getElementById('rfx-tk-alan'), hedef = document.getElementById('rfx-tk-hedef');
+            let tickSay = 0;
+            rfxTimer = setInterval(() => {
+                rfxTkFaz += 0.03;
+                let w = alanEl ? alanEl.clientWidth : 300, h = alanEl ? alanEl.clientHeight : 320;
+                rfxTkTx = w / 2 + Math.sin(rfxTkFaz * 1.1) * (w * 0.36) + Math.sin(rfxTkFaz * 0.5) * (w * 0.08);
+                rfxTkTy = h / 2 + Math.cos(rfxTkFaz * 0.9) * (h * 0.34) + Math.cos(rfxTkFaz * 1.7) * (h * 0.07);
+                if(hedef) { hedef.style.left = rfxTkTx + 'px'; hedef.style.top = rfxTkTy + 'px'; }
+                let d = Math.sqrt((rfxTkFx - rfxTkTx) ** 2 + (rfxTkFy - rfxTkTy) ** 2);
+                let ust = d < 48;
+                if(ust) { rfxTkOnHedef += 0.05; if(hedef) hedef.style.borderColor = 'var(--neon-green)'; }
+                else { if(hedef) hedef.style.borderColor = '#fbbf24'; }
+                let se = document.getElementById('rfx-tk-skor'); if(se) se.innerText = rfxTkOnHedef.toFixed(1);
+                tickSay++;
+                if(tickSay % 20 === 0) { rfxTkSure--; let su = document.getElementById('rfx-tk-sure'); if(su) su.innerText = rfxTkSure; if(rfxTkSure <= 0) rfxTkBitir(); }
+            }, 50);
+        }
+        function rfxTkMove(e) {
+            let alan = document.getElementById('rfx-tk-alan'); if(!alan) return;
+            let r = alan.getBoundingClientRect(); rfxTkFx = e.clientX - r.left; rfxTkFy = e.clientY - r.top;
+        }
+        function rfxTkBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, Math.round(rfxTkOnHedef / 1.6));
+            let ozet = rfxTkOnHedef >= 14 ? 'Takibin çok akıcı — nişanın sakin ve kontrollü! 👁️' : rfxTkOnHedef >= 7 ? 'İyi! Daha yumuşak, öngörerek takip et.' : 'Sert hareket etme; noktanın gideceği yeri tahmin edip akıcı kal.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Hedef Takip', '👁️') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">👁️ ${rfxTkOnHedef.toFixed(1)} sn hedef üstünde</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); max-width:300px; margin:8px auto 0;">${ozet}</div>`, kazanilan, 'takip', Math.round(rfxTkOnHedef*10))}</div>`;
+        }
+        // --- Hafıza (Simon / odak + hafıza) ---
+        let rfxHfDizi = [], rfxHfAdim = 0, rfxHfGosteriyor = false;
+        function rfxHfRenk(i, p) { let r = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'], pp = ['#fca5a5', '#93c5fd', '#6ee7b7', '#fcd34d']; return p ? pp[i] : r[i]; }
+        function rfxHfKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Hafıza', '🧠') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--neon-purple,#a855f7); border-radius:14px; padding:15px; line-height:1.5;">
+                    <div style="font-weight:800; color:var(--neon-purple,#a855f7); margin-bottom:6px;">🧠 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Yanan hedeflerin sırasını izle ve aynı sırayla tekrarla. Her turda bir hedef eklenir. Hafıza & odak, atış rutinini ezberlemeyi güçlendirir.</div>
+                </div>
+                <button onclick="rfxHfBaslat()" style="width:100%; margin-top:14px; background:var(--neon-purple,#a855f7); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla</button>`;
+        }
+        function rfxHfBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxHfDizi = []; rfxHfAdim = 0; rfxHfGosteriyor = false;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Hafıza', '🧠') + `
+                <div style="text-align:center; margin-bottom:10px;">Seviye: <b id="rfx-hf-sv" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-hf-mesaj" style="text-align:center; font-weight:800; margin-bottom:12px; height:20px; color:var(--text-muted);">İzle...</div>
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; max-width:320px; margin:0 auto;">
+                    ${[0,1,2,3].map(i => `<button id="rfx-hf-${i}" onclick="rfxHfBas(${i})" style="aspect-ratio:1; border-radius:16px; border:3px solid #fff; background:${rfxHfRenk(i,false)}; cursor:pointer; transition:all .1s; box-shadow:0 4px 10px rgba(0,0,0,0.3);"></button>`).join('')}
+                </div>`;
+            rfxSpawnT = setTimeout(rfxHfYeniTur, 700);
+        }
+        function rfxHfYeniTur() {
+            if(!rfxAktif) return;
+            let sv = document.getElementById('rfx-hf-sv'); if(sv) sv.innerText = rfxHfDizi.length;
+            rfxHfDizi.push(Math.floor(Math.random() * 4)); rfxHfAdim = 0;
+            let m = document.getElementById('rfx-hf-mesaj'); if(m) { m.innerText = 'İzle...'; m.style.color = 'var(--text-muted)'; }
+            rfxHfGosteriyor = true; rfxHfGoster(0);
+        }
+        function rfxHfGoster(k) {
+            if(!rfxAktif) return;
+            if(k >= rfxHfDizi.length) { rfxHfGosteriyor = false; let m = document.getElementById('rfx-hf-mesaj'); if(m) { m.innerText = '👉 Şimdi sen!'; m.style.color = 'var(--neon-green)'; } return; }
+            let i = rfxHfDizi[k], btn = document.getElementById('rfx-hf-' + i);
+            if(btn) { btn.style.background = rfxHfRenk(i, true); btn.style.transform = 'scale(1.06)'; }
+            try { sesCal(500 + i * 150, 0.15); } catch(e) {}
+            rfxSpawnT = setTimeout(() => { if(btn) { btn.style.background = rfxHfRenk(i, false); btn.style.transform = 'scale(1)'; } rfxSpawnT = setTimeout(() => rfxHfGoster(k + 1), 190); }, 450);
+        }
+        function rfxHfBas(i) {
+            if(!rfxAktif || rfxHfGosteriyor) return;
+            let btn = document.getElementById('rfx-hf-' + i);
+            if(btn) { btn.style.background = rfxHfRenk(i, true); setTimeout(() => { if(btn) btn.style.background = rfxHfRenk(i, false); }, 160); }
+            try { sesCal(500 + i * 150, 0.1); } catch(e) {}
+            if(i === rfxHfDizi[rfxHfAdim]) {
+                rfxHfAdim++;
+                if(rfxHfAdim >= rfxHfDizi.length) { let sv = document.getElementById('rfx-hf-sv'); if(sv) sv.innerText = rfxHfDizi.length; let m = document.getElementById('rfx-hf-mesaj'); if(m) { m.innerText = '✓ Doğru!'; m.style.color = 'var(--neon-green)'; } rfxSpawnT = setTimeout(rfxHfYeniTur, 800); }
+            } else { rfxHfBitir(); }
+        }
+        function rfxHfBitir() {
+            let seviye = Math.max(0, rfxHfDizi.length - 1); rfxTemizle(); let kazanilan = Math.min(10, seviye);
+            let ozet = seviye >= 8 ? 'Olağanüstü hafıza! 🧠' : seviye >= 4 ? 'İyi! Diziyi sesle de takip et.' : 'Diziyi gözünle izle, acele etme.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Hafıza', '🧠') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">🧠 ${seviye}. seviyeye ulaştın</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'hafiza', seviye)}</div>`;
+        }
+        // --- Skor Sayımı (zihinsel hesap, X=10) ---
+        let rfxSySure = 0, rfxSyDogru = 0, rfxSyCevap = 0;
+        function rfxSyKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Skor Sayımı', '🔢') + `
+                <div style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:15px; line-height:1.5;">
+                    <div style="font-weight:800; color:var(--gold); margin-bottom:6px;">🔢 Koçun İpucu</div>
+                    <div style="font-size:13px; color:var(--text-main);">Okçu serisini hızlı ve doğru toplayabilmeli (<b>X = 10</b>). Çıkan okların toplamını bul, doğru şıkka dokun. 30 saniyede en çok doğru!</div>
+                </div>
+                <button onclick="rfxSyBaslat()" style="width:100%; margin-top:14px; background:var(--gold); color:#000; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla (30 sn)</button>`;
+        }
+        function rfxSyBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxSySure = 30; rfxSyDogru = 0;
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return;
+            alan.innerHTML = rfxBaslikHtml('Skor Sayımı', '🔢') + `
+                <div style="text-align:center; margin-bottom:8px;">⏱️ <span id="rfx-sy-sure">30</span>s · ✅ <b id="rfx-sy-dogru" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-sy-soru" style="background:#0b1220; border:2px solid var(--border-color); border-radius:14px; padding:24px 12px; text-align:center; font-size:22px; font-weight:900; letter-spacing:2px; min-height:64px;"></div>
+                <div id="rfx-sy-secenek" style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px;"></div>`;
+            rfxSySoru();
+            rfxTimer = setInterval(() => { rfxSySure--; let e = document.getElementById('rfx-sy-sure'); if(e) e.innerText = rfxSySure; if(rfxSySure <= 0) rfxSyBitir(); }, 1000);
+        }
+        function rfxSySoru() {
+            if(!rfxAktif) return;
+            let n = 3 + Math.floor(Math.random() * 4); let degerler = ['X', '10', '9', '8', '7', '6', '5']; let oklar = [], toplam = 0;
+            for(let i = 0; i < n; i++) { let d = degerler[Math.floor(Math.random() * degerler.length)]; oklar.push(d); toplam += (d === 'X' ? 10 : parseInt(d)); }
+            rfxSyCevap = toplam;
+            let soru = document.getElementById('rfx-sy-soru'); if(soru) soru.innerHTML = '🎯 ' + oklar.join('  ');
+            let secs = new Set([toplam]); let guard = 0; while(secs.size < 4 && guard < 50) { let off = Math.floor(Math.random() * 11) - 5; guard++; if(off !== 0) secs.add(Math.max(0, toplam + off)); }
+            let arr = [...secs].sort(() => Math.random() - 0.5);
+            let sec = document.getElementById('rfx-sy-secenek'); if(sec) sec.innerHTML = arr.map(v => `<button onclick="rfxSyCevapla(${v})" style="padding:16px; font-size:18px; font-weight:800; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; color:var(--text-main); cursor:pointer;">${v}</button>`).join('');
+        }
+        function rfxSyCevapla(v) {
+            if(!rfxAktif) return;
+            if(v === rfxSyCevap) { rfxSyDogru++; let e = document.getElementById('rfx-sy-dogru'); if(e) e.innerText = rfxSyDogru; try { sesCal(950, 0.05); } catch(err) {} }
+            else { try { sesCal(220, 0.15); } catch(err) {} }
+            rfxSySoru();
+        }
+        function rfxSyBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxSyDogru / 2));
+            let ozet = rfxSyDogru >= 12 ? 'Zihinden toplama şimşek gibi! 🔢' : rfxSyDogru >= 6 ? 'İyi! Onlukları (10+10) birlikte topla.' : 'Acele etme; önce X ve 10\'ları say.';
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Skor Sayımı', '🔢') + `<div style="text-align:center; padding:40px 12px;"><div style="font-size:16px; font-weight:bold;">🔢 ${rfxSyDogru} doğru hesap</div>${rfxBitisIc(`<div style="font-size:13px; color:var(--text-muted); margin-top:6px;">${ozet}</div>`, kazanilan, 'sayim', rfxSyDogru)}</div>`;
+        }
         // --- Profil (kapak fotoğrafı + rozet vitrini) ---
         function profilRender(ad) {
             let kart = document.getElementById('bs-profil-kart');
@@ -5515,6 +6042,26 @@
         }
     </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+    <div id="girdi-modal" class="modal-overlay" style="z-index:30000;">
+        <div class="modal-content glass-panel" style="max-width:360px; width:100%; text-align:center;">
+            <div id="girdi-mesaj" style="font-size:15px; font-weight:bold; margin-bottom:12px;"></div>
+            <input id="girdi-input" type="text" style="width:100%; padding:11px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; margin-bottom:14px; box-sizing:border-box; font-size:15px;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="girdiKapat()" style="flex:1; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">İptal</button>
+                <button onclick="girdiKaydet()" style="flex:1; background:var(--neon-green); color:#fff; border:none; padding:12px; border-radius:10px; font-weight:800; cursor:pointer;">Kaydet</button>
+            </div>
+        </div>
+    </div>
+    <input type="file" id="yedek-dosya" accept=".json,application/json" onchange="yedekYukle(event)" style="display:none;">
+    <div id="onay-modal" class="modal-overlay" style="z-index:30000;">
+        <div class="modal-content glass-panel" style="max-width:360px; width:100%; text-align:center;">
+            <div id="onay-mesaj" style="font-size:15px; font-weight:bold; margin-bottom:18px; line-height:1.5;"></div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="onayKapat()" style="flex:1; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">İptal</button>
+                <button id="onay-evet-btn" onclick="onayOnayla()" style="flex:1; background:var(--neon-red); color:#fff; border:none; padding:12px; border-radius:10px; font-weight:800; cursor:pointer;">Evet</button>
+            </div>
+        </div>
+    </div>
     <div id="yonetici-modal" class="modal-overlay" style="z-index:25000;">
         <div class="modal-content glass-panel" style="max-width:600px; width:100%; max-height:92vh; display:flex; flex-direction:column;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:10px;">
