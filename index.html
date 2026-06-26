@@ -345,11 +345,12 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v41</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v51</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
             <button class="giris-secim-btn" onclick="platformSec('egitmen')">🎓 EĞİTMEN PLATFORMU <span>Yoklama · antrenman · karne · sınıf/grup · personel</span></button>
+            <button class="giris-secim-btn" onclick="platformSec('yonetici')">🛡️ YÖNETİCİ <span>Kullanıcı yönetimi · dondur · sil · kod sıfırla</span></button>
         </div>
         <div id="giris-lig" style="width:100%; display:none; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="grupKurulumu('buyukler')">🎯 BÜYÜKLER LİGİ <span>18m / 50m / 70m Eleme</span></button>
@@ -376,8 +377,10 @@
         </div>
         <div id="giris-sporcu" style="width:100%; max-width:320px; display:none; flex-direction:column; align-items:center; gap:12px;">
             <div style="color:var(--text-muted); font-size:12px; text-align:center;">Adını ve kişisel kodunu gir<br>(kod verilmediyse <b>doğum yılın</b>)</div>
+            <button id="hizli-giris-btn" onclick="hatirlaGiris()" style="display:none; width:100%; padding:13px; background:var(--neon-green); color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:15px; cursor:pointer;">⚡ Hızlı Giriş</button>
             <input type="text" id="sporcu-giris-ad" placeholder="Ad Soyad" autocomplete="off" style="width:100%; padding:12px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; text-align:center; font-size:15px;">
             <input type="text" id="sporcu-giris-kod" placeholder="Kişisel kod" inputmode="numeric" autocomplete="off" style="width:100%; padding:12px; background:rgba(0,0,0,0.25); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; text-align:center; font-size:15px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-main); align-self:flex-start; cursor:pointer;"><input type="checkbox" id="beni-hatirla-chk" checked style="width:19px; height:19px; accent-color:var(--accent-orange);"> ✅ Beni hatırla (çıkana kadar açık kal)</label>
             <button onclick="sporcuGirisDene()" style="width:100%; padding:13px; background:var(--accent-orange); color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:15px;">🎯 Giriş Yap</button>
             <button onclick="platformGeri()" style="width:100%; padding:9px; font-size:12px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); border-radius:8px;">← Geri</button>
         </div>
@@ -567,13 +570,14 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v41</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v51</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
                 <input type="number" id="toplam-seri-ayar" value="12" min="1" max="60" class="sadece-egitmen" title="Atış serisi sayısı" style="width: 50px; background:var(--bg-main); border:1px solid var(--border-color); color:var(--text-main); padding:6px; border-radius:6px; text-align:center;" onchange="seriSayisiAyarla(this.value)">
-                <button onclick="ekranAcDegistir()" class="sadece-egitmen" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🔄 Lig Değiştir</button>
+                <button onclick="ligDegistirAc()" class="sadece-egitmen" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🔄 Lig Değiştir</button>
+                <button onclick="egitmenCikis()" class="sadece-egitmen" style="background:rgba(239,68,68,0.15); color:var(--text-main); border:1px solid var(--neon-red); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold;">🚪 Çıkış</button>
                 <button onclick="sporcuCikis()" class="sadece-sporcu" style="background:rgba(239,68,68,0.15); color:var(--text-main); border:1px solid var(--neon-red); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; display:none;">🚪 Çıkış</button>
             </div>
         </div>
@@ -586,6 +590,7 @@
             <button id="tab-video" class="sekme-btn" onclick="showToast('🎥 Video Analiz yapım aşamasında — yakında!', 'warning')" style="opacity:0.55;">🎥 Video Analiz <span style="font-size:9px; background:var(--gold); color:#000; padding:1px 5px; border-radius:6px; margin-left:3px;">YAKINDA</span></button>
             <button id="tab-basari" class="sekme-btn" onclick="sekmeAc('basari')">🏅 Başarılar</button>
             <button id="tab-oyun" class="sekme-btn" onclick="sekmeAc('oyun')">🎮 Görev & Mağaza</button>
+            <button id="tab-refleks" class="sekme-btn" onclick="sekmeAc('refleks')">🎯 Refleks Oyunu</button>
         </div>
     </div>
 
@@ -696,9 +701,12 @@
                 <button onclick="skorKaydet()" style="display:block; width:100%; box-sizing:border-box; background:var(--neon-green); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; font-size:16px; box-shadow:0 3px 12px rgba(16,185,129,0.35);">💾 SERİYİ KAYDET ✔️</button>
                 <div style="display:flex; gap:8px; margin-top:8px;">
                     <button onclick="seriUzat()" style="flex:1; background:rgba(255,98,0,0.15); color:var(--text-main); border:1px solid var(--accent-orange); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">➕ Seri Uzat</button>
-                    <button onclick="oncekiSeriyiDuzelt()" class="sadece-egitmen" style="flex:1; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">✏️ Önceki Seriyi Düzelt</button>
+                    <button onclick="oncekiSeriyiDuzelt()" style="flex:1; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">✏️ Önceki Skoru Düzelt</button>
                 </div>
+                <div style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:6px; font-style:italic;">🏹 İyi bir okçu, dürüst olandır.</div>
             </div>
+            <div id="isim-flash" style="display:none; opacity:0; transition:opacity .3s; position:fixed; top:90px; left:50%; transform:translateX(-50%); z-index:9500; background:var(--neon-blue); color:#fff; padding:10px 24px; border-radius:24px; font-weight:800; font-size:16px; box-shadow:0 5px 20px rgba(0,0,0,0.4); pointer-events:none;"></div>
+            <div id="seri-tamam-banner" style="display:none; position:fixed; bottom:74px; left:50%; transform:translateX(-50%); z-index:8999; background:var(--accent-orange); color:#fff; padding:9px 22px; border-radius:22px; font-weight:800; font-size:14px; box-shadow:0 4px 16px rgba(255,98,0,0.55);">✅ SERİ TAMAMLANDI — Kaydet!</div>
             <button onclick="skorKaydet()" id="yuzen-kaydet-btn" title="Seriyi Kaydet" style="position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:9000; background:var(--neon-green); color:white; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:15px; box-shadow:0 5px 18px rgba(16,185,129,0.55);">💾 SERİYİ KAYDET ✔️</button>
 
             <div style="padding: 15px; padding-bottom: 90px; overflow-y: auto; flex: 1;">
@@ -988,6 +996,29 @@
     </div>
 
     <!-- GÖREV & MAĞAZA SEKMESİ -->
+    <div id="icerik-refleks" class="sekme-icerik">
+        <div class="oy-coin-bar">
+            <div>
+                <div class="oy-coin-deger">💎 <span id="rfx-coin">0</span></div>
+                <div class="oy-coin-etiket">Oyna, elmas kazan, mağazada profilini özelleştir!</div>
+            </div>
+        </div>
+        <div id="rfx-sporcu-sarmal" style="margin-bottom:12px; display:none;">
+            <select id="rfx-sporcu-sec" onchange="rfxSporcuDegisti(this.value)" style="width:100%; padding:10px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; font-weight:bold;"></select>
+        </div>
+        <div id="rfx-menu" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px;">
+            <button onclick="rfxOyunAc('pod')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔴</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Refleks Pod</div><div style="font-size:11px; color:var(--text-muted);">Çıkan hedefe hızlı dokun</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('gonogo')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🚦</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Yeşile Bas</div><div style="font-size:11px; color:var(--text-muted);">Yeşilde dokun, kırmızıda durma!</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('tap')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">💥</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Hızlı Dokunuş</div><div style="font-size:11px; color:var(--text-muted);">5 saniyede en çok dokunuş</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('timing')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">⏱️</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Tam Zamanında</div><div style="font-size:11px; color:var(--text-muted);">Bırakış zamanlaması (clicker)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('tut')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Nişan Tut</div><div style="font-size:11px; color:var(--text-muted);">Sabit kal, pini ortada tut</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('odak')" style="background:var(--bg-panel); border:1px solid var(--neon-purple, #a855f7); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🔢</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Odak Kilidi</div><div style="font-size:11px; color:var(--text-muted);">1→9 sırayla, tarama & odak</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('dusus')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">🏹</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Mükemmel Düşüş</div><div style="font-size:11px; color:var(--text-muted);">Bırakınca yayı SIKMA</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('dinamik')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Dinamik Bırakış</div><div style="font-size:11px; color:var(--text-muted);">Geriye çekerken bırak (sırt)</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+            <button onclick="rfxOyunAc('sabir')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:18px 12px; cursor:pointer; text-align:center;"><div style="font-size:34px;">⏳</div><div style="font-weight:800; color:var(--text-main); margin-top:6px;">Sabır (Hedef Panik)</div><div style="font-size:11px; color:var(--text-muted);">İşareti bekle, erken atma</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+        </div>
+        <div id="rfx-oyun-alani" style="display:none;"></div>
+    </div>
     <div id="icerik-oyun" class="sekme-icerik">
         <div class="oy-coin-bar">
             <div>
@@ -1057,6 +1088,7 @@
         let atisLog = []; let rekorlarDB = {}; // ROZET/REKOR SİSTEMİ: atış kayıt günlüğü + kulüp rekorları
         let basariSeciliSporcu = ''; let egitmenDefterSecili = ''; // Başarı sekmesi ve defter seçimleri
         let egitmenAltSekme = 'yoklama'; let egitmenKarneSecili = ''; let egitmenAcikAntrenman = null; let egitmenYeniSinifFiltre = '__hepsi';
+        let renderHedefId = 'egitmen-liste'; // normalde eğitmen paneli; yönetici panelinde 'yonetici-liste'
         let egitmenAramaFiltre = '';
         function egitmenAramaUygula(isimler) { let q = (egitmenAramaFiltre || '').trim().toLocaleLowerCase('tr'); if(!q) return isimler; return isimler.filter(ad => (ad || '').toLocaleLowerCase('tr').includes(q)); }
         let yoklamaDurum = {};
@@ -1142,7 +1174,7 @@
             try {
                 let paket = {
                     uygulama: "DagSK Master OS", surum: 36, tarih: new Date().toISOString(),
-                    turnuvaDB, takimlarDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, otomatikYoklamaDB, atisLog, rekorlarDB
+                    turnuvaDB, takimlarDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, otomatikYoklamaDB, aidatDB, atisLog, rekorlarDB
                 };
                 let blob = new Blob([JSON.stringify(paket, null, 2)], { type: 'application/json' });
                 let url = URL.createObjectURL(blob);
@@ -1295,14 +1327,17 @@
         function egitmenSekmeAc(v) { egitmenAltSekme = v; egitmenPaneliDoldur(); }
 
         function egitmenPaneliDoldur() {
+            renderHedefId = 'egitmen-liste';
             let nav = document.getElementById('egitmen-altnav');
             if(nav) {
-                let sek = [['yoklama','✅ Yoklama'],['gelenler','⏱️ Bugün Gelenler'],['yeni','➕ Antrenman'],['aylik','📆 Aylık'],['gecmis','📋 Geçmiş'],['karne','👤 Karne'],['sertifika','📜 Sertifika'],['defter','📔 Defter'],['siniflar','🏷️ Sınıf/Grup'],['personel','👔 Personel']];
+                let sek = [['pano','📊 Pano'],['yoklama','✅ Yoklama'],['gelenler','⏱️ Bugün Gelenler'],['yeni','➕ Antrenman'],['aylik','📆 Aylık'],['gecmis','📋 Geçmiş'],['karne','👤 Karne'],['sertifika','📜 Sertifika'],['defter','📔 Defter'],['siniflar','🏷️ Sınıf/Grup'],['personel','👔 Personel']];
                 nav.innerHTML = sek.map(([k,l]) => `<button onclick="egitmenSekmeAc('${k}')" style="flex:1; min-width:90px; white-space:nowrap; background:${egitmenAltSekme===k?'var(--neon-blue)':'transparent'}; color:${egitmenAltSekme===k?'#fff':'var(--text-main)'}; border:1px solid ${egitmenAltSekme===k?'var(--neon-blue)':'var(--border-color)'}; padding:8px 6px; border-radius:8px; font-weight:bold; font-size:12px;">${l}</button>`).join('');
             }
             let alan = document.getElementById('egitmen-liste'); if(!alan) return;
             if(Object.keys(turnuvaDB[aktifGrup] || {}).length === 0) { alan.innerHTML = "<div style='color:var(--text-muted); text-align:center; padding:20px; font-size:13px;'>Önce <b>Skor</b> sekmesinden sporcu ekleyin.</div>"; return; }
             if(egitmenAltSekme === 'yoklama') egitmenRenderYoklama();
+            else if(egitmenAltSekme === 'pano') egitmenRenderPano();
+            else if(egitmenAltSekme === 'aidat') egitmenRenderAidat();
             else if(egitmenAltSekme === 'gelenler') egitmenRenderGelenler();
             else if(egitmenAltSekme === 'yeni') egitmenRenderYeni();
             else if(egitmenAltSekme === 'aylik') egitmenRenderAylik();
@@ -1816,7 +1851,7 @@
             showToast(`${aktarilan} ok seriye aktarıldı. Kontrol edip kaydedin.`, 'success');
         }
         function egitmenRenderPersonel() {
-            let alan = document.getElementById('egitmen-liste');
+            let alan = document.getElementById(renderHedefId);
             let d = new Date(); let ay = personelAylikAy || `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
             personelAylikAy = ay;
             let girisTarih = personelGirisTarih || bugunISO(); personelGirisTarih = girisTarih;
@@ -1934,8 +1969,144 @@
         }
 
         /* --- HIZLI YOKLAMA (check usulü + canlı cinsiyet sayımı) --- */
-        function egitmenRenderGelenler() {
+        // AİDAT/ÖDEME
+        let aidatDB = {}; // { 'AD': { 'YYYY-MM': { odendi:true, tutar:200, tarih } } }
+        let aidatAy = '';
+        let aidatVarsayilanTutar = parseInt(localStorage.getItem('okculuk_aidat_tutar') || '0') || 0;
+        function aidatKaydet() { try { localStorage.setItem('okculuk_aidat', JSON.stringify(aidatDB)); } catch(e) {} }
+        function aidatTutarDegis(d) { aidatVarsayilanTutar = parseInt(d) || 0; try { localStorage.setItem('okculuk_aidat_tutar', String(aidatVarsayilanTutar)); } catch(e) {} }
+        function aidatMerge(yerel, uzak) {
+            let sonuc = {}; let adlar = new Set([...Object.keys(yerel || {}), ...Object.keys(uzak || {})]);
+            adlar.forEach(ad => {
+                sonuc[ad] = {}; let a = (yerel && yerel[ad]) || {}, b = (uzak && uzak[ad]) || {};
+                let aylar = new Set([...Object.keys(a), ...Object.keys(b)]);
+                aylar.forEach(ay => { let x = a[ay], y = b[ay];
+                    if(x && !y) sonuc[ad][ay] = x; else if(y && !x) sonuc[ad][ay] = y;
+                    else if(x.odendi && !y.odendi) sonuc[ad][ay] = x; else if(y.odendi && !x.odendi) sonuc[ad][ay] = y;
+                    else sonuc[ad][ay] = ((y.tarih || '') >= (x.tarih || '')) ? y : x;
+                });
+            });
+            return sonuc;
+        }
+        function haftaBasiISO() {
+            let n = new Date(); let gun = (n.getDay() + 6) % 7; let bas = new Date(n); bas.setHours(0,0,0,0); bas.setDate(n.getDate() - gun);
+            return `${bas.getFullYear()}-${String(bas.getMonth()+1).padStart(2,'0')}-${String(bas.getDate()).padStart(2,'0')}`;
+        }
+        function sonGelisTarihi(ad, grup) {
+            let tarihler = [];
+            Object.keys(otomatikYoklamaDB || {}).forEach(t => { let r = otomatikYoklamaDB[t][ad]; if(r && (!grup || r.grup === grup)) tarihler.push(t); });
+            (antrenmanlarDB || []).forEach(a => { if((!grup || a.lig === grup) && a.kayitlar && a.kayitlar.find(x => x.ad === ad && x.geldi)) tarihler.push(a.tarih); });
+            if(!tarihler.length) return null;
+            tarihler.sort();
+            return tarihler[tarihler.length - 1];
+        }
+        function egitmenRenderPano() {
             let alan = document.getElementById('egitmen-liste'); if(!alan) return;
+            let db = turnuvaDB[aktifGrup] || {};
+            let aktifler = Object.keys(db).filter(ad => !db[ad].pasif);
+            let bugun = bugunISO(), hb = haftaBasiISO();
+            let bugunGelen = aktifler.filter(ad => sonGelisTarihi(ad, aktifGrup) === bugun).length;
+            let haftaGelen = aktifler.filter(ad => { let s = sonGelisTarihi(ad, aktifGrup); return s && s >= hb; }).length;
+            let skorlar = aktifler.map(ad => db[ad].toplamSkor || 0);
+            let ortSkor = skorlar.length ? Math.round(skorlar.reduce((a,b) => a+b, 0) / skorlar.length) : 0;
+            let enYuksek = skorlar.length ? Math.max(...skorlar) : 0;
+            let topKlasik = aktifler.filter(ad => db[ad].yay === 'Klasik').map(ad => ({ ad, s: db[ad].toplamSkor || 0 })).sort((a, b) => b.s - a.s)[0];
+            let topMakarali = aktifler.filter(ad => db[ad].yay === 'Makaralı').map(ad => ({ ad, s: db[ad].toplamSkor || 0 })).sort((a, b) => b.s - a.s)[0];
+            let devamsiz = aktifler.map(ad => { let s = sonGelisTarihi(ad, aktifGrup); let gun = s ? Math.floor((new Date(bugun+'T00:00:00') - new Date(s+'T00:00:00')) / 86400000) : null; return { ad, son: s, gun }; }).filter(x => x.gun === null || x.gun >= 7).sort((a, b) => (b.gun === null ? 99999 : b.gun) - (a.gun === null ? 99999 : a.gun));
+            let kart = (ikon, deger, etiket, renk) => `<div style="flex:1; min-width:90px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:12px 8px; text-align:center;"><div style="font-size:20px;">${ikon}</div><div style="font-size:22px; font-weight:800; color:${renk};">${deger}</div><div style="font-size:10px; color:var(--text-muted);">${etiket}</div></div>`;
+            let html = `<div class="glass-panel" style="padding:14px; border-radius:12px;">
+                <div style="font-weight:800; color:var(--neon-blue); font-size:15px; margin-bottom:2px;">📊 Kulüp Panosu <span style="font-size:11px; color:var(--text-muted);">(${aktifGrup === 'buyukler' ? 'Büyükler' : 'Küçükler'})</span></div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;">
+                    ${kart('👥', aktifler.length, 'Aktif Sporcu', 'var(--text-main)')}
+                    ${kart('✅', bugunGelen, 'Bugün Gelen', 'var(--neon-green)')}
+                    ${kart('📅', haftaGelen, 'Bu Hafta', 'var(--accent-orange)')}
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    ${kart('🎯', ortSkor, 'Ort. Skor', 'var(--neon-blue)')}
+                    ${kart('🏆', enYuksek, 'En Yüksek', 'var(--gold)')}
+                    ${kart('🚫', devamsiz.length, '7+ Gün Yok', 'var(--neon-red)')}
+                </div>
+                <div style="margin-top:16px; font-weight:bold; color:var(--gold); font-size:13px;">🏆 En Yüksek Skorlar</div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <div style="flex:1; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px;"><div style="font-size:11px; color:var(--text-muted);">🏹 Klasik</div><div style="font-weight:bold; font-size:13px;">${topKlasik ? `${topKlasik.ad}` : '-'}</div><div style="font-size:12px; color:var(--gold); font-weight:bold;">${topKlasik ? topKlasik.s + ' P' : ''}</div></div>
+                    <div style="flex:1; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px;"><div style="font-size:11px; color:var(--text-muted);">⚙️ Makaralı</div><div style="font-weight:bold; font-size:13px;">${topMakarali ? `${topMakarali.ad}` : '-'}</div><div style="font-size:12px; color:var(--gold); font-weight:bold;">${topMakarali ? topMakarali.s + ' P' : ''}</div></div>
+                </div>
+                <div style="margin-top:16px; font-weight:bold; color:var(--neon-red); font-size:13px;">🔔 Devamsızlık (7+ gündür gelmeyen)</div>`;
+            if(devamsiz.length === 0) html += `<div style="font-size:12px; color:var(--text-muted); padding:8px 0;">Herkes düzenli geliyor 👍</div>`;
+            else devamsiz.forEach(x => {
+                let gunYazi = x.gun === null ? 'Hiç gelmemiş' : `${x.gun} gündür yok`;
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:9px 11px; margin-top:6px; background:rgba(239,68,68,0.08); border:1px solid var(--neon-red); border-radius:9px;"><span style="font-weight:600; font-size:13px;">${spEmoji(db[x.ad])}${x.ad}</span><span style="font-size:11px; color:var(--neon-red); font-weight:bold; text-align:right;">${gunYazi}<br><span style="color:var(--text-muted); font-weight:normal;">son: ${x.son ? formatTarih(x.son) : '-'}</span></span></div>`;
+            });
+            html += `</div>`;
+            alan.innerHTML = html;
+        }
+        function aidatToggle(ad, ay) {
+            if(!aidatDB[ad]) aidatDB[ad] = {};
+            let m = aidatDB[ad][ay];
+            if(m && m.odendi) aidatDB[ad][ay] = { odendi: false, tutar: m.tutar || 0 };
+            else aidatDB[ad][ay] = { odendi: true, tutar: aidatVarsayilanTutar, tarih: bugunISO() };
+            aidatKaydet();
+            try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
+            egitmenRenderAidat();
+        }
+        function egitmenRenderAidat() {
+            let alan = document.getElementById(renderHedefId); if(!alan) return;
+            if(!aidatAy) aidatAy = bugunISO().slice(0, 7);
+            let db = turnuvaDB[aktifGrup] || {};
+            let isimler = egitmenAramaUygula(Object.keys(db).filter(ad => !db[ad].pasif));
+            let odeyen = 0, toplam = 0;
+            let satirlar = isimler.map(ad => {
+                let rec = (aidatDB[ad] && aidatDB[ad][aidatAy]) || null;
+                let odendi = rec && rec.odendi;
+                if(odendi) { odeyen++; toplam += (rec.tutar || 0); }
+                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:9px 11px; margin-bottom:5px; background:var(--bg-panel); border:1px solid ${odendi ? 'var(--neon-green)' : 'var(--border-color)'}; border-radius:9px;">
+                    <span style="font-weight:600; font-size:13px;">${spEmoji(db[ad])}${ad}</span>
+                    <button onclick="aidatToggle('${ad.replace(/'/g,"\\'")}','${aidatAy}')" style="background:${odendi ? 'var(--neon-green)' : 'rgba(255,255,255,0.06)'}; color:${odendi ? '#fff' : 'var(--text-main)'}; border:1px solid ${odendi ? 'var(--neon-green)' : 'var(--border-color)'}; padding:6px 12px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap;">${odendi ? `✓ Ödendi${rec.tutar ? ` (${rec.tutar}₺)` : ''}` : 'Ödenmedi'}</button>
+                </div>`;
+            }).join('');
+            let beklenen = isimler.length * aidatVarsayilanTutar;
+            alan.innerHTML = `<div class="glass-panel" style="padding:14px; border-radius:12px;">
+                <div style="font-weight:800; color:var(--gold); font-size:15px; margin-bottom:8px;">💳 Aidat Takibi</div>
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <input type="month" value="${aidatAy}" onchange="aidatAy=this.value; egitmenRenderAidat();" style="flex:1; padding:8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px;">
+                    <input type="number" value="${aidatVarsayilanTutar || ''}" placeholder="Aidat ₺" oninput="aidatTutarDegis(this.value)" style="width:100px; padding:8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px;">
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <div style="flex:1; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px; text-align:center;"><div style="font-size:17px; font-weight:800; color:var(--neon-green);">${toplam}₺</div><div style="font-size:10px; color:var(--text-muted);">Toplanan</div></div>
+                    <div style="flex:1; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px; text-align:center;"><div style="font-size:17px; font-weight:800; color:var(--accent-orange);">${odeyen}/${isimler.length}</div><div style="font-size:10px; color:var(--text-muted);">Ödeyen</div></div>
+                    <div style="flex:1; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:10px; padding:10px; text-align:center;"><div style="font-size:17px; font-weight:800; color:var(--neon-blue);">${beklenen}₺</div><div style="font-size:10px; color:var(--text-muted);">Beklenen</div></div>
+                </div>
+                <div style="max-height:340px; overflow-y:auto; margin-bottom:12px;">${satirlar || '<div style="color:var(--text-muted); font-size:12px;">Sporcu yok.</div>'}</div>
+                <button onclick="aidatGelirRaporu()" style="width:100%; background:var(--gold); color:#1b1b1b; border:none; padding:11px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">📄 Gelir Raporu (Yazdır / PDF)</button>
+            </div>`;
+        }
+        function aidatGelirRaporu() {
+            let db = turnuvaDB[aktifGrup] || {};
+            let isimler = Object.keys(db).filter(ad => !db[ad].pasif);
+            let satir = '', toplam = 0, odeyen = 0;
+            let esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            isimler.forEach(ad => {
+                let rec = (aidatDB[ad] && aidatDB[ad][aidatAy]) || null;
+                let odendi = rec && rec.odendi;
+                if(odendi) { toplam += (rec.tutar || 0); odeyen++; }
+                satir += `<tr><td>${esc(ad)}</td><td style="text-align:center; color:${odendi ? 'green' : '#c00'}; font-weight:bold;">${odendi ? 'ÖDENDİ' : 'Ödenmedi'}</td><td style="text-align:right;">${odendi ? (rec.tutar || 0) + '₺' : '-'}</td></tr>`;
+            });
+            let w = window.open('', '_blank'); if(!w) { showToast('Açılır pencere engellendi.', 'error'); return; }
+            w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Aidat Raporu ${aidatAy}</title></head><body style="font-family:Arial; padding:24px;">
+                <h2 style="text-align:center; color:#1b2a4a; margin:0;">DAĞ SPOR KULÜBÜ</h2>
+                <h3 style="text-align:center; color:#ff6200; margin:4px 0 2px;">Aidat Gelir Raporu</h3>
+                <p style="text-align:center; color:#555; margin:0 0 16px;">${aktifGrup === 'buyukler' ? 'Büyükler' : 'Küçükler'} · ${aidatAy}</p>
+                <table style="width:100%; border-collapse:collapse; font-size:13px;" border="1" cellpadding="7">
+                    <tr style="background:#1b2a4a; color:#fff;"><th align="left">Sporcu</th><th>Durum</th><th>Tutar</th></tr>
+                    ${satir}
+                    <tr style="font-weight:bold; background:#f0f0f0;"><td>TOPLAM (${odeyen}/${isimler.length} ödedi)</td><td></td><td style="text-align:right; color:green;">${toplam}₺</td></tr>
+                </table>
+                <p style="text-align:center; color:#999; font-size:10px; margin-top:20px;">DAĞ S.K. Master OS ile oluşturuldu · ${new Date().toLocaleString('tr-TR')}</p>
+            </body></html>`);
+            w.document.close(); setTimeout(() => { try { w.focus(); w.print(); } catch(e) {} }, 500);
+        }
+        function egitmenRenderGelenler() {
+            let alan = document.getElementById(renderHedefId); if(!alan) return;
             let bugun = bugunISO();
             let gun = otomatikYoklamaDB[bugun] || {};
             let q = (egitmenAramaFiltre || '').trim().toLocaleLowerCase('tr');
@@ -2124,7 +2295,7 @@
 
         /* --- AYLIK YOKLAMA TAKİBİ --- */
         function egitmenRenderAylik() {
-            let alan = document.getElementById('egitmen-liste');
+            let alan = document.getElementById(renderHedefId);
             let d = new Date(); let varsayilanAy = egitmenAylikAy || `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
             egitmenAylikAy = varsayilanAy;
             let html = `<div class="glass-panel" style="padding:14px; border-radius:12px; margin-bottom:10px; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
@@ -2319,6 +2490,27 @@
                 }
             } catch(e) {} }, 150);
         }
+        function gelisimGrafigiHTML(sp) {
+            let noktalar = [];
+            (sp.kartGecmisi || []).forEach(k => { noktalar.push({ tarih: k.tarih || '', skor: k.toplamSkor || 0 }); });
+            if(sp.seriler && sp.seriler.length > 0) noktalar.push({ tarih: bugunISO(), skor: sp.toplamSkor || 0 });
+            if(noktalar.length < 2) return '';
+            let maxS = Math.max(...noktalar.map(n => n.skor), 1);
+            let minS = Math.min(...noktalar.map(n => n.skor));
+            let W = 280, H = 110, pad = 12, n = noktalar.length;
+            let X = (i) => pad + (i / (n - 1)) * (W - 2 * pad);
+            let Y = (s) => { let r = (maxS - minS) || 1; return H - pad - ((s - minS) / r) * (H - 2 * pad); };
+            let cizgi = noktalar.map((p, i) => `${i === 0 ? 'M' : 'L'}${X(i).toFixed(1)},${Y(p.skor).toFixed(1)}`).join(' ');
+            let dots = noktalar.map((p, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(p.skor).toFixed(1)}" r="3" fill="var(--accent-orange)"/><text x="${X(i).toFixed(1)}" y="${(Y(p.skor)-6).toFixed(1)}" font-size="9" fill="var(--text-muted)" text-anchor="middle">${p.skor}</text>`).join('');
+            let fark = noktalar[n - 1].skor - noktalar[0].skor;
+            let trendYazi = fark > 0 ? `📈 +${fark} (yükseliyor)` : fark < 0 ? `📉 ${fark} (düşüyor)` : '➡️ sabit';
+            let trendRenk = fark > 0 ? 'var(--neon-green)' : fark < 0 ? 'var(--neon-red)' : 'var(--text-muted)';
+            return `<div style="background:rgba(0,0,0,0.15); border:1px solid var(--border-color); border-radius:10px; padding:12px; margin-bottom:10px;">
+                <div style="font-weight:bold; color:var(--accent-orange); font-size:13px; margin-bottom:8px;">📈 Gelişim Grafiği <span style="font-size:11px; color:${trendRenk};">${trendYazi}</span></div>
+                <svg viewBox="0 0 ${W} ${H}" width="100%" style="background:rgba(255,255,255,0.02); border-radius:8px;"><path d="${cizgi}" fill="none" stroke="var(--accent-orange)" stroke-width="2"/>${dots}</svg>
+                <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:4px;"><span>${formatTarih(noktalar[0].tarih)}</span><span>${formatTarih(noktalar[n-1].tarih)}</span></div>
+            </div>`;
+        }
         function sapmaAnalizHTML(sp) {
             let oklar = [];
             let topla = (arr) => { (arr || []).forEach(o => { if(o && o.x != null && o.y != null && o.puan !== 'M') { let spotY = (o.tip === '3spot' && o.spot != null) ? [-140, 0, 140][o.spot] : 0; oklar.push({ dx: o.x, dy: o.y - spotY }); } }); };
@@ -2420,7 +2612,7 @@
             } catch(e) {}
         }
         function bulutDurum(txt, renk) { let el = document.getElementById('bulut-durum'); if(el) { el.innerText = txt; el.style.color = renk || 'var(--text-muted)'; } }
-        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB }); }
+        function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB, aidatDB }); }
 
         function bulutVeriyiUygula(p) {
             guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
@@ -2437,11 +2629,12 @@
             if(p.atisLog) atisLog = p.atisLog;
             if(p.rekorlarDB) rekorlarDB = p.rekorlarDB;
             if(p.otomatikYoklamaDB) otomatikYoklamaDB = otomatikYoklamaMerge(otomatikYoklamaDB, p.otomatikYoklamaDB);
+            if(p.aidatDB) aidatDB = aidatMerge(aidatDB, p.aidatDB);
             try {
                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
                 localStorage.setItem('okculuk_takimlar_data', JSON.stringify(takimlarDB));
                 antrenmanlariKaydet(); ozelSiniflariKaydet(); personeliKaydet(); bracketleriKaydet();
-                atisLogKaydet(); rekorlariKaydet(); otomatikYoklamaKaydet();
+                atisLogKaydet(); rekorlariKaydet(); otomatikYoklamaKaydet(); aidatKaydet();
             } catch(e) {}
             tumEkranlariYenile();
         }
@@ -2565,6 +2758,8 @@
             if(pyVeri) { try { personelYoklamaDB = JSON.parse(pyVeri) || []; } catch(e){} }
             let oyVeri = localStorage.getItem('okculuk_otomatik_yoklama');
             if(oyVeri) { try { otomatikYoklamaDB = JSON.parse(oyVeri) || {}; } catch(e){} }
+            let adVeri = localStorage.getItem('okculuk_aidat');
+            if(adVeri) { try { aidatDB = JSON.parse(adVeri) || {}; } catch(e){} }
             try { salonModuGorunumGuncelle(); } catch(e){}
             let alVeri = localStorage.getItem('okculuk_atislog_data');
             if(alVeri) { try { atisLog = JSON.parse(alVeri) || []; } catch(e){} }
@@ -2585,6 +2780,13 @@
                     setTimeout(() => { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } }, 2500);
                 }
             } catch(e) {}
+            // BENİ HATIRLA: kayıtlı sporcu varsa (veli QR yoksa) otomatik giriş yap
+            try {
+                if(!veliBeklenen) {
+                    let k = hatirlaOku();
+                    if(k && k.ad) { setTimeout(() => { try { if(!loggedInSporcu && document.getElementById('giris-ekrani').style.display !== 'none') hatirlaGiris(); } catch(e) {} }, 500); }
+                }
+            } catch(e) {}
             bulutBaslat();
             // Boş alana dokununca kapat: kenar (backdrop) her zaman; "kolay-kapat" ekranlarda içerideki boşluklar da kapatır
             document.querySelectorAll('.modal-overlay').forEach(ov => {
@@ -2603,20 +2805,34 @@
 
         function toggleTheme() { document.body.classList.toggle('light-theme'); localStorage.setItem('dag_sk_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); }
         function ekranAcDegistir() { document.getElementById('giris-ekrani').style.display = 'flex'; document.getElementById('kapat-giris-btn').style.display = 'block'; platformGeri(); kronometreSifirla(); }
+        function ligDegistirAc() {
+            document.getElementById('giris-ekrani').style.display = 'flex';
+            let kb = document.getElementById('kapat-giris-btn'); if(kb) kb.style.display = 'block';
+            document.getElementById('giris-platform').style.display = 'none';
+            let gs = document.getElementById('giris-sporcu'); if(gs) gs.style.display = 'none';
+            let ss = document.getElementById('giris-sifre'); if(ss) ss.style.display = 'none';
+            document.getElementById('giris-lig').style.display = 'flex';
+            document.getElementById('giris-baslik').innerText = 'EĞİTMEN — Lig Seçin';
+            try { kronometreSifirla(); } catch(e) {}
+        }
+        function egitmenCikis() { location.reload(); }
         function kapatGirisEkrani() { document.getElementById('giris-ekrani').style.display = 'none'; }
         let sifreBuffer = '';
+        let sifreMod = 'egitmen';
         function platformSec(p) {
-            if(p === 'egitmen') {
+            if(p === 'egitmen' || p === 'yonetici') {
+                sifreMod = p;
                 sifreBuffer = ''; sifreDisplayGuncelle();
                 document.getElementById('giris-platform').style.display = 'none';
                 document.getElementById('giris-sifre').style.display = 'flex';
-                document.getElementById('giris-baslik').innerText = 'EĞİTMEN ŞİFRESİ';
+                document.getElementById('giris-baslik').innerText = (p === 'yonetici') ? 'YÖNETİCİ ŞİFRESİ' : 'EĞİTMEN ŞİFRESİ';
                 return;
             }
             aktifPlatform = 'sporcu';
             document.getElementById('giris-platform').style.display = 'none';
             document.getElementById('giris-sporcu').style.display = 'flex';
             document.getElementById('giris-baslik').innerText = 'SPORCU GİRİŞİ';
+            try { hizliGirisButonGuncelle(); } catch(e) {}
         }
         function sporcuGirisDene() {
             let ad = (document.getElementById('sporcu-giris-ad').value || '').trim().toUpperCase();
@@ -2633,6 +2849,7 @@
                 });
             });
             if(!bulundu) return showToast('Ad veya kod hatalı. (Kod yoksa doğum yılını dene)', 'error');
+            if(turnuvaDB[bulunanGrup][bulundu].donduruldu) return showToast('⛔ Hesabın donduruldu. Lütfen antrenörün / yöneticinle iletişime geç.', 'error');
             loggedInSporcu = bulundu; aktifGrup = bulunanGrup; aktifPlatform = 'sporcu';
             try { let _f = basariSporcuBul(bulundu); if(_f && _f.sp.magaza && _f.sp.magaza.tema) temaPaletUygula(_f.sp.magaza.tema); } catch(e) {}
             try { document.getElementById('aktif-grup-etiket').innerText = (aktifGrup === 'buyukler' ? 'BÜYÜKLER' : 'KÜÇÜKLER'); } catch(e) {}
@@ -2642,7 +2859,23 @@
             try { sporcuListesiniYenile(); takimDropdownDoldur(); takimListesiCiz(); } catch(e) {}
             try { siralamaListesiDoldur(); } catch(e) {}
             tablariPlatformaGoreAyarla(); // içerikler dolduktan sonra tekrar uygula (garanti)
+            try { let chk = document.getElementById('beni-hatirla-chk'); if(!chk || chk.checked) hatirlaKaydet(bulundu, kod, bulunanGrup); else hatirlaTemizle(); } catch(e) {}
             showToast(`Hoş geldin, ${bulundu}! 🎯`, 'success');
+        }
+        function hatirlaKaydet(ad, kod, grup) { try { localStorage.setItem('okculuk_hatirla', JSON.stringify({ ad, kod, grup })); } catch(e) {} }
+        function hatirlaTemizle() { try { localStorage.removeItem('okculuk_hatirla'); } catch(e) {} }
+        function hatirlaOku() { try { return JSON.parse(localStorage.getItem('okculuk_hatirla') || 'null'); } catch(e) { return null; } }
+        function hizliGirisButonGuncelle() {
+            let b = document.getElementById('hizli-giris-btn'); if(!b) return;
+            let k = hatirlaOku();
+            if(k && k.ad) { b.style.display = 'block'; b.innerText = `⚡ ${k.ad} olarak gir`; } else b.style.display = 'none';
+        }
+        function hatirlaGiris() {
+            let k = hatirlaOku(); if(!k || !k.ad) return;
+            let adEl = document.getElementById('sporcu-giris-ad'), kodEl = document.getElementById('sporcu-giris-kod');
+            if(adEl) adEl.value = k.ad; if(kodEl) kodEl.value = k.kod || '';
+            aktifPlatform = 'sporcu';
+            sporcuGirisDene();
         }
         let veliBeklenen = null;
         function veliGiris(ad, kod) {
@@ -2650,6 +2883,7 @@
             let bulundu = null, grup = null;
             ['buyukler', 'kucukler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(isim => { if(isim.trim().toUpperCase() === ad) { let sp = db[isim]; let dk = String(sp.kod || sp.dogumYili || '').trim(); if(!kod || dk === String(kod).trim()) { bulundu = isim; grup = g; } } }); });
             if(!bulundu) { showToast('QR/bağlantı geçersiz — sporcu bulunamadı.', 'error'); return false; }
+            if(turnuvaDB[grup][bulundu].donduruldu) { showToast('⛔ Bu hesap donduruldu. Antrenörle iletişime geçin.', 'error'); return false; }
             loggedInSporcu = bulundu; aktifGrup = grup; aktifPlatform = 'sporcu';
             try { document.getElementById('aktif-grup-etiket').innerText = (aktifGrup === 'buyukler' ? 'BÜYÜKLER' : 'KÜÇÜKLER'); } catch(e) {}
             let ge = document.getElementById('giris-ekrani'); if(ge) ge.style.display = 'none';
@@ -2675,6 +2909,7 @@
         function veliQRKopyala() { let i = document.getElementById('veli-qr-link'); if(!i) return; i.select(); i.setSelectionRange(0, 99999); try { document.execCommand('copy'); showToast('Bağlantı kopyalandı 📋', 'success'); } catch(e) {} }
         function sporcuCikis() {
             loggedInSporcu = null; aktifPlatform = 'sporcu';
+            try { hatirlaTemizle(); } catch(e) {}
             document.body.classList.remove('sporcu-uye-modu');
             location.reload();
         }
@@ -2688,6 +2923,11 @@
             sifreBuffer += n; sifreDisplayGuncelle();
             if(sifreBuffer.length === 4) {
                 setTimeout(() => {
+                    if(sifreMod === 'yonetici') {
+                        if(sifreBuffer === '2872') { document.getElementById('giris-sifre').style.display = 'none'; sifreBuffer = ''; sifreDisplayGuncelle(); yoneticiPaneliAc(); }
+                        else { showToast('Hatalı şifre!', 'error'); sifreBuffer = ''; sifreDisplayGuncelle(); }
+                        return;
+                    }
                     if(sifreBuffer === '3478') {
                         aktifPlatform = 'egitmen'; loggedInSporcu = null;
                         document.body.classList.remove('sporcu-uye-modu');
@@ -2700,6 +2940,94 @@
         }
         function sifreSil() { sifreBuffer = sifreBuffer.slice(0, -1); sifreDisplayGuncelle(); }
         function sifreGeri() { sifreBuffer = ''; document.getElementById('giris-sifre').style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
+        function yoneticiKaydet() { try { localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {} }
+        function yoneticiPaneliAc() { renderHedefId = 'yonetici-liste'; if(!aktifGrup) aktifGrup = 'buyukler'; let m = document.getElementById('yonetici-modal'); if(m) m.style.display = 'flex'; yoneticiSekmeAktif = 'kullanicilar'; yoneticiSekme('kullanicilar'); }
+        let yoneticiSekmeAktif = 'kullanicilar';
+        let yoneticiYoklamaTip = 'bugun';
+        function yoneticiNavCiz() {
+            let nav = document.getElementById('yonetici-altnav'); if(!nav) return;
+            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel']];
+            nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:0 0 auto; white-space:nowrap; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'transparent'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">${l}</button>`).join('');
+        }
+        function yoneticiLigSec(g) { aktifGrup = g; yoneticiLigButonGuncelle(); yoneticiSekme(yoneticiSekmeAktif); }
+        function yoneticiLigButonGuncelle() {
+            let bb = document.getElementById('yon-lig-buyukler'), bk = document.getElementById('yon-lig-kucukler');
+            if(bb) { bb.style.background = aktifGrup === 'buyukler' ? 'var(--neon-blue)' : 'transparent'; bb.style.color = aktifGrup === 'buyukler' ? '#fff' : 'var(--text-main)'; }
+            if(bk) { bk.style.background = aktifGrup === 'kucukler' ? 'var(--neon-green)' : 'transparent'; bk.style.color = aktifGrup === 'kucukler' ? '#fff' : 'var(--text-main)'; }
+        }
+        function yoneticiSekme(k) {
+            yoneticiSekmeAktif = k; yoneticiNavCiz();
+            let arama = document.getElementById('yonetici-arama');
+            let ligBar = document.getElementById('yon-lig-bar');
+            if(ligBar) ligBar.style.display = (k === 'kullanicilar') ? 'none' : 'flex';
+            yoneticiLigButonGuncelle();
+            if(k === 'kullanicilar') { renderHedefId = 'yonetici-liste'; if(arama) arama.style.display = 'block'; yoneticiPaneliCiz(); return; }
+            if(arama) arama.style.display = 'none';
+            if(k === 'yoklama') { yoneticiYoklamaCiz(); return; }
+            renderHedefId = 'yonetici-liste';
+            if(k === 'aidat') { try { egitmenRenderAidat(); } catch(e) {} }
+            else if(k === 'personel') { try { egitmenRenderPersonel(); } catch(e) {} }
+        }
+        function yoneticiYoklamaCiz() {
+            let alan = document.getElementById('yonetici-liste'); if(!alan) return;
+            let akt = (t) => yoneticiYoklamaTip === t ? 'background:var(--accent-orange); color:#fff;' : 'background:var(--bg-panel); color:var(--text-main);';
+            alan.innerHTML = `<div style="display:flex; gap:6px; margin-bottom:10px;">
+                <button onclick="yoneticiYoklamaTip='bugun'; yoneticiYoklamaCiz();" style="flex:1; ${akt('bugun')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">⏱️ Bugün Gelenler</button>
+                <button onclick="yoneticiYoklamaTip='aylik'; yoneticiYoklamaCiz();" style="flex:1; ${akt('aylik')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">📆 Aylık Gelenler</button>
+            </div><div id="yonetici-yoklama-ic"></div>`;
+            renderHedefId = 'yonetici-yoklama-ic';
+            if(yoneticiYoklamaTip === 'bugun') { try { egitmenRenderGelenler(); } catch(e) {} }
+            else { try { egitmenRenderAylik(); } catch(e) {} }
+        }
+        function yoneticiPaneliCiz() {
+            let alan = document.getElementById('yonetici-liste'); if(!alan) return;
+            let q = (document.getElementById('yonetici-arama').value || '').trim().toLocaleLowerCase('tr');
+            let html = '';
+            [['buyukler','🔵 Büyükler'],['kucukler','🟢 Küçükler']].forEach(([g, baslik]) => {
+                let db = turnuvaDB[g] || {};
+                let isimler = Object.keys(db).filter(ad => !q || ad.toLocaleLowerCase('tr').indexOf(q) >= 0).sort();
+                html += `<div style="font-weight:bold; color:var(--accent-orange); font-size:13px; margin:12px 2px 8px;">${baslik} <span style="color:var(--text-muted); font-size:11px;">(${isimler.length})</span></div>`;
+                if(isimler.length === 0) { html += `<div style="font-size:12px; color:var(--text-muted); padding:4px;">—</div>`; return; }
+                isimler.forEach(ad => {
+                    let sp = db[ad]; let don = sp.donduruldu;
+                    let adEsc = ad.replace(/'/g, "\\'");
+                    html += `<div style="background:var(--bg-panel); border:1px solid ${don ? 'var(--neon-red)' : 'var(--border-color)'}; border-radius:10px; padding:10px; margin-bottom:7px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:bold; font-size:14px;">${don ? '🚫 ' : ''}${ad}</span>
+                            <span style="font-size:10px; font-weight:bold; color:${don ? 'var(--neon-red)' : 'var(--neon-green)'};">${don ? 'DONDURULDU' : 'Aktif'} · kod: ${sp.kod || sp.dogumYili || '-'}</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button onclick="yoneticiDondur('${g}','${adEsc}')" style="flex:1; min-width:96px; background:${don ? 'rgba(16,185,129,0.13)' : 'rgba(245,158,11,0.13)'}; color:var(--text-main); border:1px solid ${don ? 'var(--neon-green)' : 'var(--gold)'}; padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">${don ? '✅ Aktifleştir' : '⏸ Dondur'}</button>
+                            <button onclick="yoneticiKodSifirla('${g}','${adEsc}')" style="flex:1; min-width:80px; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">🔑 Kod</button>
+                            <button onclick="yoneticiSil('${g}','${adEsc}')" style="flex:1; min-width:70px; background:rgba(239,68,68,0.13); color:var(--neon-red); border:1px solid var(--neon-red); padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">🗑️ Sil</button>
+                        </div>
+                    </div>`;
+                });
+            });
+            alan.innerHTML = html;
+        }
+        function yoneticiDondur(g, ad) {
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            sp.donduruldu = !sp.donduruldu; sp.lastModified = Date.now();
+            yoneticiKaydet();
+            showToast(sp.donduruldu ? `⏸ ${ad} donduruldu.` : `✅ ${ad} aktifleştirildi.`, sp.donduruldu ? 'warning' : 'success');
+            yoneticiPaneliCiz();
+            try { siralamaListesiDoldur(); } catch(e) {}
+        }
+        function yoneticiKodSifirla(g, ad) {
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let yeni = prompt(`${ad} için yeni giriş kodu:`, sp.kod || '');
+            if(yeni === null) return;
+            sp.kod = String(yeni).trim(); sp.lastModified = Date.now();
+            yoneticiKaydet(); showToast('🔑 Kod güncellendi.', 'success'); yoneticiPaneliCiz();
+        }
+        function yoneticiSil(g, ad) {
+            if(!confirm(`${ad} kalıcı olarak silinsin mi?`)) return;
+            if(!confirm(`SON UYARI: ${ad} ve tüm skorları silinecek. Emin misin?`)) return;
+            if(turnuvaDB[g]) delete turnuvaDB[g][ad];
+            yoneticiKaydet(); showToast(`🗑️ ${ad} silindi.`, 'warning'); yoneticiPaneliCiz();
+            try { siralamaListesiDoldur(); } catch(e) {}
+        }
         function platformGeri() { document.getElementById('giris-lig').style.display = 'none'; let s = document.getElementById('giris-sifre'); if(s) s.style.display = 'none'; let sp = document.getElementById('giris-sporcu'); if(sp) sp.style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
         function tablariPlatformaGoreAyarla() {
             let g = (id, goster) => { let el = document.getElementById(id); if(el) el.style.display = goster ? '' : 'none'; };
@@ -2715,6 +3043,7 @@
             if(aktifPlatform === 'egitmen') { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', true); g('tab-takimlar', true); try { sekmeAc('egitmen'); } catch(e) {} }
             else if(sporcuModu) { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', false); g('tab-takimlar', true); try { sekmeAc('liderlik'); } catch(e) {} }
             else { g('tab-timer', true); g('tab-skor', true); g('tab-liderlik', true); g('tab-egitmen', false); g('tab-takimlar', true); try { sekmeAc('skor'); } catch(e) {} }
+            try { let bar = document.getElementById('alt-menu'); if(bar) bar.style.display = 'none'; } catch(e) {}
         }
         
         function grupKurulumu(grup) { 
@@ -2737,6 +3066,28 @@
             if(sekmeAd === 'video') vaInit();
             if(sekmeAd === 'basari') basariPaneliDoldur();
             if(sekmeAd === 'oyun') oyunPaneliDoldur();
+            try { if(typeof rfxTemizle === 'function') rfxTemizle(); } catch(e) {}
+            if(sekmeAd === 'refleks') { try { rfxPaneliDoldur(); } catch(e) {} }
+        }
+        function altMenuyuCiz() {
+            let bar = document.getElementById('alt-menu'); if(!bar) return;
+            let sporcu = !!loggedInSporcu;
+            let items = sporcu
+                ? [['timer','⏱️','Sayaç'],['skor','🎯','Skor'],['liderlik','🏆','Liderlik'],['takimlar','🏹','Yarışma'],['oyun','🎮','Görev']]
+                : [['timer','⏱️','Sayaç'],['skor','🎯','Skor'],['liderlik','🏆','Liderlik'],['egitmen','🎓','Eğitmen'],['__daha','⋯','Daha']];
+            let aktifEl = document.querySelector('.sekme-icerik.aktif');
+            let aktifAd = aktifEl ? aktifEl.id.replace('icerik-', '') : '';
+            bar.innerHTML = items.map(([k, ikon, ad]) => {
+                let on = (k === aktifAd);
+                let tik = (k === '__daha') ? 'dahaMenuAc()' : `sekmeAc('${k}')`;
+                return `<button onclick="${tik}" style="flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 2px; color:${on ? 'var(--accent-orange)' : 'var(--text-muted)'}; cursor:pointer;"><span style="font-size:21px; line-height:1;">${ikon}</span><span style="font-size:10px; font-weight:${on ? '800' : '500'};">${ad}</span></button>`;
+            }).join('');
+        }
+        function dahaMenuAc() {
+            let items = [['takimlar','🏹','Yarışmalar'],['basari','🏅','Başarılar'],['oyun','🎮','Görev & Mağaza']];
+            let ic = document.getElementById('daha-menu-ic'); if(!ic) return;
+            ic.innerHTML = `<div style="font-weight:800; font-size:15px; margin-bottom:12px; text-align:center; color:var(--text-main);">Diğer</div>` + items.map(([k, ikon, ad]) => `<button onclick="kapatModal('daha-menu'); sekmeAc('${k}');" style="display:flex; align-items:center; gap:13px; width:100%; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:11px; padding:14px; margin-bottom:9px; color:var(--text-main); font-weight:bold; font-size:14px; cursor:pointer;"><span style="font-size:22px;">${ikon}</span>${ad}</button>`).join('') + `<button onclick="kapatModal('daha-menu')" style="width:100%; background:var(--accent-orange); color:#fff; border:none; border-radius:11px; padding:12px; font-weight:bold; font-size:13px; margin-top:4px;">Kapat</button>`;
+            document.getElementById('daha-menu').style.display = 'flex';
         }
         
         function cinsiyetSec(c) { aktifCinsiyet = c; document.getElementById('gender-kiz').classList.toggle('secili-kiz', c === 'K'); document.getElementById('gender-erkek').classList.toggle('secili-erkek', c === 'E'); }
@@ -3118,11 +3469,15 @@
             });
             if(!skipSelectUpdate) { for(let i=anlikAtilanOklar.length; i<okAdet; i++) { let sel = document.getElementById(`ok_input_${i}`); if(sel) sel.value = ""; } }
             if(toplamPuanEl) toplamPuanEl.innerText = `${toplam}`;
+            let stb = document.getElementById('seri-tamam-banner');
+            if(stb) { if(okAdet > 0 && anlikAtilanOklar.length >= okAdet) { stb.innerHTML = `✅ ${okAdet} OK TAM GİRDİNİZ — Kaydet!`; stb.style.display = 'block'; } else stb.style.display = 'none'; }
             let uyari = document.getElementById('spot-uyari');
             if(uyari) uyari.innerHTML = cezaVar ? "⚠️ Aynı spota birden fazla ok düştü: büyük puanlı ok <b>karavana (M)</b> sayıldı." : "";
         }
 
         function skorEkraniniAc(ad) { 
+            let _sp = turnuvaDB[aktifGrup] && turnuvaDB[aktifGrup][ad];
+            if(_sp && _sp.donduruldu) { return showToast('⛔ Bu hesap donduruldu. Skor girilemez — yöneticiyle iletişime geç.', 'error'); }
             secilenSporcu = ad; document.getElementById('skor-liste-gorunumu').style.display = 'none'; document.getElementById('skor-grid-paneli-baba').style.display = 'block'; hedefGorunumSifirla(); hedefPanZoomKur(); 
             let sp = turnuvaDB[aktifGrup][ad]; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12; let sLen = sp.seriler ? sp.seriler.length + 1 : 1;
             if(!sp.seriler || sp.seriler.length === 0) sp.devamModu = false; // yeni kart: devam modu sıfırla
@@ -3139,10 +3494,18 @@
             if(loggedInSporcu) { bar.innerHTML = ''; return; }
             let adlar = Object.keys(turnuvaDB[aktifGrup] || {});
             bar.innerHTML = adlar.map((ad, i) => {
-                let bas = ad.trim().split(/\s+/).map(p => (p[0] || '')).join('.').toLocaleUpperCase('tr');
+                let parcalar = ad.trim().split(/\s+/);
+                let bas = parcalar.map((p, idx) => (idx === parcalar.length - 1) ? (p.slice(0, 3)) : (p[0] || '')).join('.').toLocaleUpperCase('tr');
                 let aktif = ad === secilenSporcu;
                 return `<button onclick="hizliGecis('${ad.replace(/'/g,"\\'")}')" title="${ad}" style="flex:0 0 auto; padding:7px 11px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; border:1px solid ${aktif?'var(--accent-orange)':'var(--border-color)'}; background:${aktif?'var(--accent-orange)':'var(--bg-main)'}; color:${aktif?'#fff':'var(--text-main)'};">${i+1}-${bas}</button>`;
             }).join('');
+        }
+        function isimFlashGoster(ad) {
+            let f = document.getElementById('isim-flash'); if(!f) return;
+            f.innerText = '🎯 ' + ad; f.style.display = 'block';
+            requestAnimationFrame(() => { f.style.opacity = '1'; });
+            clearTimeout(window._isimFlashT);
+            window._isimFlashT = setTimeout(() => { f.style.opacity = '0'; setTimeout(() => { f.style.display = 'none'; }, 320); }, 950);
         }
         function hizliGecis(ad) {
             if(ad === secilenSporcu) return;
@@ -3150,6 +3513,7 @@
                 if(!confirm('Bu seride henüz KAYDEDİLMEMİŞ oklar var.\nDiğer sporcuya geçersen bu oklar silinir.\n\nYine de geçilsin mi? (İptal = kal, oraya dön kaydet)')) return;
             }
             skorEkraniniAc(ad);
+            try { isimFlashGoster(ad); } catch(e) {}
         }
         function oncekiSeriyiDuzelt() {
             if(!secilenSporcu) return;
@@ -3161,7 +3525,7 @@
             if(anlikAtilanOklar && anlikAtilanOklar.length > 0) {
                 if(!confirm('Bu seride KAYDEDİLMEMİŞ oklar var!\nÇıkarsan girdiğin oklar kaybolur.\n\nYine de çıkılsın mı? (İptal = kal ve "Seriyi Kaydet")')) return;
             }
-            anlikAtilanOklar = []; secilenSporcu = ""; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile();
+            anlikAtilanOklar = []; secilenSporcu = ""; let _stb = document.getElementById('seri-tamam-banner'); if(_stb) _stb.style.display = 'none'; document.getElementById('skor-grid-paneli-baba').style.display = 'none'; document.getElementById('skor-liste-gorunumu').style.display = 'block'; sporcuListesiniYenile();
         }
         function seriUzat() {
             if(!secilenSporcu) { showToast('Önce bir sporcu seç.', 'warning'); return; }
@@ -3219,7 +3583,7 @@
             let vMap = {'X':11, '10':10, '9':9, '8':8, '7':7, '6':6, '5':5, '4':4, '3':3, '2':2, '1':1, 'M':0};
             okDegerleri.sort((a,b) => vMap[b] - vMap[a]);
             
-            if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); 
+            if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); grupData.sonSkorZamani = Date.now();
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); showToast(`Seri Kaydedildi! (+${seriPuan})`, "success");
             try { otomatikYoklamaIsaretle(secilenSporcu); } catch(e) {}
 
@@ -3419,6 +3783,7 @@
                 let seriler = sp.seriler || []; let detayliOklar = sp.detayliOklar || [];
                 let gsAlani = document.getElementById('karne-gecmis-seriler'); gsAlani.innerHTML = "";
                 let ustBilgi = `<div style="background:rgba(0,0,0,0.15); border:1px solid var(--border-color); border-radius:8px; padding:10px; margin-bottom:10px;">${okDagilimiHTML(sp)}</div>`;
+                try { ustBilgi += gelisimGrafigiHTML(sp); } catch(e) {}
                 try { ustBilgi += sapmaAnalizHTML(sp); } catch(e) {}
                 if(sp.egitmenNotu || (sp.egitmenPuan !== undefined && sp.egitmenPuan !== '' && sp.egitmenPuan !== null)) {
                     let ep = (sp.egitmenPuan !== undefined && sp.egitmenPuan !== '' && sp.egitmenPuan !== null) ? `<span style="color:var(--neon-blue); font-weight:bold;"> • Vurduğu Puan: ${sp.egitmenPuan}</span>` : '';
@@ -3493,7 +3858,7 @@
         function siralamaListesiDoldur() {
             let tK = document.getElementById('sirali-tablo-klasik'); let tM = document.getElementById('sirali-tablo-makarali'); if(!tK || !tM) return;
             tK.innerHTML = ""; tM.innerHTML = ""; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
-            let tumSporcular = Object.keys(turnuvaDB[aktifGrup] || {}).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; });
+            let tumSporcular = Object.keys(turnuvaDB[aktifGrup] || {}).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; }).filter(s => !s.donduruldu);
             let sporcular = tumSporcular.filter(s => !s.pasif);
             let pasifler = tumSporcular.filter(s => s.pasif);
             
@@ -3592,7 +3957,9 @@
         function getMatches(players, roundNum, cat) { let matches = []; let remaining = []; if (players.length % 2 !== 0) { let bp = players[0]; matches.push({ id: `tur${roundNum}_bye_${cat}_${Date.now()}`, tur: roundNum, kategori: cat, p1: bp.ad, p1Sira: bp.sira, p2: null, p2Sira: null, p1Skor: 6, p2Skor: 0, setler: [], durum: 'bitti', kazanan: bp.ad, isBye: true }); remaining = players.slice(1); } else { remaining = players; } let eslesmeSayisi = remaining.length / 2; for(let i = 0; i < eslesmeSayisi; i++) { let p1 = remaining[i]; let p2 = remaining[remaining.length - 1 - i]; matches.push({ id: `tur${roundNum}_mac_${cat}_${i}_${Date.now()}`, tur: roundNum, kategori: cat, p1: p1.ad, p1Sira: p1.sira, p2: p2.ad, p2Sira: p2.sira, p1Skor: 0, p2Skor: 0, setler: [], durum: 'devam', kazanan: null, isBye: false }); } return matches; }
         
         function elemeAgaciOlustur() {
-            let sporcular = Object.keys(turnuvaDB[aktifGrup] || {}).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; }); if(sporcular.length < 2) return showToast("Ağaç için sporcu yetersiz!", "error");
+            let simdi = Date.now(); let pencere = 10 * 60 * 1000; // son 10 dakika
+            let sporcular = Object.keys(turnuvaDB[aktifGrup] || {}).map(ad => { return { ad: ad, ...turnuvaDB[aktifGrup][ad] }; }).filter(s => !s.pasif && !s.donduruldu && s.sonSkorZamani && (simdi - s.sonSkorZamani) <= pencere);
+            if(sporcular.length < 2) return showToast("⏱️ Son 10 dakikada skor giren en az 2 sporcu olmalı. (Sadece şu an derste olup atış yapanlar yarışır.)", "error");
             elemeEslesmeleri = []; 
             let klasikler = sporcular.filter(s => s.yay === 'Klasik').sort((a,b) => (b.toplamSkor||0) - (a.toplamSkor||0) || (b.xAdet||0) - (a.xAdet||0)); klasikler.forEach((s, idx) => s.sira = idx + 1); let kMatches = getMatches(klasikler, 1, 'Klasik');
             let makaralilar = sporcular.filter(s => s.yay === 'Makaralı').sort((a,b) => (b.toplamSkor||0) - (a.toplamSkor||0) || (b.xAdet||0) - (a.xAdet||0)); makaralilar.forEach((s, idx) => s.sira = idx + 1); let mMatches = getMatches(makaralilar, 1, 'Makaralı');
@@ -4232,16 +4599,22 @@
                 </div>`;
             }
 
-            let rozetHtml = ROZETLER.map(r => {
+            let rozetSirali = ROZETLER.slice().sort((a, b) => (kazanilmis.find(x => x.id === a.id) ? 0 : 1) - (kazanilmis.find(x => x.id === b.id) ? 0 : 1));
+            let rozetKartlar = rozetSirali.map(r => {
                 let kz = kazanilmis.find(x => x.id === r.id);
                 if(kz) return `<div class="rozet-kart kazanildi"><span class="rozet-emoji">${r.emoji}</span><div class="rozet-ad">${r.ad}</div><div class="rozet-aciklama">${r.aciklama}</div><div class="rozet-tarih">✓ ${formatTarih(kz.tarih)}</div></div>`;
                 if(r.ozel) return `<div class="rozet-kart kilitli"><span class="rozet-kilit-ikon">🔒</span><span class="rozet-emoji">${r.emoji}</span><div class="rozet-ad">${r.ad}</div><div class="rozet-aciklama">${r.aciklama}</div><div class="rozet-progress-yazi">Henüz kazanılmadı</div></div>`;
                 let mevcut = rozetDeger(ad, r.tip);
                 let oran = Math.min(100, Math.round(mevcut / r.hedef * 100));
                 return `<div class="rozet-kart kilitli"><span class="rozet-kilit-ikon">🔒</span><span class="rozet-emoji">${r.emoji}</span><div class="rozet-ad">${r.ad}</div><div class="rozet-aciklama">${r.aciklama}</div><div class="rozet-progress-dis"><div class="rozet-progress-ic" style="width:${oran}%;"></div></div><div class="rozet-progress-yazi">${Math.min(mevcut, r.hedef)} / ${r.hedef}</div></div>`;
-            }).join('');
-            el.innerHTML = seviyeHtml + satinHtml + `<div class="rozet-vitrin-grid">${rozetHtml}</div>`;
+            });
+            let ilk3 = rozetKartlar.slice(0, 3).join('');
+            let kalan = rozetKartlar.slice(3).join('');
+            let toggleBtn = rozetKartlar.length > 3 ? `<button onclick="rozetHepsiToggle()" style="width:100%; margin-top:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:var(--text-main); border-radius:8px; padding:9px; font-size:12px; font-weight:bold; cursor:pointer;">${rozetHepsiGoster ? '▲ Daha az göster' : `▼ Diğer ${rozetKartlar.length - 3} rozeti göster`}</button>` : '';
+            el.innerHTML = seviyeHtml + satinHtml + `<div class="rozet-vitrin-grid">${ilk3}${rozetHepsiGoster ? kalan : ''}</div>` + toggleBtn;
         }
+        let rozetHepsiGoster = false;
+        function rozetHepsiToggle() { rozetHepsiGoster = !rozetHepsiGoster; try { rozetVitrinDoldur(basariSeciliSporcu); } catch(e) {} }
 
         // --- Başarı paneli (ana) ---
         function basariPaneliDoldur() {
@@ -4410,11 +4783,11 @@
         const MAGAZA = {
             tema: [
                 { id: 'varsayilan', ad: 'Klasik Turuncu', fiyat: 0 },
-                { id: 'okyanus',    ad: 'Okyanus Mavisi', fiyat: 50 },
-                { id: 'orman',      ad: 'Orman Yeşili',   fiyat: 50 },
-                { id: 'gece',       ad: 'Mor Gece',       fiyat: 70 },
-                { id: 'alev',       ad: 'Alev Kırmızısı', fiyat: 70 },
-                { id: 'altin',      ad: 'Altın Lüks',     fiyat: 130 }
+                { id: 'okyanus',    ad: 'Okyanus Mavisi', fiyat: 5 },
+                { id: 'orman',      ad: 'Orman Yeşili',   fiyat: 5 },
+                { id: 'gece',       ad: 'Mor Gece',       fiyat: 5 },
+                { id: 'alev',       ad: 'Alev Kırmızısı', fiyat: 5 },
+                { id: 'altin',      ad: 'Altın Lüks',     fiyat: 5 }
             ],
             cerceve: [
                 { id: 'yok',   ad: 'Çerçevesiz',    emoji: '⚪', fiyat: 0 },
@@ -4715,6 +5088,360 @@
         }
         function oyunSporcuDegisti(ad) { oyunSeciliSporcu = ad; oyunPaneliDoldur(); }
 
+        // ===================== REFLEKS / EĞLENCE OYUNLARI (elmas kazandırır) =====================
+        let rfxTimer = null, rfxSpawnT = null, rfxAktif = false, rfxSonTip = 'pod';
+        let rfxDsDusT = null, rfxSbGoT = null, rfxSbPencereT = null;
+        let rfxPodSkor = 0, rfxPodSure = 0;
+        let rfxGnSure = 0, rfxGnDogru = 0, rfxGnHata = 0, rfxGnYesil = false, rfxGnBekliyor = false;
+        let rfxTapSkor = 0, rfxTapKalan = 0, rfxTapBasladi = false;
+        function rfxTemizle() { rfxAktif = false; if(rfxTimer) clearInterval(rfxTimer); if(rfxSpawnT) clearTimeout(rfxSpawnT); if(rfxDsDusT) clearTimeout(rfxDsDusT); if(rfxSbGoT) clearTimeout(rfxSbGoT); if(rfxSbPencereT) clearTimeout(rfxSbPencereT); rfxTimer = null; rfxSpawnT = null; rfxDsDusT = null; rfxSbGoT = null; rfxSbPencereT = null; }
+        function rfxAktifSporcu() { try { return oyAktifSporcu(); } catch(e) { return loggedInSporcu || ''; } }
+        function rfxCoinGuncelle() { let ad = rfxAktifSporcu(); let f = ad ? basariSporcuBul(ad) : null; let el = document.getElementById('rfx-coin'); if(el) el.textContent = f ? (f.sp.coin || 0) : 0; }
+        function rfxSporcuDegisti(ad) { oyunSeciliSporcu = ad; rfxCoinGuncelle(); }
+        function rfxPaneliDoldur() {
+            rfxTemizle();
+            let sarmal = document.getElementById('rfx-sporcu-sarmal'), sel = document.getElementById('rfx-sporcu-sec');
+            let liste = basariSporcuListesi();
+            if(loggedInSporcu) { if(sarmal) sarmal.style.display = 'none'; }
+            else { if(sarmal) sarmal.style.display = 'block'; if(!oyunSeciliSporcu || liste.indexOf(oyunSeciliSporcu) < 0) oyunSeciliSporcu = liste[0] || ''; if(sel) sel.innerHTML = liste.length ? liste.map(n => `<option value="${n}" ${n===oyunSeciliSporcu?'selected':''}>${n}</option>`).join('') : '<option value="">Sporcu yok</option>'; }
+            let menu = document.getElementById('rfx-menu'), alan = document.getElementById('rfx-oyun-alani');
+            if(menu) menu.style.display = 'grid'; if(alan) { alan.style.display = 'none'; alan.innerHTML = ''; }
+            rfxCoinGuncelle();
+        }
+        function rfxMenuyeDon() { rfxTemizle(); rfxPaneliDoldur(); }
+        function rfxBaslikHtml(ad, ikon) { return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><button onclick="rfxMenuyeDon()" style="background:var(--bg-panel); border:1px solid var(--border-color); color:var(--text-main); padding:7px 12px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">← Geri</button><span style="font-weight:800; font-size:15px;">${ikon} ${ad}</span><div style="width:54px;"></div></div>`; }
+        function rfxBitisIc(mesaj, kazanilan, tip) {
+            let ad = rfxAktifSporcu(), coinTxt = '';
+            if(ad && kazanilan > 0) { try { coinEkle(ad, kazanilan, true); } catch(e) {} rfxCoinGuncelle(); coinTxt = `<div style="color:var(--gold); font-weight:800; font-size:20px; margin:8px 0;">💎 +${kazanilan} elmas!</div>`; }
+            else if(!ad) coinTxt = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Elmas için önce sporcu girişi yap.</div>`;
+            else coinTxt = `<div style="font-size:12px; color:var(--text-muted); margin:8px 0;">Biraz daha hızlı, elmas kapındaydı! 💪</div>`;
+            return `<div style="font-size:17px; font-weight:bold;">${mesaj}</div>${coinTxt}<div style="display:flex; gap:8px; justify-content:center; margin-top:8px;"><button onclick="rfxOyunAc('${tip}')" style="background:var(--accent-orange); color:#fff; border:none; padding:11px 18px; border-radius:10px; font-weight:bold; cursor:pointer;">🔄 Tekrar</button><button onclick="rfxMenuyeDon()" style="background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); padding:11px 18px; border-radius:10px; font-weight:bold; cursor:pointer;">Menü</button></div>`;
+        }
+        function rfxOyunAc(tip) {
+            rfxTemizle(); rfxSonTip = tip;
+            let menu = document.getElementById('rfx-menu'); if(menu) menu.style.display = 'none';
+            let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return; alan.style.display = 'block';
+            if(tip === 'pod') rfxPodKur(alan); else if(tip === 'gonogo') rfxGnKur(alan); else if(tip === 'tap') rfxTapKur(alan);
+            else if(tip === 'timing') rfxTimKur(alan); else if(tip === 'tut') rfxTutKur(alan); else if(tip === 'odak') rfxOdkKur(alan);
+            else if(tip === 'dusus') rfxDsKur(alan); else if(tip === 'dinamik') rfxDnKur(alan); else if(tip === 'sabir') rfxSbKur(alan);
+        }
+        // --- Refleks Pod ---
+        function rfxPodKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Refleks Pod', '🔴') + `
+                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-pod-sure">20</span>s</div><div>🎯 <span id="rfx-pod-skor">0</span></div></div>
+                <div id="rfx-pod-alan" style="position:relative; width:100%; height:320px; background:radial-gradient(circle, rgba(255,255,255,0.04), rgba(0,0,0,0.25)); border:2px solid var(--border-color); border-radius:14px; overflow:hidden;"><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><button onclick="rfxPodBaslat()" style="background:var(--neon-red); color:#fff; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button></div></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Çıkan kırmızı hedefe hızlıca dokun!</div>`;
+        }
+        function rfxPodBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxPodSkor = 0; rfxPodSure = 20;
+            document.getElementById('rfx-pod-skor').innerText = '0'; document.getElementById('rfx-pod-sure').innerText = '20';
+            rfxPodHedef();
+            rfxTimer = setInterval(() => { rfxPodSure--; let e = document.getElementById('rfx-pod-sure'); if(e) e.innerText = rfxPodSure; if(rfxPodSure <= 0) rfxPodBitir(); }, 1000);
+        }
+        function rfxPodHedef() {
+            let a = document.getElementById('rfx-pod-alan'); if(!a || !rfxAktif) return;
+            let b = 58, w = Math.max(10, a.clientWidth - b), h = Math.max(10, a.clientHeight - b);
+            let x = Math.random() * w, y = Math.random() * h;
+            a.innerHTML = `<button onclick="rfxPodVur(event)" style="position:absolute; left:${x}px; top:${y}px; width:${b}px; height:${b}px; border-radius:50%; border:3px solid #fff; background:radial-gradient(circle,#fff 16%,#ef4444 17%); cursor:pointer; box-shadow:0 0 14px rgba(239,68,68,0.7);"></button>`;
+        }
+        function rfxPodVur(e) { if(e) e.stopPropagation(); if(!rfxAktif) return; rfxPodSkor++; let s = document.getElementById('rfx-pod-skor'); if(s) s.innerText = rfxPodSkor; try { sesCal(900, 0.05); } catch(_) {} rfxPodHedef(); }
+        function rfxPodBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxPodSkor / 2));
+            let a = document.getElementById('rfx-pod-alan'); if(a) a.innerHTML = `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px;"><div>${rfxBitisIc(`🎯 ${rfxPodSkor} hedef vurdun!`, kazanilan, 'pod')}</div></div>`;
+        }
+        // --- Yeşile Bas (Go/No-Go) ---
+        function rfxGnKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Yeşile Bas', '🚦') + `
+                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-gn-sure">20</span>s</div><div>✅ <span id="rfx-gn-dogru">0</span></div><div>❌ <span id="rfx-gn-hata">0</span></div></div>
+                <div id="rfx-gn-alan" onclick="rfxGnDokun()" style="width:100%; height:320px; border-radius:14px; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; background:#1f2937; font-size:24px; font-weight:900; color:#fff;"><button onclick="event.stopPropagation(); rfxGnBaslat()" style="background:var(--neon-green); color:#fff; border:none; padding:14px 26px; border-radius:30px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">YEŞİL olunca dokun, KIRMIZIda dokunma!</div>`;
+        }
+        function rfxGnBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxGnSure = 20; rfxGnDogru = 0; rfxGnHata = 0;
+            document.getElementById('rfx-gn-dogru').innerText = '0'; document.getElementById('rfx-gn-hata').innerText = '0'; document.getElementById('rfx-gn-sure').innerText = '20';
+            rfxGnDongu();
+            rfxTimer = setInterval(() => { rfxGnSure--; let e = document.getElementById('rfx-gn-sure'); if(e) e.innerText = rfxGnSure; if(rfxGnSure <= 0) rfxGnBitir(); }, 1000);
+        }
+        function rfxGnDongu() {
+            if(!rfxAktif) return; let a = document.getElementById('rfx-gn-alan'); if(!a) return;
+            rfxGnBekliyor = false; rfxGnYesil = false; a.style.background = '#1f2937'; a.innerHTML = '<span style="color:#64748b;">Hazır ol...</span>';
+            rfxSpawnT = setTimeout(() => {
+                if(!rfxAktif) return; let yesil = Math.random() < 0.6; rfxGnYesil = yesil; rfxGnBekliyor = true;
+                a.style.background = yesil ? '#10b981' : '#ef4444'; a.innerHTML = yesil ? 'DOKUN!' : 'DURMA ✋';
+                try { sesCal(yesil ? 900 : 400, 0.1); } catch(e) {}
+                rfxSpawnT = setTimeout(() => { if(!rfxAktif) return; rfxGnBekliyor = false; rfxGnDongu(); }, 850);
+            }, 500 + Math.random() * 700);
+        }
+        function rfxGnDokun() {
+            if(!rfxAktif || !rfxGnBekliyor) return;
+            if(rfxGnYesil) { rfxGnDogru++; document.getElementById('rfx-gn-dogru').innerText = rfxGnDogru; try { sesCal(1100, 0.05); } catch(e) {} }
+            else { rfxGnHata++; document.getElementById('rfx-gn-hata').innerText = rfxGnHata; try { sesCal(250, 0.15); } catch(e) {} }
+            rfxGnBekliyor = false; if(rfxSpawnT) clearTimeout(rfxSpawnT); rfxGnDongu();
+        }
+        function rfxGnBitir() {
+            rfxTemizle(); let net = Math.max(0, rfxGnDogru - rfxGnHata); let kazanilan = Math.min(10, Math.ceil(net / 2));
+            let a = document.getElementById('rfx-gn-alan'); if(a) { a.style.background = '#1f2937'; a.innerHTML = `<div style="padding:14px;">${rfxBitisIc(`✅ ${rfxGnDogru} doğru · ❌ ${rfxGnHata} hata`, kazanilan, 'gonogo')}</div>`; }
+        }
+        // --- Hızlı Dokunuş (Max Tapping) ---
+        function rfxTapKur(alan) {
+            rfxTapBasladi = false;
+            alan.innerHTML = rfxBaslikHtml('Hızlı Dokunuş', '💥') + `
+                <div style="display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px;"><div>⏱️ <span id="rfx-tap-sure">5.0</span>s</div><div>💥 <span id="rfx-tap-skor">0</span></div></div>
+                <button id="rfx-tap-btn" onclick="rfxTapDokun()" style="width:100%; height:320px; border-radius:14px; border:3px solid var(--accent-orange); background:radial-gradient(circle, rgba(255,98,0,0.25), rgba(0,0,0,0.2)); color:var(--text-main); font-size:22px; font-weight:900; cursor:pointer;">▶️ Başlamak için DOKUN</button>`;
+        }
+        function rfxTapDokun() {
+            if(!rfxTapBasladi) { rfxTapBaslat(); return; }
+            if(!rfxAktif) return; rfxTapSkor++; let s = document.getElementById('rfx-tap-skor'); if(s) s.innerText = rfxTapSkor; try { sesCal(800, 0.03); } catch(e) {}
+        }
+        function rfxTapBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxTapBasladi = true; rfxTapSkor = 0; rfxTapKalan = 5.0;
+            let btn = document.getElementById('rfx-tap-btn'); if(btn) btn.innerText = 'DOKUN! DOKUN!';
+            document.getElementById('rfx-tap-skor').innerText = '0';
+            rfxTimer = setInterval(() => { rfxTapKalan -= 0.1; if(rfxTapKalan < 0) rfxTapKalan = 0; let e = document.getElementById('rfx-tap-sure'); if(e) e.innerText = rfxTapKalan.toFixed(1); if(rfxTapKalan <= 0) rfxTapBitir(); }, 100);
+        }
+        function rfxTapBitir() {
+            rfxTemizle(); rfxTapBasladi = false; let kazanilan = Math.min(10, Math.round(rfxTapSkor / 4));
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Hızlı Dokunuş', '💥') + `<div style="text-align:center; padding:50px 12px;">${rfxBitisIc(`💥 ${rfxTapSkor} dokunuş!`, kazanilan, 'tap')}</div>`;
+        }
+        // --- Tam Zamanında (bırakış zamanlaması / clicker) ---
+        let rfxTimPos = 0, rfxTimYon = 1, rfxTimAtisSay = 0, rfxTimPuan = 0, rfxTimBasladi = false;
+        function rfxTimKur(alan) {
+            rfxTimBasladi = false;
+            alan.innerHTML = rfxBaslikHtml('Tam Zamanında', '⏱️') + `
+                <div style="text-align:center; margin-bottom:10px;">Atış: <b><span id="rfx-tim-atis">0</span>/5</b> · Puan: <b id="rfx-tim-puan" style="color:var(--gold);">0</b></div>
+                <div style="position:relative; height:74px; background:linear-gradient(90deg, #ef4444 0 38%, #10b981 38% 62%, #ef4444 62% 100%); border-radius:12px; border:2px solid var(--border-color); overflow:hidden;">
+                    <div style="position:absolute; left:50%; top:0; bottom:0; width:2px; background:rgba(255,255,255,0.7);"></div>
+                    <div id="rfx-tim-marker" style="position:absolute; top:0; bottom:0; width:6px; margin-left:-3px; background:#fff; left:0; box-shadow:0 0 10px #fff;"></div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:10px 0;">Çizgi YEŞİL ortadayken ATIŞ'a bas. Tam ortada = en yüksek puan!</div>
+                <button onclick="rfxTimAtis()" id="rfx-tim-btn" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer;">▶️ Başla</button>`;
+        }
+        function rfxTimBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxTimBasladi = true; rfxTimPos = 0; rfxTimYon = 1; rfxTimAtisSay = 0; rfxTimPuan = 0;
+            let btn = document.getElementById('rfx-tim-btn'); if(btn) btn.innerText = '🎯 ATIŞ!';
+            rfxTimer = setInterval(() => {
+                rfxTimPos += rfxTimYon * 2.2;
+                if(rfxTimPos >= 100) { rfxTimPos = 100; rfxTimYon = -1; } if(rfxTimPos <= 0) { rfxTimPos = 0; rfxTimYon = 1; }
+                let m = document.getElementById('rfx-tim-marker'); if(m) m.style.left = rfxTimPos + '%';
+            }, 16);
+        }
+        function rfxTimAtis() {
+            if(!rfxTimBasladi) { rfxTimBaslat(); return; }
+            if(!rfxAktif) return;
+            let diff = Math.abs(rfxTimPos - 50);
+            let p = diff < 4 ? 20 : diff < 9 ? 12 : diff < 16 ? 6 : 0;
+            rfxTimPuan += p; rfxTimAtisSay++;
+            document.getElementById('rfx-tim-puan').innerText = rfxTimPuan;
+            document.getElementById('rfx-tim-atis').innerText = rfxTimAtisSay;
+            try { sesCal(p >= 12 ? 1100 : p > 0 ? 700 : 300, 0.1); } catch(e) {}
+            if(rfxTimAtisSay >= 5) rfxTimBitir();
+        }
+        function rfxTimBitir() {
+            rfxTemizle(); rfxTimBasladi = false; let kazanilan = Math.min(10, Math.ceil(rfxTimPuan / 10));
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Tam Zamanında', '⏱️') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`⏱️ Toplam ${rfxTimPuan} puan!`, kazanilan, 'timing')}</div>`;
+        }
+        // --- Nişan Tut (sabit tutuş / steady hold) ---
+        let rfxTutSure = 0, rfxTutSkor = 0, rfxTutBasili = false, rfxTutLastX = 0, rfxTutLastY = 0, rfxTutJitter = 0;
+        function rfxTutKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Nişan Tut', '🎯') + `
+                <div style="text-align:center; margin-bottom:8px;">⏱️ <span id="rfx-tut-sure">15</span>s · Sabitlik: <b id="rfx-tut-skor" style="color:var(--neon-green);">0.0</b>s</div>
+                <div id="rfx-tut-alan" onpointerdown="rfxTutDown(event)" onpointermove="rfxTutMove(event)" onpointerup="rfxTutUp(event)" onpointerleave="rfxTutUp(event)" style="position:relative; width:100%; height:320px; border-radius:14px; border:2px solid var(--border-color); background:repeating-radial-gradient(circle at 50% 50%, #1f2937 0 26px, #111827 26px 28px); display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:none; user-select:none;">
+                    <div id="rfx-tut-hedef" style="width:96px; height:96px; border-radius:50%; border:3px dashed var(--accent-orange); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--text-muted); text-align:center; padding:6px;">Parmağını bas ve KIPIRDAMA</div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Parmağını basılı tut, sabit kal. Kıpırdamadıkça puan kazanırsın (full draw'da sabit durmak gibi).</div>`;
+        }
+        function rfxTutDown(e) { if(e) e.preventDefault(); if(!rfxAktif) rfxTutOyunBaslat(); rfxTutBasili = true; rfxTutLastX = e.clientX; rfxTutLastY = e.clientY; }
+        function rfxTutMove(e) { if(!rfxTutBasili) return; let dx = e.clientX - rfxTutLastX, dy = e.clientY - rfxTutLastY; rfxTutJitter += Math.sqrt(dx * dx + dy * dy); rfxTutLastX = e.clientX; rfxTutLastY = e.clientY; }
+        function rfxTutUp(e) { rfxTutBasili = false; }
+        function rfxTutOyunBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxTutSure = 15; rfxTutSkor = 0; rfxTutJitter = 0;
+            let hedef = document.getElementById('rfx-tut-hedef'); if(hedef) hedef.innerText = 'SABİT KAL';
+            let tickSay = 0;
+            rfxTimer = setInterval(() => {
+                if(rfxTutBasili && rfxTutJitter < 7) { rfxTutSkor += 0.1; if(hedef) { hedef.style.borderColor = 'var(--neon-green)'; hedef.style.color = 'var(--neon-green)'; } }
+                else { if(hedef) { hedef.style.borderColor = rfxTutBasili ? 'var(--neon-red)' : 'var(--accent-orange)'; hedef.style.color = 'var(--text-muted)'; } }
+                rfxTutJitter = 0;
+                let se = document.getElementById('rfx-tut-skor'); if(se) se.innerText = rfxTutSkor.toFixed(1);
+                tickSay++;
+                if(tickSay % 10 === 0) { rfxTutSure--; let su = document.getElementById('rfx-tut-sure'); if(su) su.innerText = rfxTutSure; if(rfxTutSure <= 0) rfxTutBitir(); }
+            }, 100);
+        }
+        function rfxTutBitir() {
+            rfxTemizle(); rfxTutBasili = false; let kazanilan = Math.min(10, Math.round(rfxTutSkor / 1.5));
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Nişan Tut', '🎯') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🎯 ${rfxTutSkor.toFixed(1)} sn sabit kaldın!`, kazanilan, 'tut')}</div>`;
+        }
+        // --- Odak Kilidi (Schulte / tarama-odak) ---
+        let rfxOdkSure = 0, rfxOdkSkor = 0, rfxOdkHedef = 1;
+        function rfxOdkKur(alan) {
+            alan.innerHTML = rfxBaslikHtml('Odak Kilidi', '🔢') + `
+                <div style="text-align:center; margin-bottom:10px;">⏱️ <span id="rfx-odk-sure">30</span>s · Sıradaki: <b id="rfx-odk-hedef" style="color:var(--accent-orange);">1</b> · Doğru: <b id="rfx-odk-skor" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-odk-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;"></div>
+                <div style="text-align:center; margin-top:12px;"><button onclick="rfxOdkBaslat()" id="rfx-odk-btn" style="background:var(--accent-orange); color:#fff; border:none; padding:12px 24px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer;">▶️ Başla</button></div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:8px;">Sayılara 1'den 9'a SIRAYLA dokun, hızlı ol! (görsel tarama & odak)</div>`;
+        }
+        function rfxOdkGridCiz() {
+            let g = document.getElementById('rfx-odk-grid'); if(!g) return;
+            let nums = [1,2,3,4,5,6,7,8,9];
+            for(let i = nums.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); let t = nums[i]; nums[i] = nums[j]; nums[j] = t; }
+            g.innerHTML = nums.map(n => `<button onclick="rfxOdkBas(${n})" data-n="${n}" style="aspect-ratio:1; font-size:26px; font-weight:900; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; color:var(--text-main); cursor:pointer;">${n}</button>`).join('');
+        }
+        function rfxOdkBaslat() {
+            rfxTemizle(); rfxAktif = true; rfxOdkSure = 30; rfxOdkSkor = 0; rfxOdkHedef = 1;
+            document.getElementById('rfx-odk-skor').innerText = '0'; document.getElementById('rfx-odk-hedef').innerText = '1'; document.getElementById('rfx-odk-sure').innerText = '30';
+            let b = document.getElementById('rfx-odk-btn'); if(b) b.style.display = 'none';
+            rfxOdkGridCiz();
+            rfxTimer = setInterval(() => { rfxOdkSure--; let e = document.getElementById('rfx-odk-sure'); if(e) e.innerText = rfxOdkSure; if(rfxOdkSure <= 0) rfxOdkBitir(); }, 1000);
+        }
+        function rfxOdkBas(n) {
+            if(!rfxAktif) return;
+            if(n === rfxOdkHedef) {
+                rfxOdkSkor++; rfxOdkHedef++; document.getElementById('rfx-odk-skor').innerText = rfxOdkSkor;
+                try { sesCal(900, 0.04); } catch(e) {}
+                let b = document.querySelector(`#rfx-odk-grid button[data-n="${n}"]`); if(b) { b.style.background = 'var(--neon-green)'; b.style.color = '#fff'; b.disabled = true; }
+                if(rfxOdkHedef > 9) { rfxOdkHedef = 1; rfxOdkGridCiz(); }
+                let he = document.getElementById('rfx-odk-hedef'); if(he) he.innerText = rfxOdkHedef;
+            } else { try { sesCal(250, 0.12); } catch(e) {} }
+        }
+        function rfxOdkBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, Math.ceil(rfxOdkSkor / 4));
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Odak Kilidi', '🔢') + `<div style="text-align:center; padding:44px 12px;">${rfxBitisIc(`🔢 ${rfxOdkSkor} doğru dokunuş!`, kazanilan, 'odak')}</div>`;
+        }
+        // --- Mükemmel Düşüş (bırakıştan sonra yayı sıkmama) ---
+        let rfxDsAtis = 0, rfxDsBasari = 0, rfxDsAsama = 'hazir', rfxDsBar = 0;
+        function rfxDsKur(alan) {
+            rfxDsAtis = 0; rfxDsBasari = 0; rfxDsAsama = 'hazir'; rfxDsBar = 0;
+            alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `
+                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-ds-atis">0</span>/3</b> · Mükemmel: <b id="rfx-ds-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-ds-sahne" style="position:relative; height:230px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#111827); overflow:hidden; display:flex; align-items:center; justify-content:center; touch-action:none;">
+                    <div id="rfx-ds-yay" style="font-size:74px; transition:transform .12s;">🏹</div>
+                    <div id="rfx-ds-mesaj" style="position:absolute; top:12px; left:0; right:0; text-align:center; font-weight:800; font-size:15px;"></div>
+                </div>
+                <div style="height:22px; background:var(--bg-main); border-radius:11px; margin-top:10px; overflow:hidden; position:relative; border:1px solid var(--border-color);">
+                    <div style="position:absolute; left:70%; right:6%; top:0; bottom:0; background:rgba(16,185,129,0.35);"></div>
+                    <div id="rfx-ds-bar" style="height:100%; width:0%; background:var(--accent-orange);"></div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Yeşil alanda bırak. Bıraktıktan sonra <b>SAKIN DOKUNMA</b> — yayı sıkma, düşmesine izin ver!</div>
+                <button id="rfx-ds-btn" onpointerdown="rfxDsCekBasla(event)" onpointerup="rfxDsBirak(event)" onpointerleave="rfxDsBirak(event)" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer; touch-action:none;">🏹 YAYI GER (BASILI TUT)</button>`;
+        }
+        function rfxDsCekBasla(e) {
+            if(e) e.preventDefault();
+            if(rfxDsAsama !== 'hazir' || rfxDsAtis >= 3) return;
+            rfxDsAsama = 'cekiliyor'; rfxDsBar = 0; rfxAktif = true;
+            let mesaj = document.getElementById('rfx-ds-mesaj'); if(mesaj) mesaj.innerText = '';
+            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'scale(1.12)';
+            rfxTimer = setInterval(() => { rfxDsBar += 2; if(rfxDsBar > 100) rfxDsBar = 100; let b = document.getElementById('rfx-ds-bar'); if(b) b.style.width = rfxDsBar + '%'; }, 30);
+        }
+        function rfxDsBirak(e) {
+            if(rfxDsAsama !== 'cekiliyor') return;
+            if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
+            let mesaj = document.getElementById('rfx-ds-mesaj'), yay = document.getElementById('rfx-ds-yay');
+            if(rfxDsBar < 70) { rfxDsAsama = 'hazir'; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Çok erken bıraktın, tekrar dene</span>'; let b = document.getElementById('rfx-ds-bar'); if(b) b.style.width = '0%'; if(yay) yay.style.transform = 'scale(1)'; return; }
+            rfxDsAsama = 'dusus';
+            if(mesaj) mesaj.innerHTML = '<span style="color:var(--gold);">Ok atıldı... DOKUNMA!</span>';
+            let salla = 0; rfxTimer = setInterval(() => { salla++; if(yay) yay.style.transform = `rotate(${Math.sin(salla / 2) * 20}deg)`; }, 60);
+            let sahne = document.getElementById('rfx-ds-sahne'); if(sahne) sahne.onpointerdown = () => { if(rfxDsAsama === 'dusus') rfxDsSonuc(false); };
+            rfxDsDusT = setTimeout(() => { rfxDsSonuc(true); }, 1800);
+        }
+        function rfxDsSonuc(basarili) {
+            if(rfxDsAsama !== 'dusus') return;
+            rfxDsAsama = 'hazir';
+            if(rfxDsDusT) { clearTimeout(rfxDsDusT); rfxDsDusT = null; } if(rfxTimer) { clearInterval(rfxTimer); rfxTimer = null; }
+            let sahne = document.getElementById('rfx-ds-sahne'); if(sahne) sahne.onpointerdown = null;
+            let yay = document.getElementById('rfx-ds-yay'); if(yay) yay.style.transform = 'rotate(0deg) scale(1)';
+            let bar = document.getElementById('rfx-ds-bar'); if(bar) bar.style.width = '0%';
+            rfxDsAtis++; let mesaj = document.getElementById('rfx-ds-mesaj');
+            if(basarili) { rfxDsBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">✅ MÜKEMMEL DÜŞÜŞ! Tam onikiden!</span>'; try { sesCal(1100, 0.25); } catch(e) {} }
+            else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ TORK HATASI – YAYI SIKTIN! Iska.</span>'; try { sesCal(200, 0.3); } catch(e) {} }
+            let ea = document.getElementById('rfx-ds-atis'); if(ea) ea.innerText = rfxDsAtis;
+            let eb = document.getElementById('rfx-ds-basari'); if(eb) eb.innerText = rfxDsBasari;
+            if(rfxDsAtis >= 3) setTimeout(rfxDsBitir, 1300);
+        }
+        function rfxDsBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, rfxDsBasari * 4);
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Mükemmel Düşüş', '🏹') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`🏹 3 atışta ${rfxDsBasari} mükemmel düşüş!`, kazanilan, 'dusus')}</div>`;
+        }
+        // --- Dinamik Bırakış (sırt gerginliği / ölü bırakış düzeltme) ---
+        let rfxDnAtis = 0, rfxDnBasari = 0, rfxDnBasili = false, rfxDnX0 = 0, rfxDnSon = [];
+        function rfxDnKur(alan) {
+            rfxDnAtis = 0; rfxDnBasari = 0; rfxDnBasili = false;
+            alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `
+                <div style="text-align:center; margin-bottom:8px;">Atış: <b><span id="rfx-dn-atis">0</span>/3</b> · Dinamik: <b id="rfx-dn-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-dn-sahne" onpointerdown="rfxDnDown(event)" onpointermove="rfxDnMove(event)" onpointerup="rfxDnUp(event)" onpointerleave="rfxDnUp(event)" style="position:relative; height:220px; border-radius:14px; border:2px solid var(--border-color); background:linear-gradient(#0b1220,#111827); overflow:hidden; touch-action:none; user-select:none;">
+                    <div style="position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:60px;">🏹</div>
+                    <div id="rfx-dn-nock" style="position:absolute; top:50%; right:78px; transform:translateY(-50%); width:26px; height:26px; border-radius:50%; background:var(--accent-orange); box-shadow:0 0 12px var(--accent-orange);"></div>
+                    <div id="rfx-dn-mesaj" style="position:absolute; top:12px; left:0; right:0; text-align:center; font-weight:800; font-size:15px;"></div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">Basılı tut, parmağını <b>SOLA</b> çek (sırtını kas). Geriye çekmeye DEVAM ederken bırak → dinamik. Durup bırakırsan ölü bırakış, ok düşer.</div>`;
+        }
+        function rfxDnDown(e) { if(e) e.preventDefault(); if(rfxDnAtis >= 3) return; rfxAktif = true; rfxDnBasili = true; rfxDnX0 = e.clientX; rfxDnSon = [{ x: e.clientX, t: performance.now() }]; let m = document.getElementById('rfx-dn-mesaj'); if(m) m.innerText = ''; }
+        function rfxDnMove(e) {
+            if(!rfxDnBasili) return; let x = e.clientX; rfxDnSon.push({ x: x, t: performance.now() }); if(rfxDnSon.length > 6) rfxDnSon.shift();
+            let cek = Math.max(0, rfxDnX0 - x); let n = document.getElementById('rfx-dn-nock'); if(n) n.style.right = (78 + Math.min(cek, 170)) + 'px';
+        }
+        function rfxDnUp(e) {
+            if(!rfxDnBasili) return; rfxDnBasili = false;
+            let x = (e && e.clientX != null) ? e.clientX : (rfxDnSon.length ? rfxDnSon[rfxDnSon.length - 1].x : rfxDnX0);
+            let cekMesafe = Math.max(0, rfxDnX0 - x);
+            let vx = 0, now = performance.now(), last = rfxDnSon[rfxDnSon.length - 1];
+            if(last && (now - last.t) <= 90 && rfxDnSon.length >= 2) { let a = rfxDnSon[rfxDnSon.length - 2]; vx = (last.x - a.x) / ((last.t - a.t) || 16); }
+            let n = document.getElementById('rfx-dn-nock'), mesaj = document.getElementById('rfx-dn-mesaj');
+            rfxDnAtis++;
+            if(cekMesafe < 50) { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">Yeterince çekmedin!</span>'; try { sesCal(200, 0.2); } catch(e) {} }
+            else if(vx < -0.05) { rfxDnBasari++; if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-green);">💪 DİNAMİK BIRAKIŞ! +bonus</span>'; if(n) n.style.right = '230px'; try { sesCal(1100, 0.2); } catch(e) {} }
+            else { if(mesaj) mesaj.innerHTML = '<span style="color:var(--neon-red);">❌ ÖLÜ BIRAKIŞ! Ok düştü.</span>'; if(n) { n.style.transition = 'top .4s'; n.style.top = '88%'; } try { sesCal(250, 0.3); } catch(e) {} }
+            setTimeout(() => { let nn = document.getElementById('rfx-dn-nock'); if(nn) { nn.style.transition = ''; nn.style.top = '50%'; nn.style.right = '78px'; } }, 700);
+            let ea = document.getElementById('rfx-dn-atis'); if(ea) ea.innerText = rfxDnAtis;
+            let eb = document.getElementById('rfx-dn-basari'); if(eb) eb.innerText = rfxDnBasari;
+            if(rfxDnAtis >= 3) setTimeout(rfxDnBitir, 900);
+        }
+        function rfxDnBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, rfxDnBasari * 4);
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Dinamik Bırakış', '💪') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`💪 3 atışta ${rfxDnBasari} dinamik bırakış!`, kazanilan, 'dinamik')}</div>`;
+        }
+        // --- Sabır (Hedef Panik): işareti bekle, erken atma ---
+        let rfxSbTur = 0, rfxSbBasari = 0, rfxSbHazir = false, rfxSbBasili = false, rfxSbGoZaman = 0;
+        function rfxSbKur(alan) {
+            rfxSbTur = 0; rfxSbBasari = 0; rfxSbHazir = false; rfxSbBasili = false;
+            alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `
+                <div style="text-align:center; margin-bottom:8px;">Tur: <b><span id="rfx-sb-tur">0</span>/5</b> · İsabet: <b id="rfx-sb-basari" style="color:var(--neon-green);">0</b></div>
+                <div id="rfx-sb-ekran" style="height:240px; border-radius:14px; border:2px solid var(--border-color); background:#1f2937; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; transition:background .1s;">
+                    <div style="font-size:56px;">🎯</div>
+                    <div id="rfx-sb-mesaj" style="font-weight:800; font-size:16px; margin-top:10px; color:var(--text-muted);">Hazır mısın?</div>
+                </div>
+                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin:8px 0;">"NİŞAN AL"a BASILI tut, sarı işareti bekle. Erken bırakırsan ACELE etmiş olursun; işaret gelince hemen bırak!</div>
+                <button id="rfx-sb-btn" onpointerdown="rfxSbBasla(event)" onpointerup="rfxSbBirak(event)" onpointerleave="rfxSbBirak(event)" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; font-size:17px; cursor:pointer; touch-action:none;">🎯 NİŞAN AL (BASILI TUT)</button>`;
+        }
+        function rfxSbBasla(e) {
+            if(e) e.preventDefault();
+            if(rfxSbBasili || rfxSbTur >= 5) return;
+            rfxSbBasili = true; rfxAktif = true; rfxSbHazir = false;
+            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj');
+            if(ekran) ekran.style.background = '#1f2937'; if(mesaj) { mesaj.innerText = 'Nişan alınıyor... sabret'; mesaj.style.color = 'var(--text-muted)'; }
+            let bekle = 1500 + Math.random() * 3500;
+            rfxSbGoT = setTimeout(() => {
+                if(!rfxSbBasili) return; rfxSbHazir = true; rfxSbGoZaman = performance.now();
+                if(ekran) ekran.style.background = '#10b981'; if(mesaj) { mesaj.innerHTML = '🟡 ŞİMDİ BIRAK!'; mesaj.style.color = '#fff'; }
+                try { sesCal(1200, 0.15); } catch(e) {}
+            }, bekle);
+        }
+        function rfxSbBirak(e) {
+            if(!rfxSbBasili) return; rfxSbBasili = false;
+            if(rfxSbGoT) { clearTimeout(rfxSbGoT); rfxSbGoT = null; } if(rfxSbPencereT) { clearTimeout(rfxSbPencereT); rfxSbPencereT = null; }
+            let ekran = document.getElementById('rfx-sb-ekran'), mesaj = document.getElementById('rfx-sb-mesaj');
+            rfxSbTur++;
+            if(!rfxSbHazir) { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '❌ ACELE ETTİN! Sabret.'; mesaj.style.color = '#fff'; } try { sesCal(200, 0.3); } catch(e) {} }
+            else { let tepki = performance.now() - rfxSbGoZaman; if(tepki <= 1200) { rfxSbBasari++; if(ekran) ekran.style.background = '#065f46'; if(mesaj) { mesaj.innerHTML = `✅ İSABET! (${Math.round(tepki)}ms)`; mesaj.style.color = '#fff'; } try { sesCal(1100, 0.15); } catch(e) {} } else { if(ekran) ekran.style.background = '#7f1d1d'; if(mesaj) { mesaj.innerHTML = '⏰ Geç kaldın!'; mesaj.style.color = '#fff'; } try { sesCal(300, 0.2); } catch(e) {} } }
+            rfxSbHazir = false;
+            let et = document.getElementById('rfx-sb-tur'); if(et) et.innerText = rfxSbTur;
+            let eb = document.getElementById('rfx-sb-basari'); if(eb) eb.innerText = rfxSbBasari;
+            if(rfxSbTur >= 5) setTimeout(rfxSbBitir, 1100);
+            else setTimeout(() => { let ek = document.getElementById('rfx-sb-ekran'), me = document.getElementById('rfx-sb-mesaj'); if(ek) ek.style.background = '#1f2937'; if(me) { me.innerText = 'Tekrar bas, nişan al'; me.style.color = 'var(--text-muted)'; } }, 1100);
+        }
+        function rfxSbBitir() {
+            rfxTemizle(); let kazanilan = Math.min(10, rfxSbBasari * 2);
+            let alan = document.getElementById('rfx-oyun-alani'); if(alan) alan.innerHTML = rfxBaslikHtml('Sabır (Hedef Panik)', '⏳') + `<div style="text-align:center; padding:40px 12px;">${rfxBitisIc(`⏳ 5 turda ${rfxSbBasari} isabet!`, kazanilan, 'sabir')}</div>`;
+        }
+
         // --- Profil (kapak fotoğrafı + rozet vitrini) ---
         function profilRender(ad) {
             let kart = document.getElementById('bs-profil-kart');
@@ -4788,5 +5515,24 @@
         }
     </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+    <div id="yonetici-modal" class="modal-overlay" style="z-index:25000;">
+        <div class="modal-content glass-panel" style="max-width:600px; width:100%; max-height:92vh; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:10px;">
+                <span style="font-weight:800; color:var(--neon-red); font-size:17px;">🛡️ Yönetici Paneli</span>
+                <button onclick="location.reload()" style="background:var(--border-color); color:var(--text-main); border:none; padding:7px 13px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">Çıkış</button>
+            </div>
+            <div id="yonetici-altnav" style="display:flex; gap:6px; margin-bottom:8px; overflow-x:auto;"></div>
+            <div id="yon-lig-bar" style="display:none; gap:6px; margin-bottom:8px;">
+                <button id="yon-lig-buyukler" onclick="yoneticiLigSec('buyukler')" style="flex:1; border:1px solid var(--border-color); padding:7px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer; background:transparent; color:var(--text-main);">🔵 Büyükler</button>
+                <button id="yon-lig-kucukler" onclick="yoneticiLigSec('kucukler')" style="flex:1; border:1px solid var(--border-color); padding:7px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer; background:transparent; color:var(--text-main);">🟢 Küçükler</button>
+            </div>
+            <input id="yonetici-arama" oninput="yoneticiPaneliCiz()" placeholder="🔍 Sporcu ara..." style="width:100%; padding:9px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px; box-sizing:border-box;">
+            <div id="yonetici-liste" style="overflow-y:auto; flex:1;"></div>
+        </div>
+    </div>
+    <div id="alt-menu" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:600; background:var(--bg-panel); border-top:1px solid var(--border-color); padding:5px 4px; padding-bottom:calc(5px + env(safe-area-inset-bottom)); box-shadow:0 -3px 14px rgba(0,0,0,0.35);"></div>
+    <div id="daha-menu" class="modal-overlay" style="align-items:flex-end;">
+        <div id="daha-menu-ic" style="width:100%; max-width:480px; margin:0 auto; background:var(--bg-main); border-radius:18px 18px 0 0; border:1px solid var(--border-color); padding:18px 16px calc(20px + env(safe-area-inset-bottom));"></div>
+    </div>
 </body>
 </html>
