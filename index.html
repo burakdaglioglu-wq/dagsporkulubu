@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v79</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v80</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v79</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v80</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -2866,7 +2866,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
                     // Kişi bazlı anlık dinleyici başlat
                     sporcuBulutaDinle();
-                    // Master dinleyici — değişince TÜM veriyi uygula (Firestore kazanır)
+                    // Master dinleyici — turnuvaDB için merge yap, silme yapma
                     dbBulut.collection('kulup').doc('master').onSnapshot(doc2 => {
                         if(!doc2.exists) return;
                         let d = doc2.data(); if(!d || !d.veri) return;
@@ -2875,13 +2875,29 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                             let p = JSON.parse(d.veri);
                             let uzakSayi = jsonSporcuSayisi(d.veri);
                             if(uzakSayi > 0 && p.turnuvaDB) {
-                                // Tam veriyi uygula — eski localStorage'ı geç
-                                turnuvaDB = p.turnuvaDB;
+                                // turnuvaDB: MERGE et — hiçbir sporcuyu silme
+                                // Yerel yeni eklenenler korunsun, buluttan gelenler eklensin
+                                ['buyukler','kucukler'].forEach(g => {
+                                    if(!p.turnuvaDB[g]) return;
+                                    if(!turnuvaDB[g]) turnuvaDB[g] = {};
+                                    Object.keys(p.turnuvaDB[g]).forEach(ad => {
+                                        if(silindiMi(g, ad)) return; // silinmiş ise ekleme
+                                        if(!turnuvaDB[g][ad]) {
+                                            // Bulutta var, yerelde yok → ekle
+                                            turnuvaDB[g][ad] = p.turnuvaDB[g][ad];
+                                        } else {
+                                            // İkisinde de var → daha yenisini al
+                                            let ym = turnuvaDB[g][ad].lastModified || 0;
+                                            let bm = p.turnuvaDB[g][ad].lastModified || 0;
+                                            if(bm > ym) turnuvaDB[g][ad] = p.turnuvaDB[g][ad];
+                                        }
+                                    });
+                                });
                                 if(p.takimlarDB) takimlarDB = p.takimlarDB;
                                 if(p.personelDB) personelDB = p.personelDB;
                                 if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
                                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
-                                bulutDurum('☁️ güncellendi ✓', 'var(--neon-green)');
+                                bulutDurum('☁️ senkron ✓', 'var(--neon-green)');
                                 try { siralamaListesiDoldur(); } catch(e) {}
                                 try { sporcuListesiniYenile(); } catch(e) {}
                             }
@@ -3293,7 +3309,19 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
         function sifreSil() { sifreBuffer = sifreBuffer.slice(0, -1); sifreDisplayGuncelle(); }
         function sifreGeri() { sifreBuffer = ''; document.getElementById('giris-sifre').style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
-        function yoneticiKaydet() { try { localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {} }
+        function yoneticiKaydet() {
+            try {
+                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                bekleyenGonderim = true;
+                // Anında Firestore'a gönder (10sn bekletme)
+                if(bulutHazir && dbBulut && bulutIlkPullYapildi) {
+                    let json = bulutVeriJSON();
+                    dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                        .then(() => { sonBulutJSON = json; bekleyenGonderim = false; bulutDurum('☁️ kaydedildi ✓', 'var(--neon-green)'); })
+                        .catch(() => { bekleyenGonderim = true; });
+                }
+            } catch(e) {}
+        }
         function yoneticiPaneliAc() { renderHedefId = 'yonetici-liste'; if(!aktifGrup) aktifGrup = 'buyukler'; let m = document.getElementById('yonetici-modal'); if(m) m.style.display = 'flex'; yoneticiSekmeAktif = 'kullanicilar'; yoneticiSekme('kullanicilar'); }
         let yoneticiSekmeAktif = 'kullanicilar';
         let yoneticiYoklamaTip = 'bugun';
@@ -3586,6 +3614,9 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(turnuvaDB[aktifGrup][ad]) return showToast("Zaten kayıtlı!", "warning");
             turnuvaDB[aktifGrup][ad] = { toplamSkor: 0, xAdet: 0, dogumYili: yil, cinsiyet: aktifCinsiyet, yay: aktifYay, seriler: [], detayliOklar: [], lastModified: Date.now() };
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            // Hemen Firestore'a gönder — diğer cihazlar anında görsün
+            bekleyenGonderim = true;
+            try { bulutaGonderKontrol(); } catch(e) {}
             document.getElementById('yeni-sporcu-ad').value = ""; showToast(`${ad} eklendi!`, "success"); sporcuListesiniYenile(); takimDropdownDoldur();
         }
 
@@ -3601,6 +3632,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(!yeniAd) return showToast("İsim boş olamaz!", "error"); let sp = turnuvaDB[aktifGrup][eskiAd];
             if(yeniAd !== eskiAd) { if(turnuvaDB[aktifGrup][yeniAd]) return showToast("Bu isimde bir sporcu var!", "error"); turnuvaDB[aktifGrup][yeniAd] = sp; delete turnuvaDB[aktifGrup][eskiAd]; sp.ad = yeniAd; }
             sp.yay = yayTipi; sp.kod = (document.getElementById('duzenle-kod').value || '').trim(); let yeniDogum = (document.getElementById('duzenle-dogum').value || '').trim(); if(yeniDogum) sp.dogumYili = yeniDogum; sp.lastModified = Date.now(); localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            bekleyenGonderim = true; try { bulutaGonderKontrol(); } catch(e) {}
             document.getElementById('duzenle-modal').style.display = 'none'; showToast("Sporcu güncellendi!", "success"); sporcuListesiniYenile(); takimDropdownDoldur();
         }
 
