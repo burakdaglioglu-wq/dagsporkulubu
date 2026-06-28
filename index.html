@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v80</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v81</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v80</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v81</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -708,12 +708,6 @@
                     <span style="width:60px; flex-shrink:0;"></span>
                 </div>
                 <div id="hizli-gecis-bar" class="sadece-egitmen" style="display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px 0; -webkit-overflow-scrolling:touch;"></div>
-                <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display:flex; align-items:center; gap:8px; width:100%; box-sizing:border-box; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; margin-bottom:10px;">
-                    <span id="ciddi-mod-switch" style="display:inline-block; width:34px; height:18px; border-radius:10px; background:var(--accent-grey, #555); position:relative; transition:background 0.2s; flex-shrink:0;">
-                        <span id="ciddi-mod-knob" style="position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;"></span>
-                    </span>
-                    <span id="ciddi-mod-label" style="flex:1; text-align:left;">🎉 Eğlence Modu <span style="font-size: 9px; opacity: 0.8;">(kutlamalar açık)</span></span>
-                </button>
                 <button onclick="skorKaydet()" style="display:block; width:100%; box-sizing:border-box; background:var(--neon-green); color:white; border:none; padding:14px; border-radius:10px; font-weight:800; font-size:16px; box-shadow:0 3px 12px rgba(16,185,129,0.35);">💾 SERİYİ KAYDET ✔️</button>
                 <div style="display:flex; gap:8px; margin-top:8px;">
                     <button onclick="seriUzat()" style="flex:1; background:rgba(255,98,0,0.15); color:var(--text-main); border:1px solid var(--accent-orange); padding:6px 8px; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer;">➕ Seri Uzat</button>
@@ -735,6 +729,17 @@
                             <button class="hedef-sec-btn" id="btn-6ring" onclick="setHedefTipi('6ring')">6 Halkalı</button>
                             <button class="hedef-sec-btn" id="btn-3spot" onclick="setHedefTipi('3spot')">3'lü Spot</button>
                         </div>
+                        <!-- MOD SEÇİCİ — hedef yüzünün hemen üstü -->
+                        <button type="button" id="ciddi-mod-btn" onclick="ciddiModToggle()" style="display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; border:none; padding:10px 14px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; user-select:none; margin-bottom:8px; transition:all 0.25s;">
+                            <span style="font-size:22px;" id="ciddi-mod-icon">🎉</span>
+                            <span style="flex:1; text-align:left;">
+                                <span id="ciddi-mod-label" style="display:block; font-size:13px; font-weight:900;">Eğlence Modu</span>
+                                <span id="ciddi-mod-alt" style="display:block; font-size:10px; opacity:0.75;">Konfeti & kutlamalar açık</span>
+                            </span>
+                            <span id="ciddi-mod-switch" style="display:inline-flex; align-items:center; width:44px; height:24px; border-radius:12px; background:#555; position:relative; transition:background 0.25s; flex-shrink:0;">
+                                <span id="ciddi-mod-knob" style="position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; transition:left 0.25s; box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
+                            </span>
+                        </button>
                         <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:8px; padding:7px 9px;">
                             <span style="font-size:11px; font-weight:bold; flex:1;">🏹 Bu seride kaç ok?</span>
                             <button id="oksayi-btn-oto" onclick="okSayisiAyarla(null)" style="padding:5px 9px; border-radius:6px; font-size:11px; font-weight:bold; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); cursor:pointer;">Oto</button>
@@ -4062,20 +4067,28 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let sw = document.getElementById('ciddi-mod-switch');
             let knob = document.getElementById('ciddi-mod-knob');
             let label = document.getElementById('ciddi-mod-label');
+            let alt = document.getElementById('ciddi-mod-alt');
+            let icon = document.getElementById('ciddi-mod-icon');
             let btn = document.getElementById('ciddi-mod-btn');
             if(!sw || !knob || !label || !btn) return;
             if(ciddiModAcik) {
                 sw.style.background = 'var(--accent-orange)';
-                knob.style.left = '18px';
-                label.innerHTML = '🎯 Ciddi Yarışma <span style="font-size: 9px; opacity: 0.8;">(ödül alırsın, göstermeyiz)</span>';
-                btn.style.background = 'rgba(245,158,11,0.18)';
-                btn.style.borderColor = 'var(--accent-orange)';
+                knob.style.left = '23px';
+                if(icon) icon.textContent = '🎯';
+                label.textContent = 'Ciddi Yarışma Modu';
+                if(alt) alt.textContent = 'Kutlamalar kapalı · Ödüller sessizce verilir';
+                btn.style.background = 'rgba(245,158,11,0.15)';
+                btn.style.border = '2px solid var(--accent-orange)';
+                btn.style.color = 'var(--accent-orange)';
             } else {
-                sw.style.background = 'var(--accent-grey, #555)';
-                knob.style.left = '2px';
-                label.innerHTML = '🎉 Eğlence Modu <span style="font-size: 9px; opacity: 0.8;">(kutlamalar açık)</span>';
-                btn.style.background = 'rgba(255,255,255,0.06)';
-                btn.style.borderColor = 'var(--border-color)';
+                sw.style.background = '#555';
+                knob.style.left = '3px';
+                if(icon) icon.textContent = '🎉';
+                label.textContent = 'Eğlence Modu';
+                if(alt) alt.textContent = 'Konfeti & kutlamalar açık';
+                btn.style.background = 'rgba(16,185,129,0.1)';
+                btn.style.border = '2px solid var(--neon-green)';
+                btn.style.color = 'var(--neon-green)';
             }
         }
 
