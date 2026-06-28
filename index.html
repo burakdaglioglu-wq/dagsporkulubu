@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v77</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v78</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v77</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v78</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -1314,12 +1314,25 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 if(sp.seriler && sp.seriler.length > 0) {
                     if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi = [];
                     sp.kartGecmisi.push({ tarih: bugun, seriler: sp.seriler, detayliOklar: sp.detayliOklar || [], toplamSkor: sp.toplamSkor || 0, xAdet: sp.xAdet || 0 });
-                    sp.seriler = []; sp.detayliOklar = []; sp.toplamSkor = 0; sp.xAdet = 0; sp.lastModified = Date.now();
+                    sp.seriler = []; sp.detayliOklar = []; sp.toplamSkor = 0; sp.xAdet = 0;
+                    sp.lastModified = Date.now(); sp.sonSkorZamani = null;
                 }
             });
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
             showToast(`Yeni antrenman başladı! ${arsivlenecek.length} kart arşivlendi 🗂️`, 'success');
             sporcuListesiniYenile(); siralamaListesiDoldur();
+            // DİĞER CİHAZLARA ANLIK GÖNDER — Firestore master + özel reset eventi
+            if(bulutHazir && dbBulut) {
+                let json = bulutVeriJSON();
+                // Master'a yaz (tam veri)
+                dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                    .then(() => { sonBulutJSON = json; bulutDurum('☁️ arşivlendi ✓', 'var(--neon-green)'); })
+                    .catch(() => { bekleyenGonderim = true; });
+                // Özel reset sinyali — diğer cihazlar bunu görünce yenileyecek
+                dbBulut.collection('kulup').doc('reset_sinyali').set({
+                    yapan: _cihazId, grup: aktifGrup, zaman: Date.now(), tip: 'yeni_antrenman'
+                }).catch(() => {});
+            }
         }
 
         // Otomatik arşivleme: son skoru 3 saatten eski olan sporcuları arşivle
@@ -2939,13 +2952,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         // Canlı dinleyici — yeni seri gelince anında uygula
         function sporcuBulutaDinle() {
             if(!bulutHazir || !dbBulut) return;
+            // Seri dinleyici
             dbBulut.collection('kulup').doc('seriler').collection('kayitlar')
                 .onSnapshot(snapshot => {
                     let degisti = false;
                     snapshot.docChanges().forEach(change => {
-                        if(change.type !== 'added') return; // sadece yeni seriler
+                        if(change.type !== 'added') return;
                         let s = change.doc.data();
-                        if(!s || s.cihazId === _cihazId) return; // kendi yazdığımızı atla
+                        if(!s || s.cihazId === _cihazId) return;
                         _seriUygula(s);
                         degisti = true;
                     });
@@ -2955,6 +2969,31 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         try { siralamaListesiDoldur(); } catch(e) {}
                         try { egitmenPaneliDoldur(); } catch(e) {}
                     }
+                }, () => {});
+
+            // Reset sinyali dinleyici — "Yeni Antrenman Başlat" başka cihazdan gelince
+            dbBulut.collection('kulup').doc('reset_sinyali')
+                .onSnapshot(snap => {
+                    if(!snap.exists) return;
+                    let d = snap.data();
+                    if(!d || !d.zaman) return;
+                    if(d.yapan === _cihazId) return; // kendi gönderdiğimizi atla
+                    // Son 30 saniye içinde gönderilmiş reset sinyali
+                    if(Date.now() - d.zaman > 30000) return;
+                    // Firestore'dan tam güncel veriyi çek ve uygula
+                    bulutDurum('☁️ antrenman sıfırlanıyor...', 'var(--gold)');
+                    dbBulut.collection('kulup').doc('master').get().then(doc => {
+                        if(doc.exists && doc.data() && doc.data().veri) {
+                            bulutVeriyiUygula(JSON.parse(doc.data().veri));
+                            sonBulutJSON = doc.data().veri;
+                            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                            bulutDurum('☁️ senkron', 'var(--neon-green)');
+                            showToast('🗂️ Yeni antrenman başladı! Skorlar güncellendi.', 'success');
+                            try { siralamaListesiDoldur(); } catch(e) {}
+                            try { egitmenPaneliDoldur(); } catch(e) {}
+                            try { sporcuListesiniYenile(); } catch(e) {}
+                        }
+                    }).catch(() => {});
                 }, () => {});
         }
         
