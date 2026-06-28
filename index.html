@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v66</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v76</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v66</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v76</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -1059,12 +1059,12 @@
             <div style="font-weight:900; font-size:12px; color:var(--accent-orange); letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">🏹 TEKNİK ATIŞ BECERİLERİ</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:16px;">
                 <button onclick="rfxOyunAc('timing')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">⏱️</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Tam Zamanında</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Bırakış zamanlaması · kliker ritmi</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-                <button onclick="rfxOyunAc('tut')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Nişan Tut</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Sabitlik · propriyosepsiyon</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                
                 <button onclick="rfxOyunAc('dusus')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🏹</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Mükemmel Düşüş</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Tork önleme · bırakış sonrası</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-                <button onclick="rfxOyunAc('dinamik')" style="background:var(--bg-panel); border:1px solid var(--accent-orange); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Dinamik Bırakış</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Sırt genişlemesi · ölü bırakış önleme</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                
                 <button onclick="rfxOyunAc('sabir')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">⏳</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Sabır</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Hedef panik · komutla atış</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
                 <button onclick="rfxOyunAc('grup')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🎯</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Grup At</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Tutarlılık · motor tekrar</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-                <button onclick="rfxOyunAc('ruzgar')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💨</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Rüzgar Okuyucu</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Offset nişan · açık hava taktik</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                
                 <button onclick="rfxOyunAc('kliker')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🖱️</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Kliker Duvarı</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Kliker sendromu · back tension</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
                 <button onclick="rfxOyunAc('followthrough')" style="background:var(--bg-panel); border:1px solid var(--neon-green); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🗿</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Follow-Through</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Yay kolu takibi · heykel gibi kal</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
             </div>
@@ -1073,7 +1073,7 @@
             <div style="font-weight:900; font-size:12px; color:var(--neon-green); letter-spacing:1px; margin:4px 0 8px; padding-left:4px;">🫁 SAKİNLİK & STRES YÖNETİMİ</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px,1fr)); gap:10px; margin-bottom:8px;">
                 <button onclick="rfxOyunAc('nefes')" style="background:var(--bg-panel); border:1px solid var(--neon-blue); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🫁</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Nefes Ritmi</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">HRV kontrolü · parasempatik aktivasyon</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
-                <button onclick="rfxOyunAc('sampiyonluk')" style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">🏆</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Şampiyonluk Oku</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Adrenalin yönetimi · shoot-off simülasyonu</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
+                
                 <button onclick="rfxOyunAc('yorgunluk')" style="background:var(--bg-panel); border:1px solid var(--gold); border-radius:14px; padding:14px 10px; cursor:pointer; text-align:center;"><div style="font-size:30px;">💪</div><div style="font-weight:800; color:var(--text-main); margin-top:5px; font-size:13px;">Son Okun Ağırlığı</div><div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Yorgunluk simülasyonu · zihin vs kas</div><div style="font-size:11px; color:var(--gold); font-weight:bold; margin-top:4px;">💎 max 10</div></button>
             </div>
         </div>
@@ -1320,6 +1320,34 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
             showToast(`Yeni antrenman başladı! ${arsivlenecek.length} kart arşivlendi 🗂️`, 'success');
             sporcuListesiniYenile(); siralamaListesiDoldur();
+        }
+
+        // Otomatik arşivleme: son skoru 3 saatten eski olan sporcuları arşivle
+        // Her grup için bağımsız çalışır — diğer gruba dokunmaz
+        function otomatikArsivle(g) {
+            if(!g || !turnuvaDB[g]) return;
+            let simdi = Date.now();
+            let uc_saat = 3 * 60 * 60 * 1000;
+            let arsivlendi = 0;
+            Object.keys(turnuvaDB[g]).forEach(ad => {
+                let sp = turnuvaDB[g][ad];
+                if(!sp.seriler || sp.seriler.length === 0) return; // seri yoksa dokunma
+                let sonZaman = sp.sonSkorZamani || sp.lastModified || 0;
+                if(!sonZaman) return;
+                if(simdi - sonZaman < uc_saat) return; // 3 saat geçmemiş, dokunma
+                // 3 saat geçmiş — arşivle
+                if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi = [];
+                let arsivTarih = new Date(sonZaman).toISOString().slice(0,10);
+                sp.kartGecmisi.push({ tarih: arsivTarih, seriler: sp.seriler, detayliOklar: sp.detayliOklar || [], toplamSkor: sp.toplamSkor || 0, xAdet: sp.xAdet || 0 });
+                sp.seriler = []; sp.detayliOklar = []; sp.toplamSkor = 0; sp.xAdet = 0;
+                sp.lastModified = Date.now(); sp.sonSkorZamani = null;
+                arsivlendi++;
+            });
+            if(arsivlendi > 0) {
+                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                try { bulutaGonderKontrol(); } catch(e) {}
+                console.log(`Otomatik arşiv: ${g} grubundan ${arsivlendi} sporcu arşivlendi`);
+            }
         }
         function kartGeriGetir(ad, idx) {
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp || !sp.kartGecmisi || !sp.kartGecmisi[idx]) return;
@@ -2736,6 +2764,8 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
         function bulutDurum(txt, renk) { let el = document.getElementById('bulut-durum'); if(el) { el.innerText = txt; el.style.color = renk || 'var(--text-muted)'; } }
         function bulutVeriJSON() { return JSON.stringify({ turnuvaDB, takimlarDB, antrenmanlarDB, ozelSiniflar, personelDB, personelYoklamaDB, elemeEslesmeleri, takimElemeEslesmeleri, aktifTur, aktifTakimTur, atisLog, rekorlarDB, otomatikYoklamaDB, aidatDB, silinenler: silinenlerDB.map(s => ({ ad: s.ad, grup: s.grup, tarih: s.tarih })) }); }
+        // Grup bazlı JSON — sadece aktif grubun turnuvaDB'sini gönderir
+        function bulutGrupJSON(g) { let partial = JSON.parse(bulutVeriJSON()); partial.aktifGrupGonderim = g; partial.turnuvaDB = {}; partial.turnuvaDB[g] = turnuvaDB[g] || {}; return JSON.stringify(partial); }
 
         function bulutVeriyiUygula(p) {
             guvenlikYedegiAl(); // uygulamadan önce mevcut dolu veriyi yedekle
@@ -2793,47 +2823,159 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                             let uzakSayi = jsonSporcuSayisi(uzakJSON);
                             let yerelSayi = sporcuSayisi(turnuvaDB);
                             if(uzakSayi > 0) { bulutVeriyiUygula(JSON.parse(uzakJSON)); sonBulutJSON = uzakJSON; bulutDurum('☁️ senkron', 'var(--neon-green)'); }
-                            else if(yerelSayi > 0) { sonBulutJSON = ''; bulutDurum('☁️ bağlı (bulut boştu, yerel korundu)', 'var(--gold)'); } // bulut boş, yereli koru — birazdan gönderilecek
+                            else if(yerelSayi > 0) { sonBulutJSON = ''; bulutDurum('☁️ bağlı (bulut boştu, yerel korundu)', 'var(--gold)'); }
                             else { sonBulutJSON = uzakJSON; bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
                         } else { bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
+                        // Kişi bazlı kayıtları da yükle — her sporcunun en güncel skoru
+                        dbBulut.collection('kulup').doc('sporcular').collection('kayitlar').get().then(snap => {
+                            snap.forEach(d => {
+                                let e=d.data(); if(!e||!e.g||!e.ad||!e.veri) return;
+                                try {
+                                    if(silindiMi(e.g,e.ad)) return;
+                                    let gelenSp=JSON.parse(e.veri);
+                                    if(!turnuvaDB[e.g]) turnuvaDB[e.g]={};
+                                    let yerelSp=turnuvaDB[e.g][e.ad];
+                                    if(!yerelSp||(gelenSp.lastModified||0)>(yerelSp.lastModified||0)) turnuvaDB[e.g][e.ad]=gelenSp;
+                                } catch(ex) {}
+                            });
+                            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                        }).catch(()=>{});
                     } catch(e) {}
-                    bulutIlkPullYapildi = true; // artık göndermeye izin var
+                    bulutIlkPullYapildi = true;
                     try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
-                    // 2) Canlı dinleyici
+                    // Kişi bazlı anlık dinleyici başlat
+                    sporcuBulutaDinle();
+                    // Master dinleyici (takımlar, personel vs. için)
                     dbBulut.collection('kulup').doc('master').onSnapshot(doc2 => {
                         if(!doc2.exists) return;
                         let d = doc2.data(); if(!d || !d.veri) return;
-                        if(d.veri === sonBulutJSON) { bulutDurum('☁️ senkron', 'var(--neon-green)'); return; }
-                        let gelenSayi = jsonSporcuSayisi(d.veri);
-                        let yerelSayi = sporcuSayisi(turnuvaDB);
-                        // KORUMA: bulut boş gelirse ama yerelde sporcu varsa, silme — yereli koru
-                        if(gelenSayi === 0 && yerelSayi > 0) { bulutDurum('☁️ boş güncelleme yok sayıldı 🛡️', 'var(--gold)'); return; }
-                        try { bulutVeriyiUygula(JSON.parse(d.veri)); sonBulutJSON = d.veri; localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); bulutDurum('☁️ güncellendi', 'var(--neon-green)'); } catch(e) {}
+                        if(d.veri === sonBulutJSON) return;
+                        try {
+                            let p = JSON.parse(d.veri);
+                            if(p.takimlarDB) takimlarDB = p.takimlarDB;
+                            if(p.personelDB) personelDB = p.personelDB;
+                            if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
+                            sonBulutJSON = d.veri;
+                        } catch(e) {}
                     }, err => { bulutDurum('☁️ izin/kural hatası', 'var(--neon-red)'); });
-                    // 3) Periyodik gönderme
-                    setInterval(bulutaGonderKontrol, 5000);
+                    // Periyodik master yedek
+                    setInterval(bulutaGonderKontrol, 10000);
                 }).catch(e => {
                     // okuma başarısızsa yine de dinleyiciyi kur ama göndermeyi kilitli tut
                     bulutDurum('☁️ okuma hatası', 'var(--neon-red)');
                 });
             } catch(e) { bulutDurum('☁️ hata: ' + (e.message || e.code || 'bilinmiyor'), 'var(--neon-red)'); }
         }
-        let bekleyenGonderim = false; // İnternet yokken skor girildi mi?
+        let bekleyenGonderim = false;
+        
+        // ===== KİŞİ BAZLI SYNC =====
+        // Her sporcu Firestore'da ayrı belge: sporcular/{grup}_{ad}
+        // İki cihaz aynı anda farklı sporcuya skor girince ASLA çakışmaz
+        
+        function sporcuBulutaYaz(g, ad) {
+            // Eski uyumluluk için boş bırak — artık seri bazlı yazılıyor
+        }
+        
+        // ===== SERİ BAZLI SYNC — Race Condition Tamamen Çözüldü =====
+        // Her seri Firestore'da bağımsız belge → kimse kimseyi ezmez
+        // kulup/seriler/{seriId} = { g, ad, oklar, puan, tarih, cihazId, t }
+        
+        // Bu cihaza özel benzersiz ID
+        let _cihazId = localStorage.getItem('dag_cihaz_id');
+        if(!_cihazId) { _cihazId = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); localStorage.setItem('dag_cihaz_id', _cihazId); }
+        
+        // Yerel kuyruk: internet yokken biriken seriler
+        let _seriBekleyen = JSON.parse(localStorage.getItem('dag_seri_kuyruk') || '[]');
+        function _seriBekleyenKaydet() { try { localStorage.setItem('dag_seri_kuyruk', JSON.stringify(_seriBekleyen)); } catch(e) {} }
+        
+        // Tek seri yaz (atomic — başka kimsenin verisine dokunmaz)
+        function seriBulutaYaz(seriDoc) {
+            if(!bulutHazir || !dbBulut) { _seriBekleyen.push(seriDoc); _seriBekleyenKaydet(); return; }
+            let docRef = dbBulut.collection('kulup').doc('seriler').collection('kayitlar').doc(seriDoc.id);
+            docRef.set(seriDoc)
+                .then(() => { bulutDurum('☁️ seri kaydedildi ✓', 'var(--neon-green)'); })
+                .catch(() => { _seriBekleyen.push(seriDoc); _seriBekleyenKaydet(); bulutDurum('☁️ ⚠️ kuyrukta', 'var(--gold)'); });
+        }
+        
+        // Bekleyen serileri gönder (internet gelince)
+        function seriBekleyenleriGonder() {
+            if(!bulutHazir || !dbBulut || _seriBekleyen.length === 0) return;
+            let kuyruk = [..._seriBekleyen]; _seriBekleyen = []; _seriBekleyenKaydet();
+            kuyruk.forEach(s => seriBulutaYaz(s));
+        }
+        
+        // Firestore'dan tüm serileri çek ve turnuvaDB'ye uygula
+        function serileriBuluttanYukle(cb) {
+            if(!bulutHazir || !dbBulut) { if(cb) cb(); return; }
+            dbBulut.collection('kulup').doc('seriler').collection('kayitlar')
+                .get().then(snap => {
+                    snap.forEach(doc => { _seriUygula(doc.data()); });
+                    localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                    if(cb) cb();
+                }).catch(() => { if(cb) cb(); });
+        }
+        
+        // Tek seri verisini turnuvaDB'ye uygula
+        function _seriUygula(s) {
+            if(!s || !s.g || !s.ad || !s.oklar) return;
+            if(silindiMi(s.g, s.ad)) return;
+            if(!turnuvaDB[s.g]) turnuvaDB[s.g] = {};
+            if(!turnuvaDB[s.g][s.ad]) {
+                // Sporcu yoksa master'dan gelmiş olmalı — sadece seriyi ekle
+                return; // master sync zaten sporcuyu ekleyecek
+            }
+            let sp = turnuvaDB[s.g][s.ad];
+            if(!sp.seriler) sp.seriler = [];
+            // Aynı seri ID zaten var mı? (duplicate engellemek için)
+            if(sp.seriler.some(sr => sr.seriId === s.id)) return;
+            sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
+            // Toplamı güncelle
+            let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
+            sp.toplamSkor = (sp.seriler || []).reduce((a,sr) => a+(sr.puan||0), 0);
+            sp.xAdet = (sp.seriler || []).reduce((a,sr) => a+((sr.oklar||[]).filter(o=>o==='X').length), 0);
+            sp.lastModified = Date.now();
+        }
+        
+        // Canlı dinleyici — yeni seri gelince anında uygula
+        function sporcuBulutaDinle() {
+            if(!bulutHazir || !dbBulut) return;
+            dbBulut.collection('kulup').doc('seriler').collection('kayitlar')
+                .onSnapshot(snapshot => {
+                    let degisti = false;
+                    snapshot.docChanges().forEach(change => {
+                        if(change.type !== 'added') return; // sadece yeni seriler
+                        let s = change.doc.data();
+                        if(!s || s.cihazId === _cihazId) return; // kendi yazdığımızı atla
+                        _seriUygula(s);
+                        degisti = true;
+                    });
+                    if(degisti) {
+                        localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                        bulutDurum('☁️ senkron', 'var(--neon-green)');
+                        try { siralamaListesiDoldur(); } catch(e) {}
+                        try { egitmenPaneliDoldur(); } catch(e) {}
+                    }
+                }, () => {});
+        }
+        
         function bulutaGonderKontrol() {
             if(!bulutHazir || !bulutIlkPullYapildi) return;
+            seriBekleyenleriGonder();
+            // Master yedek (10sn'de bir tam snapshot)
             let json = bulutVeriJSON();
             if(json === sonBulutJSON && !bekleyenGonderim) return;
             let yerelSayi = sporcuSayisi(turnuvaDB);
-            let bulutSayi = jsonSporcuSayisi(sonBulutJSON);
-            if(yerelSayi === 0 && bulutSayi > 0) { bulutDurum('☁️ koruma: boş veri gönderilmedi 🛡️', 'var(--gold)'); return; }
-            bulutDurum('☁️ gönderiliyor...', 'var(--gold)');
+            if(yerelSayi === 0 && jsonSporcuSayisi(sonBulutJSON) > 0) return;
             dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
-                .then(() => { sonBulutJSON = json; bekleyenGonderim = false; guvenlikYedegiAl(); bulutDurum('☁️ kaydedildi ✓', 'var(--neon-green)'); })
-                .catch(() => { bekleyenGonderim = true; bulutDurum('☁️ ⚠️ bağlantı yok — yerel kaydedildi', 'var(--gold)'); });
+                .then(() => { sonBulutJSON = json; bekleyenGonderim = false; guvenlikYedegiAl(); })
+                .catch(() => { bekleyenGonderim = true; });
         }
         // İnternet gelince otomatik gönder
-        window.addEventListener('online', () => { if(bekleyenGonderim) { bulutDurum('☁️ bağlantı geldi, gönderiliyor...', 'var(--gold)'); setTimeout(bulutaGonderKontrol, 1500); } });
-        window.addEventListener('offline', () => { bulutDurum('☁️ ⚠️ çevrimdışı', 'var(--gold)'); });
+        window.addEventListener('online', () => {
+            bulutDurum('☁️ bağlantı geldi, gönderiliyor...', 'var(--gold)');
+            setTimeout(() => { seriBekleyenleriGonder(); bulutaGonderKontrol(); }, 1500);
+        });
+        window.addEventListener('offline', () => { bulutDurum('☁️ ⚠️ çevrimdışı — seriler kuyrukta', 'var(--gold)'); });
         function bulutaYukleManuel() {
             if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
             if(sporcuSayisi(turnuvaDB) === 0 && jsonSporcuSayisi(sonBulutJSON) > 0) {
@@ -3311,7 +3453,11 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             document.getElementById('tab-' + sekmeAd).classList.add('aktif'); 
             document.getElementById('icerik-' + sekmeAd).classList.add('aktif'); 
             if(sekmeAd === 'skor') skorEkraniniKapat(); 
-            if(sekmeAd === 'liderlik') siralamaListesiDoldur(); 
+            if(sekmeAd === 'liderlik') {
+                // Sadece görsel ayrım: son 3 saatte skor girenler "bu ders", diğerleri "önceki ders"
+                // VERİ SİLİNMEZ — sadece renk/etiket değişir
+                siralamaListesiDoldur();
+            }
             if(sekmeAd === 'klasman') klasmanDoldur();
             if(sekmeAd === 'ana') try { sporcuAnaDoldur(); } catch(e) {}
             if(sekmeAd === 'gelisim') try { sporcuGelisimDoldur(); } catch(e) {}
@@ -3840,11 +3986,20 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(!grupData.seriler) grupData.seriler = []; grupData.seriler.push({ puan: seriPuan, oklar: okDegerleri }); grupData.lastModified = Date.now(); grupData.sonSkorZamani = Date.now();
             try { sporcuPuanlariYenidenHesapla(grupData); } catch(e) {}
             grupData.lastModified = Date.now(); grupData.sonSkorZamani = Date.now();
-            bekleyenGonderim = true; // çevrimdışıysa retry kuyruğuna al
+            bekleyenGonderim = true;
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
-            if(!navigator.onLine) { showToast(`✅ Seri kaydedildi (+${seriPuan}) — ⚠️ Çevrimdışısın, internet gelince buluta yüklenecek`, "warning"); }
+            // SERİ BAZLI ATOMIC WRITE — race condition yok
+            let seriDoc = {
+                id: _cihazId + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+                g: aktifGrup, ad: secilenSporcu,
+                oklar: okDegerleri, puan: seriPuan,
+                tarih: bugunISO(), t: Date.now(), cihazId: _cihazId
+            };
+            seriBulutaYaz(seriDoc);
+            if(!navigator.onLine) { showToast(`✅ Seri kaydedildi (+${seriPuan}) — ⚠️ Çevrimdışısın, internet gelince gönderilecek`, "warning"); }
             else { showToast(`Seri Kaydedildi! (+${seriPuan})`, "success"); }
-            try { bulutaGonderKontrol(); } catch(e) {}
+            // Klasman anlık güncelle
+            try { klasmanDoldur(); } catch(e) {}
             try { otomatikYoklamaIsaretle(secilenSporcu); } catch(e) {}
 
             // --- BAŞARI & REKOR SİSTEMİ ENTEGRASYONU ---
@@ -4264,70 +4419,82 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function klasmanYaySec(y) { klasmanYay = y; klasmanDoldur(); }
         function klasmanDoldur() {
             let el = document.getElementById('icerik-klasman'); if(!el) return;
-            let fb = (y) => klasmanYay === y ? 'background:var(--accent-orange); color:#fff;' : 'background:var(--bg-panel); color:var(--text-main);';
-            let html = `<div style="text-align:center; margin:0 0 4px;"><span style="font-weight:900; font-size:18px;">📊 Genel Klasman</span></div>
-                <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:4px;">Tüm zamanların birikimleri — arşivler dahil</div>
-                <div style="background:rgba(59,130,246,0.08); border:1px solid var(--neon-blue); border-radius:10px; padding:9px 12px; margin-bottom:12px; font-size:12px; color:var(--text-muted);">💡 "Yeni Antrenman Başlat" yapsan bile geçmiş kartlar bu tabloda <b style="color:var(--text-main);">birikmeye devam eder</b>. Sıralama kaybolmaz.</div>
-                <div style="display:flex; gap:6px; margin-bottom:12px;">
-                    <button onclick="klasmanYaySec('hepsi')" style="flex:1; ${fb('hepsi')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">Tümü</button>
-                    <button onclick="klasmanYaySec('Klasik')" style="flex:1; ${fb('Klasik')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">🏹 Klasik</button>
-                    <button onclick="klasmanYaySec('Makaralı')" style="flex:1; ${fb('Makaralı')} border:1px solid var(--border-color); padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">⚙️ Makaralı</button>
-                </div>`;
-            [['buyukler', '🔵 BÜYÜKLER'], ['kucukler', '🟢 KÜÇÜKLER']].forEach(([g, etiket]) => {
+            let fb = (y) => klasmanYay === y ? 'background:var(--accent-orange);color:#fff;border-color:var(--accent-orange);' : 'background:var(--bg-panel);color:var(--text-main);';
+            let html = `
+            <div style="font-weight:900;font-size:17px;margin-bottom:4px;">📊 Genel Klasman</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Tüm antrenmanların birikimi · Sıralama kalıcı</div>
+            <div style="display:flex;gap:6px;margin-bottom:12px;">
+                <button onclick="klasmanYaySec('hepsi')" style="flex:1;${fb('hepsi')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">Tümü</button>
+                <button onclick="klasmanYaySec('Klasik')" style="flex:1;${fb('Klasik')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">🏹 Klasik</button>
+                <button onclick="klasmanYaySec('Makaralı')" style="flex:1;${fb('Makaralı')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">⚙️ Makaralı</button>
+            </div>`;
+
+            [['buyukler','🔵 BÜYÜKLER'],['kucukler','🟢 KÜÇÜKLER']].forEach(([g, etiket]) => {
                 let db = turnuvaDB[g] || {};
-                let arr = Object.keys(db).filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay === 'hepsi' || db[ad].yay === klasmanYay)).map(ad => {
-                    let sp = db[ad];
-                    // Mevcut seri
-                    let mevcutSeri = sp.seriler || [];
-                    let mevcutOk = mevcutSeri.reduce((a,s)=>a+(s.oklar||[]).length,0);
-                    let mevcutToplam = sp.toplamSkor || 0;
-                    let mevcutX = sp.xAdet || 0;
-                    // Tüm geçmiş kartlar
-                    let gecmis = sp.kartGecmisi || [];
-                    let gecmisSeri = gecmis.reduce((a,k)=>a+(k.seriler||[]).length,0);
-                    let gecmisOk = gecmis.reduce((a,k)=>a+(k.seriler||[]).reduce((s2,sr)=>s2+(sr.oklar||[]).length,0),0);
-                    let gecmisToplam = gecmis.reduce((a,k)=>a+(k.toplamSkor||0),0);
-                    let gecmisX = gecmis.reduce((a,k)=>a+(k.xAdet||0),0);
-                    // Kümülatif
-                    let toplamSeri = mevcutSeri.length + gecmisSeri;
-                    let toplamOk = mevcutOk + gecmisOk;
-                    let toplamPuan = mevcutToplam + gecmisToplam;
-                    let toplamX = mevcutX + gecmisX;
-                    let ort = toplamOk ? (toplamPuan / toplamOk) : 0;
-                    let antrenmanSay = gecmis.length + (mevcutSeri.length > 0 ? 1 : 0);
-                    return { ad, seri: toplamSeri, toplam: toplamPuan, x: toplamX, okSay: toplamOk, ort, yay: sp.yay, sinif: sp.sinif, antrenman: antrenmanSay, mevcutPuan: mevcutToplam };
-                }).sort((a, b) => b.toplam - a.toplam);
-                html += `<div style="font-weight:800; font-size:15px; margin:14px 0 8px; color:var(--accent-orange);">${etiket} <span style="font-size:12px; color:var(--text-muted); font-weight:600;">(${arr.length} sporcu)</span></div>`;
-                if(!arr.length) { html += '<div style="color:var(--text-muted); font-size:13px; padding:8px;">Bu grupta sporcu yok.</div>'; return; }
-                let madalya = ['🥇', '🥈', '🥉'];
-                html += '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:12px; min-width:380px;">';
-                html += '<tr style="color:var(--text-muted); font-size:10px; text-align:left; background:rgba(0,0,0,0.2);"><th style="padding:7px 4px;">#</th><th style="padding:7px 4px;">Sporcu</th><th style="padding:7px 4px; text-align:center;" title="Toplam antrenman sayısı">Antr.</th><th style="padding:7px 4px; text-align:center;" title="Tüm zamanlar toplam seri">Seri</th><th style="padding:7px 4px; text-align:center;" title="Tüm atılan oklar">Ok</th><th style="padding:7px 4px; text-align:center;">X</th><th style="padding:7px 4px; text-align:center;" title="Ok başına ortalama puan">Ort</th><th style="padding:7px 4px; text-align:right;" title="Tüm zamanlar birikim puanı">KÜM. ↓</th></tr>';
-                let grupToplam = 0, grupSeri = 0, grupOk = 0;
+                let arr = Object.keys(db)
+                    .filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay === 'hepsi' || db[ad].yay === klasmanYay))
+                    .map(ad => {
+                        let sp = db[ad];
+                        let mevcutSeri = sp.seriler || [];
+                        let mevcutToplam = sp.toplamSkor || 0;
+                        let mevcutX = sp.xAdet || 0;
+                        let mevcutOk = mevcutSeri.reduce((a,s)=>a+(s.oklar||[]).length, 0);
+                        let gecmis = sp.kartGecmisi || [];
+                        let gecmisToplam = gecmis.reduce((a,k)=>a+(k.toplamSkor||0), 0);
+                        let gecmisX = gecmis.reduce((a,k)=>a+(k.xAdet||0), 0);
+                        let gecmisOk = gecmis.reduce((a,k)=>a+(k.seriler||[]).reduce((s2,sr)=>s2+(sr.oklar||[]).length,0), 0);
+                        let gecmisSeri = gecmis.reduce((a,k)=>a+(k.seriler||[]).length, 0);
+                        let toplamPuan = mevcutToplam + gecmisToplam;
+                        let toplamX = mevcutX + gecmisX;
+                        let toplamOk = mevcutOk + gecmisOk;
+                        let toplamSeri = mevcutSeri.length + gecmisSeri;
+                        let ort = toplamOk ? (toplamPuan / toplamOk) : 0;
+                        // Bugün gerçekten skor girildi mi? — sonSkorZamani bugün mü kontrol et
+                        let bugunPuan = 0;
+                        if(sp.sonSkorZamani) {
+                            let skorTarih = new Date(sp.sonSkorZamani).toISOString().slice(0,10);
+                            if(skorTarih === bugunISO()) bugunPuan = mevcutToplam;
+                        }
+                        return { ad, toplam: toplamPuan, x: toplamX, seri: toplamSeri, okSay: toplamOk, ort, yay: sp.yay, sinif: sp.sinif, mevcutPuan: bugunPuan };
+                    })
+                    .sort((a, b) => b.toplam - a.toplam);
+
+                if(!arr.length) return;
+                let madalya = ['🥇','🥈','🥉'];
+                html += `<div style="font-weight:900;font-size:14px;color:var(--accent-orange);margin:14px 0 8px;">${etiket} <span style="font-size:11px;color:var(--text-muted);font-weight:600;">${arr.length} sporcu</span></div>`;
+
                 arr.forEach((s, i) => {
-                    grupToplam += s.toplam; grupSeri += s.seri; grupOk += s.okSay;
                     let yE = s.yay === 'Makaralı' ? '⚙️' : '🏹';
-                    let bgRow = i < 3 ? 'rgba(251,191,36,0.07)' : (i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)');
-                    html += `<tr style="border-top:1px solid var(--border-color); background:${bgRow};">
-                        <td style="padding:9px 4px; font-weight:800; text-align:center;">${madalya[i] || (i + 1)}</td>
-                        <td style="padding:9px 4px; font-weight:bold;">${yE} ${s.ad}${s.sinif ? `<div style="font-size:9px; color:var(--text-muted);">${s.sinif}</div>` : ''}</td>
-                        <td style="padding:9px 4px; text-align:center; color:var(--text-muted);">${s.antrenman}</td>
-                        <td style="padding:9px 4px; text-align:center; color:var(--neon-blue);">${s.seri}</td>
-                        <td style="padding:9px 4px; text-align:center; color:var(--text-muted);">${s.okSay}</td>
-                        <td style="padding:9px 4px; text-align:center; color:var(--neon-blue);">${s.x}</td>
-                        <td style="padding:9px 4px; text-align:center; color:var(--text-muted);">${s.ort.toFixed(1)}</td>
-                        <td style="padding:9px 4px; text-align:right;"><span style="font-weight:900; color:var(--gold); font-size:14px;">${s.toplam}</span>${s.mevcutPuan > 0 ? `<div style="font-size:9px; color:var(--neon-green);">+${s.mevcutPuan} bugün</div>` : ''}</td>
-                    </tr>`;
+                    let madalyaEl = madalya[i] ? `<span style="font-size:22px;">${madalya[i]}</span>` : `<span style="font-size:13px;font-weight:900;color:var(--text-muted);">${i+1}</span>`;
+                    let bgCard = i === 0 ? 'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.05))' : i === 1 ? 'linear-gradient(135deg,rgba(148,163,184,0.14),rgba(0,0,0,0.1))' : i === 2 ? 'linear-gradient(135deg,rgba(205,127,50,0.14),rgba(0,0,0,0.1))' : 'var(--bg-panel)';
+                    let borderLeft = i === 0 ? '3px solid #fbbf24' : i === 1 ? '3px solid #94a3b8' : i === 2 ? '3px solid #cd7f32' : '1px solid var(--border-color)';
+                    // Motivasyon etiketi
+                    let motivasyon = '';
+                    if(i === 0) motivasyon = '<span style="font-size:10px;background:#fbbf24;color:#000;padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👑 LİDER</span>';
+                    else if(i === 1) motivasyon = '<span style="font-size:10px;background:rgba(148,163,184,0.2);color:#94a3b8;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">🔥 YAKLAŞIYOR</span>';
+                    else if(i === 2) motivasyon = '<span style="font-size:10px;background:rgba(205,127,50,0.2);color:#cd7f32;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">⚡ PODİUM</span>';
+                    // Bugün aktif mi?
+                    let bugunBadge = s.mevcutPuan > 0 ? `<span style="font-size:10px;background:rgba(16,185,129,0.15);color:var(--neon-green);padding:2px 7px;border-radius:20px;font-weight:800;">+${s.mevcutPuan} bugün 🎯</span>` : '';
+                    // İstatistik satırı ikonlu
+                    let statlar = `<span style="color:var(--text-muted);">🏹 ${s.seri} seri</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">🎯 ${s.okSay} ok</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--neon-blue);">✕ ${s.x}</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">ort ${s.ort.toFixed(1)}</span>`;
+                    html += `
+                    <div style="background:${bgCard};border-left:${borderLeft};border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+                        <div style="width:32px;text-align:center;flex-shrink:0;">${madalyaEl}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
+                                <span style="font-weight:900;font-size:15px;">${yE} ${s.ad}</span>
+                                ${motivasyon}
+                                ${bugunBadge}
+                            </div>
+                            <div style="font-size:11px;line-height:1.8;">${statlar}</div>
+                            ${s.sinif ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">📌 ${s.sinif}</div>` : ''}
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;min-width:54px;">
+                            <div style="font-size:24px;font-weight:900;color:${i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--text-main)'};">${s.toplam}</div>
+                            <div style="font-size:9px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;">PUAN</div>
+                        </div>
+                    </div>`;
                 });
-                // Grup toplam satırı
-                html += `<tr style="border-top:2px solid var(--border-color); background:rgba(255,98,0,0.08); font-weight:900;">
-                    <td colspan="2" style="padding:8px 4px; color:var(--accent-orange); font-size:12px;">📊 GRUP TOPLAMI</td>
-                    <td style="padding:8px 4px; text-align:center; color:var(--text-muted); font-size:11px;">—</td>
-                    <td style="padding:8px 4px; text-align:center; color:var(--neon-blue);">${grupSeri}</td>
-                    <td style="padding:8px 4px; text-align:center; color:var(--text-muted);">${grupOk}</td>
-                    <td colspan="2" style="padding:8px 4px;"></td>
-                    <td style="padding:8px 4px; text-align:right; color:var(--gold); font-size:15px;">${grupToplam}</td>
-                </tr>`;
-                html += '</table></div>';
             });
             el.innerHTML = html;
         }
@@ -4344,7 +4511,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             orijinalSiraMap = {};
             
             // Bu derste skor giren (bugün seri var) vs geçmişte girmiş
-            function bugunSkorVar(sp) { return (sp.seriler && sp.seriler.length > 0) || (sp.sonSkorZamani && (Date.now() - sp.sonSkorZamani) < 12 * 60 * 60 * 1000); }
+            // "Bu ders" = son 3 saat içinde skor girilmiş
+            // VERİ SİLİNMEZ — sadece görsel ayrım için kullanılır
+            function bugunSkorVar(sp) {
+                if(!sp.seriler || sp.seriler.length === 0) return false;
+                let sonZaman = sp.sonSkorZamani || sp.lastModified || 0;
+                if(!sonZaman) return false;
+                return (Date.now() - sonZaman) < 3 * 60 * 60 * 1000; // son 3 saat
+            }
             
             let klasikler = sporcular.filter(s => s.yay === 'Klasik').sort((a,b) => (b.toplamSkor||0) - (a.toplamSkor||0) || (b.xAdet||0) - (a.xAdet||0));
             klasikler.forEach((s, idx) => orijinalSiraMap[s.ad] = idx + 1); cizSira(klasikler, tK, limit, bugunSkorVar);
@@ -5745,11 +5919,11 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let menu = document.getElementById('rfx-menu'); if(menu) menu.style.display = 'none';
             let alan = document.getElementById('rfx-oyun-alani'); if(!alan) return; alan.style.display = 'block';
             if(tip === 'pod') rfxPodKur(alan); else if(tip === 'gonogo') rfxGnKur(alan); else if(tip === 'tap') rfxTapKur(alan);
-            else if(tip === 'timing') rfxTimKur(alan); else if(tip === 'tut') rfxTutKur(alan); else if(tip === 'odak') rfxOdkKur(alan);
-            else if(tip === 'dusus') rfxDsKur(alan); else if(tip === 'dinamik') rfxDnKur(alan); else if(tip === 'sabir') rfxSbKur(alan);
+            else if(tip === 'timing') rfxTimKur(alan); else if(tip === 'odak') rfxOdkKur(alan);
+            else if(tip === 'dusus') rfxDsKur(alan); else if(tip === 'sabir') rfxSbKur(alan);
             else if(tip === 'nefes') rfxNfKur(alan); else if(tip === 'grup') rfxGrKur(alan); else if(tip === 'takip') rfxTkKur(alan);
             else if(tip === 'hafiza') rfxHfKur(alan); else if(tip === 'sayim') rfxSyKur(alan);
-            else if(tip === 'kaos') rfxKaosKur(alan); else if(tip === 'ruzgar') rfxRzKur(alan); else if(tip === 'sampiyonluk') rfxSpKur(alan);
+            else if(tip === 'kaos') rfxKaosKur(alan);
             else if(tip === 'kliker') rfxKlKur(alan); else if(tip === 'followthrough') rfxFtKur(alan); else if(tip === 'yorgunluk') rfxYrKur(alan);
         }
         // --- Refleks Pod ---
