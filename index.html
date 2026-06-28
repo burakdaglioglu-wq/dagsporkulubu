@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v76</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v77</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v76</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v77</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -3003,9 +3003,36 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function bulutManuelYenile() {
             if(!bulutHazir) { showToast('Bulut bağlı değil.', 'warning'); return; }
             bulutDurum('☁️ yenileniyor...', 'var(--gold)');
+            // Önce master'dan çek (sporcu profilleri, temel bilgiler)
             dbBulut.collection('kulup').doc('master').get().then(doc => {
-                if(doc.exists && doc.data().veri) { bulutVeriyiUygula(JSON.parse(doc.data().veri)); sonBulutJSON = doc.data().veri; showToast('Buluttan yenilendi ☁️', 'success'); bulutDurum('☁️ senkron', 'var(--neon-green)'); }
-                else { showToast('Bulutta henüz veri yok.', 'warning'); }
+                if(doc.exists && doc.data() && doc.data().veri) {
+                    bulutVeriyiUygula(JSON.parse(doc.data().veri));
+                    sonBulutJSON = doc.data().veri;
+                }
+                // Sonra seri bazlı kayıtları çek (en güncel skorlar)
+                return dbBulut.collection('kulup').doc('seriler').collection('kayitlar').get();
+            }).then(snap => {
+                if(!snap) { showToast('Buluttan yenilendi ☁️', 'success'); bulutDurum('☁️ senkron', 'var(--neon-green)'); return; }
+                let degisti = false;
+                snap.forEach(d => {
+                    let s = d.data(); if(!s || !s.g || !s.ad || !s.oklar) return;
+                    if(silindiMi(s.g, s.ad)) return;
+                    if(!turnuvaDB[s.g]) turnuvaDB[s.g] = {};
+                    if(!turnuvaDB[s.g][s.ad]) return;
+                    let sp = turnuvaDB[s.g][s.ad];
+                    if(!sp.seriler) sp.seriler = [];
+                    if(!sp.seriler.some(sr => sr.seriId === s.id)) {
+                        sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
+                        sp.toplamSkor = sp.seriler.reduce((a,sr)=>a+(sr.puan||0),0);
+                        sp.xAdet = sp.seriler.reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
+                        sp.sonSkorZamani = Math.max(sp.sonSkorZamani||0, s.t||0) || sp.sonSkorZamani;
+                        degisti = true;
+                    }
+                });
+                if(degisti) localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                showToast('Buluttan yenilendi ☁️✅', 'success');
+                bulutDurum('☁️ senkron', 'var(--neon-green)');
+                try { siralamaListesiDoldur(); klasmanDoldur(); } catch(e) {}
             }).catch(() => showToast('Bulut hatası.', 'error'));
         }
 
@@ -4512,11 +4539,11 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             
             // Bu derste skor giren (bugün seri var) vs geçmişte girmiş
             // "Bu ders" = son 3 saat içinde skor girilmiş
-            // VERİ SİLİNMEZ — sadece görsel ayrım için kullanılır
+            // sonSkorZamani yoksa ama seriler varsa: eski kayıt — eğitmen karar versin (Yeni Antrenman Başlat)
             function bugunSkorVar(sp) {
                 if(!sp.seriler || sp.seriler.length === 0) return false;
-                let sonZaman = sp.sonSkorZamani || sp.lastModified || 0;
-                if(!sonZaman) return false;
+                let sonZaman = sp.sonSkorZamani || 0;
+                if(!sonZaman) return true; // sonSkorZamani yoksa ama seri var = aktif say (eski veri)
                 return (Date.now() - sonZaman) < 3 * 60 * 60 * 1000; // son 3 saat
             }
             
