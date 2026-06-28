@@ -356,7 +356,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v78</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v79</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -581,7 +581,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v78</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v79</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -2828,46 +2828,63 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 dbBulut = firebase.firestore();
                 bulutHazir = true;
                 bulutDurum('☁️ bağlanıyor...', 'var(--gold)');
-                // 1) ÖNCE buluttan oku — gönderme yapmadan. Boş veri taşmasını engeller.
+                // AÇILIŞTA: Firestore KAZANIR — her cihaz en güncel veriyi alır
                 dbBulut.collection('kulup').doc('master').get().then(doc => {
                     try {
                         if(doc.exists && doc.data() && doc.data().veri) {
                             let uzakJSON = doc.data().veri;
                             let uzakSayi = jsonSporcuSayisi(uzakJSON);
-                            let yerelSayi = sporcuSayisi(turnuvaDB);
-                            if(uzakSayi > 0) { bulutVeriyiUygula(JSON.parse(uzakJSON)); sonBulutJSON = uzakJSON; bulutDurum('☁️ senkron', 'var(--neon-green)'); }
-                            else if(yerelSayi > 0) { sonBulutJSON = ''; bulutDurum('☁️ bağlı (bulut boştu, yerel korundu)', 'var(--gold)'); }
-                            else { sonBulutJSON = uzakJSON; bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
-                        } else { bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)'); }
-                        // Kişi bazlı kayıtları da yükle — her sporcunun en güncel skoru
-                        dbBulut.collection('kulup').doc('sporcular').collection('kayitlar').get().then(snap => {
-                            snap.forEach(d => {
-                                let e=d.data(); if(!e||!e.g||!e.ad||!e.veri) return;
-                                try {
-                                    if(silindiMi(e.g,e.ad)) return;
-                                    let gelenSp=JSON.parse(e.veri);
-                                    if(!turnuvaDB[e.g]) turnuvaDB[e.g]={};
-                                    let yerelSp=turnuvaDB[e.g][e.ad];
-                                    if(!yerelSp||(gelenSp.lastModified||0)>(yerelSp.lastModified||0)) turnuvaDB[e.g][e.ad]=gelenSp;
-                                } catch(ex) {}
-                            });
-                            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
-                        }).catch(()=>{});
+                            if(uzakSayi > 0) {
+                                // Firestore kazanır — yerel eski veriyi tamamen değiştir
+                                let p = JSON.parse(uzakJSON);
+                                if(p.turnuvaDB) turnuvaDB = p.turnuvaDB;
+                                if(p.takimlarDB) takimlarDB = p.takimlarDB;
+                                if(p.personelDB) personelDB = p.personelDB;
+                                if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
+                                if(p.silinenler && Array.isArray(p.silinenler)) {
+                                    p.silinenler.forEach(s => { if(s&&s.ad&&s.grup&&!silindiMi(s.grup,s.ad)) silinenlerDB.push(s); });
+                                    silinenlerKaydet();
+                                }
+                                sonBulutJSON = uzakJSON;
+                                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                                bulutDurum('☁️ senkron ✓', 'var(--neon-green)');
+                            } else {
+                                bulutDurum('☁️ bağlı', 'var(--neon-green)');
+                            }
+                        } else {
+                            bulutDurum('☁️ bağlı (boş)', 'var(--neon-green)');
+                        }
                     } catch(e) {}
                     bulutIlkPullYapildi = true;
                     try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
+                    // Ekranı açılışta güncelle
+                    try { siralamaListesiDoldur(); } catch(e) {}
+                    try { sporcuListesiniYenile(); } catch(e) {}
+                    // Dinleyicileri başlat
+                    sporcuBulutaDinle();
+
+                    try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
                     // Kişi bazlı anlık dinleyici başlat
                     sporcuBulutaDinle();
-                    // Master dinleyici (takımlar, personel vs. için)
+                    // Master dinleyici — değişince TÜM veriyi uygula (Firestore kazanır)
                     dbBulut.collection('kulup').doc('master').onSnapshot(doc2 => {
                         if(!doc2.exists) return;
                         let d = doc2.data(); if(!d || !d.veri) return;
                         if(d.veri === sonBulutJSON) return;
                         try {
                             let p = JSON.parse(d.veri);
-                            if(p.takimlarDB) takimlarDB = p.takimlarDB;
-                            if(p.personelDB) personelDB = p.personelDB;
-                            if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
+                            let uzakSayi = jsonSporcuSayisi(d.veri);
+                            if(uzakSayi > 0 && p.turnuvaDB) {
+                                // Tam veriyi uygula — eski localStorage'ı geç
+                                turnuvaDB = p.turnuvaDB;
+                                if(p.takimlarDB) takimlarDB = p.takimlarDB;
+                                if(p.personelDB) personelDB = p.personelDB;
+                                if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
+                                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                                bulutDurum('☁️ güncellendi ✓', 'var(--neon-green)');
+                                try { siralamaListesiDoldur(); } catch(e) {}
+                                try { sporcuListesiniYenile(); } catch(e) {}
+                            }
                             sonBulutJSON = d.veri;
                         } catch(e) {}
                     }, err => { bulutDurum('☁️ izin/kural hatası', 'var(--neon-red)'); });
