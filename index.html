@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v96</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v97</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -594,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v96</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v97</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -3908,7 +3908,10 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
                             <!-- Aktif Seriler -->
                             ${aktif.length ? `
-                            <div style="font-size:11px;font-weight:700;color:var(--neon-green);margin-bottom:6px;">▶ Aktif Seriler · ${sp.toplamSkor||0} puan</div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                                <div style="font-size:11px;font-weight:700;color:var(--neon-green);">▶ Aktif Seriler · ${sp.toplamSkor||0} puan</div>
+                                <button onclick="yoneticiTumAktifSilOnay('${g}','${adEsc}')" style="background:rgba(239,68,68,0.15);color:var(--neon-red);border:1px solid var(--neon-red);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">🗑️ Tümünü Sil (${aktif.length})</button>
+                            </div>
                             ${aktif.map((s,i) => `
                             <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;margin-bottom:5px;">
                                 <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${i+1}. seri — <b style="color:var(--text-main);">${s.puan||0} puan</b></div>
@@ -3923,7 +3926,10 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
                             <!-- Geçmiş Kartlar -->
                             ${gecmis.length ? `
-                            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin:10px 0 6px;">📂 Geçmiş Kartlar (${gecmis.length})</div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px;">
+                                <div style="font-size:11px;font-weight:700;color:var(--text-muted);">📂 Geçmiş Kartlar (${gecmis.length})</div>
+                                <button onclick="yoneticiTumGecmisSilOnay('${g}','${adEsc}')" style="background:rgba(239,68,68,0.15);color:var(--neon-red);border:1px solid var(--neon-red);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">🗑️ Tümünü Sil (${gecmis.length})</button>
+                            </div>
                             ${gecmis.slice().reverse().map((k,ri) => {
                                 let ki=gecmis.length-1-ri;
                                 return `<details style="margin-bottom:4px;">
@@ -3955,6 +3961,28 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             // Arama kutusuna odaklan
             let ara = document.getElementById('skor-duz-ara'); if(ara) { ara.focus(); ara.setSelectionRange(ara.value.length,ara.value.length); }
         }
+        function yoneticiTumAktifSilOnay(g, ad) {
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let sayi = (sp.seriler||[]).length;
+            if(!sayi) return showToast('Aktif seri yok','warning');
+            if(!confirm(`${ad} için ${sayi} aktif serinin TAMAMI silinsin mi?\nBu işlem geri alınamaz!`)) return;
+            sp.seriler = []; sp.detayliOklar = [];
+            sp.toplamSkor = 0; sp.xAdet = 0;
+            sp.sonSkorZamani = null; sp.lastModified = Date.now();
+            yoneticiKaydet(); yoneticiSkorDuzeltCiz();
+            showToast(`✅ ${sayi} aktif seri silindi`, 'success');
+        }
+
+        function yoneticiTumGecmisSilOnay(g, ad) {
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let sayi = (sp.kartGecmisi||[]).length;
+            if(!sayi) return showToast('Geçmiş kart yok','warning');
+            if(!confirm(`${ad} için ${sayi} geçmiş kartın TAMAMI silinsin mi?\nKlasman puanları da düşer. Geri alınamaz!`)) return;
+            sp.kartGecmisi = []; sp.lastModified = Date.now();
+            yoneticiKaydet(); yoneticiSkorDuzeltCiz();
+            showToast(`✅ ${sayi} geçmiş kart silindi`, 'success');
+        }
+
         function yoneticiSporcuBilgiGuncelle(g, ad) {
             let key = `${g}_${ad.replace(/[^a-z0-9]/gi,'_')}`;
             let yeniAd = (document.getElementById('duz-ad-'+key)||{}).value?.trim().toUpperCase();
