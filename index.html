@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v91</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v92</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -594,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v91</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v92</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -1173,7 +1173,6 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         let aktifSezonBitis = localStorage.getItem('dag_sezon_bitis') || null;
 
         function sezonAyarla() {
-            // Yönetici sezon ayarları
             girdiIste('📅 Sezon adı (örn: 2025 Bahar Sezonu):', aktifSezonAdi, (ad) => {
                 if(!ad) return;
                 aktifSezonAdi = ad.trim();
@@ -1187,9 +1186,52 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         else localStorage.removeItem('dag_sezon_bitis');
                         showToast('✅ Sezon bilgileri güncellendi', 'success');
                         sezonSayaciniGuncelle();
+                        // Firestore'a yaz — tüm cihazlar görsün
+                        _sezonBulutaYaz();
                     });
                 });
             });
+        }
+
+        function _sezonBulutaYaz() {
+            if(!bulutHazir || !dbBulut) return;
+            dbBulut.collection('kulup').doc('sezon_bilgisi').set({
+                ad: aktifSezonAdi,
+                baslangic: aktifSezonBaslangic || '',
+                bitis: aktifSezonBitis || '',
+                guncelleme: Date.now()
+            }).catch(() => {});
+        }
+
+        function _sezonBuluttanYukle() {
+            if(!bulutHazir || !dbBulut) return;
+            // Sezon bilgisini Firestore'dan çek
+            dbBulut.collection('kulup').doc('sezon_bilgisi').get().then(doc => {
+                if(!doc.exists) return;
+                let d = doc.data();
+                if(d.ad) { aktifSezonAdi = d.ad; localStorage.setItem('dag_sezon_adi', d.ad); }
+                if(d.baslangic) { aktifSezonBaslangic = d.baslangic; localStorage.setItem('dag_sezon_baslangic', d.baslangic); }
+                aktifSezonBitis = d.bitis || null;
+                if(aktifSezonBitis) localStorage.setItem('dag_sezon_bitis', aktifSezonBitis);
+                else localStorage.removeItem('dag_sezon_bitis');
+                sezonSayaciniGuncelle();
+            }).catch(() => {});
+            // Canlı dinle — biri güncellerse diğerleri de görsün
+            dbBulut.collection('kulup').doc('sezon_bilgisi').onSnapshot(doc => {
+                if(!doc.exists) return;
+                let d = doc.data();
+                if(!d || !d.ad) return;
+                let degisti = (d.ad !== aktifSezonAdi || d.baslangic !== aktifSezonBaslangic || d.bitis !== aktifSezonBitis);
+                if(!degisti) return;
+                aktifSezonAdi = d.ad;
+                aktifSezonBaslangic = d.baslangic || null;
+                aktifSezonBitis = d.bitis || null;
+                localStorage.setItem('dag_sezon_adi', aktifSezonAdi);
+                if(aktifSezonBaslangic) localStorage.setItem('dag_sezon_baslangic', aktifSezonBaslangic);
+                if(aktifSezonBitis) localStorage.setItem('dag_sezon_bitis', aktifSezonBitis);
+                else localStorage.removeItem('dag_sezon_bitis');
+                sezonSayaciniGuncelle();
+            }, () => {});
         }
 
         function sezonWidgetHTML(kompakt) {
@@ -3007,6 +3049,8 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     try { sporcuListesiniYenile(); } catch(e) {}
                     // Dinleyicileri başlat
                     sporcuBulutaDinle();
+                    // Sezon bilgisini Firestore'dan çek ve dinle
+                    _sezonBuluttanYukle();
 
                     try { if(veliBeklenen) { veliGiris(veliBeklenen.ad, veliBeklenen.kod); veliBeklenen = null; } } catch(e) {}
                     // Kişi bazlı anlık dinleyici başlat
@@ -3534,6 +3578,13 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 }).catch(()=>{});
             }
             showToast(`🏆 "${sezonAdi}" kapatıldı! Yeni sezon başladı.`, 'success');
+            // Yeni sezonu Firestore'a yaz — tüm cihazlar sıfırı görsün
+            aktifSezonAdi = 'Yeni Sezon'; aktifSezonBaslangic = bugunISO(); aktifSezonBitis = null;
+            localStorage.setItem('dag_sezon_adi', aktifSezonAdi);
+            localStorage.setItem('dag_sezon_baslangic', aktifSezonBaslangic);
+            localStorage.removeItem('dag_sezon_bitis');
+            _sezonBulutaYaz();
+            sezonSayaciniGuncelle();
             try { siralamaListesiDoldur(); klasmanDoldur(); sporcuListesiniYenile(); } catch(e) {}
         }
 
