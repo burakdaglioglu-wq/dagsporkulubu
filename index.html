@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v95</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v96</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -594,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v95</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v96</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -3847,12 +3847,12 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             }).catch(() => cb(true));
         }
 
-        // Skor girişinde kilit kontrolü
         function skorKaydetKilitKontrol() {
+            // Yerel kilit kontrolü — yönetici bu sporcuyu açık tutuyorsa dur
             if(!_duzenlemeKilidi) return true;
             if(Date.now() - _duzenlemeKilidi.zaman > 60000) { _duzenlemeKilidi = null; return true; }
             if(_duzenlemeKilidi.g === aktifGrup && _duzenlemeKilidi.ad === secilenSporcu) {
-                showToast('⚠️ Yönetici bu sporcuyu düzenliyor. 30 saniye sonra tekrar dene.', 'warning');
+                showToast('⚠️ Yönetici bu sporcuyu düzenliyor. Lütfen bekle.', 'warning');
                 return false;
             }
             return true;
@@ -3886,7 +3886,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     let gecmis = sp.kartGecmisi || [];
                     let adEsc = ad.replace(/'/g,"\'");
                     let kilitli = _duzenlemeKilidi && _duzenlemeKilidi.g===g && _duzenlemeKilidi.ad===ad;
-                    html += `<details id="duz-${g}-${ad.replace(/[^a-z0-9]/gi,'_')}" style="margin-bottom:6px;">
+                    html += `<details id="duz-${g}-${ad.replace(/[^a-z0-9]/gi,'_')}" style="margin-bottom:6px;" ontoggle="this.open?_kilitKoy('${g}','${adEsc}'):_kilitKaldir()">
                         <summary style="cursor:pointer;background:var(--bg-panel);border:1px solid ${kilitli?'var(--accent-orange)':'var(--border-color)'};border-radius:10px;padding:10px 12px;list-style:none;display:flex;align-items:center;gap:8px;">
                             <span style="flex:1;font-weight:800;font-size:13px;">${spEmoji(sp)}${ad}</span>
                             ${kilitli?'<span style="font-size:10px;color:var(--accent-orange);font-weight:700;">🔒 Düzenleniyor</span>':''}
@@ -3976,51 +3976,41 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
 
         function yoneticiAktifSeriGuncelle(g, ad, seriIdx) {
-            _kilitKontrol(g, ad, (ok) => {
-                if(!ok) return;
-                _kilitKoy(g, ad);
-                let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
-                let s = sp.seriler[seriIdx]; if(!s) return;
-                let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${seriIdx}`;
-                let yeniOklar = (s.oklar||[]).map((_,oi) => {
-                    let inp = document.getElementById(`ok-a-${key}-${oi}`);
-                    return inp ? inp.value.trim().toUpperCase() : _;
-                });
-                let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
-                let yeniPuan = yeniOklar.reduce((a,o) => a+(vMap[o]||0), 0);
-                s.oklar = yeniOklar; s.puan = yeniPuan;
-                sp.toplamSkor = (sp.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
-                sp.xAdet = (sp.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
-                sp.lastModified = Date.now();
-                yoneticiKaydet();
-                _kilitKaldir();
-                showToast('✅ Seri güncellendi', 'success');
-                yoneticiSkorDuzeltCiz();
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let s = sp.seriler[seriIdx]; if(!s) return;
+            let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${seriIdx}`;
+            let yeniOklar = (s.oklar||[]).map((_,oi) => {
+                let inp = document.getElementById(`ok-a-${key}-${oi}`);
+                return inp ? inp.value.trim().toUpperCase() : _;
             });
+            let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
+            let yeniPuan = yeniOklar.reduce((a,o) => a+(vMap[o]||0), 0);
+            s.oklar = yeniOklar; s.puan = yeniPuan;
+            sp.toplamSkor = (sp.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
+            sp.xAdet = (sp.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
+            sp.lastModified = Date.now();
+            yoneticiKaydet();
+            showToast('✅ Seri güncellendi', 'success');
+            yoneticiSkorDuzeltCiz();
         }
 
         function yoneticiGecmisSeriGuncelle(g, ad, kartIdx, seriIdx) {
-            _kilitKontrol(g, ad, (ok) => {
-                if(!ok) return;
-                _kilitKoy(g, ad);
-                let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
-                let k = sp.kartGecmisi[kartIdx]; if(!k) return;
-                let s = k.seriler[seriIdx]; if(!s) return;
-                let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${kartIdx}-${seriIdx}`;
-                let yeniOklar = (s.oklar||[]).map((_,oi) => {
-                    let inp = document.getElementById(`ok-g-${key}-${oi}`);
-                    return inp ? inp.value.trim().toUpperCase() : _;
-                });
-                let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
-                s.oklar = yeniOklar; s.puan = yeniOklar.reduce((a,o)=>a+(vMap[o]||0),0);
-                k.toplamSkor = (k.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
-                k.xAdet = (k.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
-                sp.lastModified = Date.now();
-                yoneticiKaydet();
-                _kilitKaldir();
-                showToast('✅ Geçmiş seri güncellendi', 'success');
-                yoneticiSkorDuzeltCiz();
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let k = sp.kartGecmisi[kartIdx]; if(!k) return;
+            let s = k.seriler[seriIdx]; if(!s) return;
+            let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${kartIdx}-${seriIdx}`;
+            let yeniOklar = (s.oklar||[]).map((_,oi) => {
+                let inp = document.getElementById(`ok-g-${key}-${oi}`);
+                return inp ? inp.value.trim().toUpperCase() : _;
             });
+            let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
+            s.oklar = yeniOklar; s.puan = yeniOklar.reduce((a,o)=>a+(vMap[o]||0),0);
+            k.toplamSkor = (k.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
+            k.xAdet = (k.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
+            sp.lastModified = Date.now();
+            yoneticiKaydet();
+            showToast('✅ Geçmiş seri güncellendi', 'success');
+            yoneticiSkorDuzeltCiz();
         }
 
         function yoneticiSkorSil(g, ad, tip, idx) {
@@ -7992,7 +7982,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         <div class="modal-content glass-panel" style="max-width:600px; width:100%; max-height:92vh; display:flex; flex-direction:column; padding:16px; overflow:hidden;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <span style="font-weight:800; color:var(--neon-red); font-size:17px;">🛡️ Yönetici Paneli</span>
-                <button onclick="location.reload()" style="background:var(--border-color); color:var(--text-main); border:none; padding:7px 13px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">✕ Çıkış</button>
+                <button onclick="try{_kilitKaldir();}catch(e){} location.reload()" style="background:var(--border-color); color:var(--text-main); border:none; padding:7px 13px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">✕ Çıkış</button>
             </div>
             <div id="yonetici-altnav" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; flex-shrink:0;"></div>
             <div id="yon-lig-bar" style="display:none; gap:6px; margin-bottom:8px; flex-shrink:0;">
