@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v92</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v95</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -594,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v92</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v95</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -3143,20 +3143,50 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         // Firestore'dan tüm serileri çek ve turnuvaDB'ye uygula
         function serileriBuluttanYukle(cb) {
             if(!bulutHazir || !dbBulut) { if(cb) cb(); return; }
+            let bugun = bugunISO();
+            let esiksifir = Date.now() - (3 * 60 * 60 * 1000); // 3 saat önce
+            let silinecek = []; // Eski seri belgeleri — Firestore'dan temizlenecek
+
             dbBulut.collection('kulup').doc('seriler').collection('kayitlar')
                 .get().then(snap => {
-                    snap.forEach(doc => { _seriUygula(doc.data()); });
+                    snap.forEach(doc => {
+                        let s = doc.data();
+                        if(!s) return;
+                        // Bugünden eski VEYA 3 saatten eski seri → sil, uygulama
+                        let seriTarih = s.tarih || '';
+                        let seriZaman = s.t || 0;
+                        let eskiTarih = seriTarih && seriTarih < bugun;
+                        let eskiZaman = seriZaman && seriZaman < esiksifir;
+                        if(eskiTarih || eskiZaman) {
+                            silinecek.push(doc.id); // Firestore'dan silinecek
+                            return; // Uygulanmıyor
+                        }
+                        _seriUygula(s);
+                    });
+                    // Eski seri belgelerini Firestore'dan temizle
+                    if(silinecek.length > 0) {
+                        let col = dbBulut.collection('kulup').doc('seriler').collection('kayitlar');
+                        silinecek.forEach(id => col.doc(id).delete().catch(()=>{}));
+                        console.log(`${silinecek.length} eski seri Firestore'dan temizlendi`);
+                    }
                     localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
                     if(cb) cb();
                 }).catch(() => { if(cb) cb(); });
         }
-        
+
         // Tek seri verisini turnuvaDB'ye uygula
         let _bekleyenSeriler = []; // Sporcu henüz yüklenmemişse buraya al
 
         function _seriUygula(s) {
             if(!s || !s.g || !s.ad || !s.oklar) return;
             if(silindiMi(s.g, s.ad)) return;
+            // ZAMAN KONTROLÜ: 3 saatten eski seri uygulanmaz
+            let uc_saat = 3 * 60 * 60 * 1000;
+            let seriZaman = s.t || 0;
+            let seriTarih = s.tarih || '';
+            let bugun = bugunISO();
+            if(seriTarih && seriTarih < bugun) return; // Dünden eski
+            if(seriZaman && (Date.now() - seriZaman) > uc_saat) return; // 3 saatten eski
             if(!turnuvaDB[s.g]) turnuvaDB[s.g] = {};
             if(!turnuvaDB[s.g][s.ad]) {
                 // Sporcu henüz yüklenmemiş — kuyruğa al
@@ -3164,14 +3194,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 return;
             }
             let sp = turnuvaDB[s.g][s.ad];
-            // KRİTİK: Bu seri zaten arşivlendiyse (kartGecmisi'nde varsa) tekrar uygulama!
+            // Arşivde varsa uygulama
             let arsivde = (sp.kartGecmisi||[]).some(k => (k.seriler||[]).some(sr => sr.seriId === s.id));
             if(arsivde) return;
             if(!sp.seriler) sp.seriler = [];
             if(sp.seriler.some(sr => sr.seriId === s.id)) return; // duplicate
             sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
-            sp.toplamSkor = (sp.seriler || []).reduce((a,sr) => a+(sr.puan||0), 0);
-            sp.xAdet = (sp.seriler || []).reduce((a,sr) => a+((sr.oklar||[]).filter(o=>o==='X').length), 0);
+            sp.toplamSkor = (sp.seriler||[]).reduce((a,sr) => a+(sr.puan||0), 0);
+            sp.xAdet = (sp.seriler||[]).reduce((a,sr) => a+((sr.oklar||[]).filter(o=>o==='X').length), 0);
             sp.sonSkorZamani = Math.max(sp.sonSkorZamani||0, s.t||0) || sp.sonSkorZamani;
             sp.lastModified = Date.now();
         }
@@ -3197,13 +3227,16 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         if(change.type !== 'added') return;
                         let s = change.doc.data();
                         if(!s || s.cihazId === _cihazId) return;
-                        // Bu seri zaten arşivlendiyse (kartGecmisi'nde varsa) tekrar uygulama
+                        // Tarih kontrolü — eski seri uygulama
+                        let seriTarih = s.tarih || '';
+                        let seriZaman = s.t || 0;
+                        if(seriTarih && seriTarih < bugunISO()) return;
+                        if(seriZaman && (Date.now() - seriZaman) > 3*60*60*1000) return;
+                        // Arşiv kontrolü
                         if(turnuvaDB[s.g] && turnuvaDB[s.g][s.ad]) {
                             let sp = turnuvaDB[s.g][s.ad];
-                            let arşivde = (sp.kartGecmisi||[]).some(k =>
-                                (k.seriler||[]).some(sr => sr.seriId === s.id)
-                            );
-                            if(arşivde) return; // Arşivlenmiş seri — tekrar uygulama!
+                            let arsivde = (sp.kartGecmisi||[]).some(k => (k.seriler||[]).some(sr => sr.seriId === s.id));
+                            if(arsivde) return;
                         }
                         _seriUygula(s);
                         degisti = true;
@@ -3240,6 +3273,15 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         }
                     }).catch(() => {});
                 }, () => {});
+
+            // Düzenleme kilidi dinleyici — başka cihaz kilit koyarsa bunu da uygula
+            dbBulut.collection('kulup').doc('duzenleme_kilidi').onSnapshot(snap => {
+                if(!snap.exists) { if(_duzenlemeKilidi && _duzenlemeKilidi.disaridan) _duzenlemeKilidi=null; return; }
+                let d = snap.data(); if(!d) return;
+                if(d.yapan === _cihazId) return;
+                if(Date.now() - d.zaman > 60000) { _duzenlemeKilidi=null; return; }
+                _duzenlemeKilidi = { g: d.g, ad: d.ad, zaman: d.zaman, disaridan: true };
+            }, () => {});
         }
         
         function bulutaGonderKontrol() {
@@ -3349,6 +3391,9 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             try { temaPaletUygula(localStorage.getItem('dag_sk_palette') || 'varsayilan'); } catch(e){}
             guvenlikYedegiAl();
             setInterval(guvenlikYedegiAl, 20000);
+            // 30 dakikada bir otomatik arşiv kontrolü
+            setTimeout(() => { try { temizlikYap(); } catch(e) {} }, 5000);
+            setInterval(() => { try { temizlikYap(); } catch(e) {} }, 30 * 60 * 1000);
             try { sezonSayaciBaslat(); } catch(e) {}
             sporcuListesiniYenile(); siralamaListesiDoldur(); takimDropdownDoldur(); takimListesiCiz();
             hedefPanZoomKur();
@@ -3606,7 +3651,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         let yoneticiYoklamaTip = 'bugun';
         function yoneticiNavCiz() {
             let nav = document.getElementById('yonetici-altnav'); if(!nav) return;
-            let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['silinenler','🗑️ Silinenler'],['yedek','💾 Yedek']];
+            let sek = [['kullanicilar','👥 Kullanıcılar'],['skorlar','⚙️ Skor Düzelt'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['silinenler','🗑️ Silinenler'],['yedek','💾 Yedek']];
             nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:1 1 auto; min-width:70px; white-space:nowrap; touch-action:manipulation; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--bg-panel)'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:8px 6px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer; text-align:center;">${l}</button>`).join('');
         }
         function yoneticiLigSec(g) { aktifGrup = g; yoneticiLigButonGuncelle(); yoneticiSekme(yoneticiSekmeAktif); }
@@ -3619,13 +3664,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             yoneticiSekmeAktif = k; yoneticiNavCiz();
             let arama = document.getElementById('yonetici-arama');
             let ligBar = document.getElementById('yon-lig-bar');
-            if(ligBar) ligBar.style.display = (k === 'kullanicilar' || k === 'yedek' || k === 'silinenler') ? 'none' : 'flex';
+            if(ligBar) ligBar.style.display = (k === 'kullanicilar' || k === 'yedek' || k === 'silinenler' || k === 'skorlar') ? 'none' : 'flex';
             yoneticiLigButonGuncelle();
             if(k === 'kullanicilar') { renderHedefId = 'yonetici-liste'; if(arama) arama.style.display = 'block'; yoneticiPaneliCiz(); return; }
             if(arama) arama.style.display = 'none';
             if(k === 'yoklama') { yoneticiYoklamaCiz(); return; }
             if(k === 'yedek') { yoneticiYedekCiz(); return; }
             if(k === 'silinenler') { yoneticiSilinenlerCiz(); return; }
+            if(k === 'skorlar') { yoneticiSkorDuzeltCiz(); return; }
             renderHedefId = 'yonetici-liste';
             if(k === 'aidat') { try { egitmenRenderAidat(); } catch(e) {} }
             else if(k === 'personel') { try { egitmenRenderPersonel(); } catch(e) {} }
@@ -3768,6 +3814,247 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             yoneticiPaneliCiz();
             try { siralamaListesiDoldur(); } catch(e) {}
         }
+        // Düzenleme kilidi — başka cihaz veri giremesin
+        let _duzenlemeKilidi = null; // { g, ad, zaman }
+
+        function _kilitKoy(g, ad) {
+            _duzenlemeKilidi = { g, ad, zaman: Date.now() };
+            if(bulutHazir && dbBulut) {
+                dbBulut.collection('kulup').doc('duzenleme_kilidi').set({
+                    g, ad, yapan: _cihazId, zaman: Date.now()
+                }).catch(()=>{});
+            }
+        }
+        function _kilitKaldir() {
+            _duzenlemeKilidi = null;
+            if(bulutHazir && dbBulut) {
+                dbBulut.collection('kulup').doc('duzenleme_kilidi').delete().catch(()=>{});
+            }
+        }
+        function _kilitKontrol(g, ad, cb) {
+            // Başka cihazda kilit var mı?
+            if(!bulutHazir || !dbBulut) { cb(true); return; }
+            dbBulut.collection('kulup').doc('duzenleme_kilidi').get().then(doc => {
+                if(!doc.exists) { cb(true); return; }
+                let d = doc.data();
+                if(!d) { cb(true); return; }
+                if(d.yapan === _cihazId) { cb(true); return; } // Kendi kilidi
+                if(Date.now() - d.zaman > 60000) { cb(true); return; } // 60sn geçmiş, bayat
+                if(d.g === g && d.ad === ad) {
+                    showToast('⚠️ Yönetici şu an bu sporcuyu düzenliyor. 30 saniye sonra tekrar dene.', 'warning');
+                    cb(false);
+                } else { cb(true); }
+            }).catch(() => cb(true));
+        }
+
+        // Skor girişinde kilit kontrolü
+        function skorKaydetKilitKontrol() {
+            if(!_duzenlemeKilidi) return true;
+            if(Date.now() - _duzenlemeKilidi.zaman > 60000) { _duzenlemeKilidi = null; return true; }
+            if(_duzenlemeKilidi.g === aktifGrup && _duzenlemeKilidi.ad === secilenSporcu) {
+                showToast('⚠️ Yönetici bu sporcuyu düzenliyor. 30 saniye sonra tekrar dene.', 'warning');
+                return false;
+            }
+            return true;
+        }
+
+        let _skorDuzArama = '';
+        function yoneticiSkorDuzeltCiz() {
+            let alan = document.getElementById('yonetici-liste'); if(!alan) return;
+            let html = `
+            <div style="margin-bottom:10px;">
+                <input id="skor-duz-ara" type="text" placeholder="🔍 Sporcu ara..." value="${_skorDuzArama}"
+                    oninput="_skorDuzArama=this.value; yoneticiSkorDuzeltCiz()"
+                    style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:10px;color:var(--text-main);font-size:14px;">
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">
+                Aktif ve geçmiş serileri düzelt/sil. Tüm değişiklikler buluta anında yansır.
+                <br>Düzenleme sırasında o sporcu veri giremez.
+            </div>`;
+            let q = _skorDuzArama.trim().toLocaleLowerCase('tr');
+            let herhangiVar = false;
+            ['buyukler','yildizlar','kucukler','minikler'].forEach(g => {
+                let db = turnuvaDB[g] || {};
+                let adlar = Object.keys(db).filter(ad => !db[ad].pasif &&
+                    (!q || ad.toLocaleLowerCase('tr').includes(q))).sort();
+                if(!adlar.length) return;
+                herhangiVar = true;
+                html += `<div style="font-weight:900;color:var(--accent-orange);font-size:12px;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">${LIG_ETIKET[g]}</div>`;
+                adlar.forEach(ad => {
+                    let sp = db[ad];
+                    let aktif = sp.seriler || [];
+                    let gecmis = sp.kartGecmisi || [];
+                    let adEsc = ad.replace(/'/g,"\'");
+                    let kilitli = _duzenlemeKilidi && _duzenlemeKilidi.g===g && _duzenlemeKilidi.ad===ad;
+                    html += `<details id="duz-${g}-${ad.replace(/[^a-z0-9]/gi,'_')}" style="margin-bottom:6px;">
+                        <summary style="cursor:pointer;background:var(--bg-panel);border:1px solid ${kilitli?'var(--accent-orange)':'var(--border-color)'};border-radius:10px;padding:10px 12px;list-style:none;display:flex;align-items:center;gap:8px;">
+                            <span style="flex:1;font-weight:800;font-size:13px;">${spEmoji(sp)}${ad}</span>
+                            ${kilitli?'<span style="font-size:10px;color:var(--accent-orange);font-weight:700;">🔒 Düzenleniyor</span>':''}
+                            <span style="font-size:11px;color:var(--text-muted);">${aktif.length?aktif.length+' aktif':'—'} · ${gecmis.length} kart</span>
+                            <span style="font-size:11px;color:var(--text-muted);">▾</span>
+                        </summary>
+                        <div style="padding:10px;border:1px solid var(--border-color);border-top:none;border-radius:0 0 10px 10px;background:rgba(0,0,0,0.15);">
+
+                            <!-- Sporcu Bilgileri -->
+                            <div style="font-size:11px;font-weight:700;color:var(--neon-blue);margin-bottom:6px;">👤 Sporcu Bilgileri</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                                <input id="duz-ad-${g}_${ad.replace(/[^a-z0-9]/gi,'_')}" value="${ad}" placeholder="İsim" style="padding:6px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:6px;color:var(--text-main);font-size:12px;">
+                                <input id="duz-yil-${g}_${ad.replace(/[^a-z0-9]/gi,'_')}" value="${sp.dogumYili||''}" placeholder="Doğum yılı" style="padding:6px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:6px;color:var(--text-main);font-size:12px;">
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                                <button onclick="yoneticiSporcuBilgiGuncelle('${g}','${adEsc}')" style="background:var(--neon-blue);color:#fff;border:none;padding:7px;border-radius:7px;font-weight:700;font-size:11px;cursor:pointer;">💾 Bilgileri Kaydet</button>
+                                <button onclick="yoneticiKategoriTasi('${g}','${adEsc}')" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid #8b5cf6;padding:7px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;">📂 Kategori Taşı</button>
+                            </div>
+
+                            <!-- Aktif Seriler -->
+                            ${aktif.length ? `
+                            <div style="font-size:11px;font-weight:700;color:var(--neon-green);margin-bottom:6px;">▶ Aktif Seriler · ${sp.toplamSkor||0} puan</div>
+                            ${aktif.map((s,i) => `
+                            <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;margin-bottom:5px;">
+                                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${i+1}. seri — <b style="color:var(--text-main);">${s.puan||0} puan</b></div>
+                                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+                                    ${(s.oklar||[]).map((ok,oi) => `<input id="ok-a-${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${i}-${oi}" value="${ok}" style="width:36px;text-align:center;padding:4px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:5px;color:var(--text-main);font-size:12px;font-weight:700;">`).join('')}
+                                </div>
+                                <div style="display:flex;gap:5px;">
+                                    <button onclick="yoneticiAktifSeriGuncelle('${g}','${adEsc}',${i})" style="flex:1;background:rgba(16,185,129,0.1);color:var(--neon-green);border:1px solid var(--neon-green);padding:5px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">💾 Güncelle</button>
+                                    <button onclick="yoneticiSkorSil('${g}','${adEsc}','aktif',${i})" style="background:rgba(239,68,68,0.1);color:var(--neon-red);border:1px solid var(--neon-red);padding:5px 10px;border-radius:6px;font-size:10px;cursor:pointer;">🗑️</button>
+                                </div>
+                            </div>`).join('')}` : '<div style="font-size:11px;color:var(--text-muted);padding:6px 0;">Aktif seri yok</div>'}
+
+                            <!-- Geçmiş Kartlar -->
+                            ${gecmis.length ? `
+                            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin:10px 0 6px;">📂 Geçmiş Kartlar (${gecmis.length})</div>
+                            ${gecmis.slice().reverse().map((k,ri) => {
+                                let ki=gecmis.length-1-ri;
+                                return `<details style="margin-bottom:4px;">
+                                    <summary style="cursor:pointer;font-size:11px;padding:6px 8px;background:rgba(0,0,0,0.2);border-radius:6px;list-style:none;display:flex;align-items:center;gap:6px;">
+                                        <span style="flex:1;">📅 ${k.tarih} · <b>${k.toplamSkor||0}p</b> · ${(k.seriler||[]).length} seri ${k.otomatik?'<span style="color:var(--text-muted);">(oto)</span>':''}</span>
+                                        <button onclick="event.preventDefault();yoneticiGecmisKartSil('${g}','${adEsc}',${ki})" style="background:rgba(239,68,68,0.1);color:var(--neon-red);border:1px solid var(--neon-red);padding:2px 7px;border-radius:4px;font-size:9px;cursor:pointer;">🗑️ Kartı Sil</button>
+                                    </summary>
+                                    <div style="padding:6px;">
+                                    ${(k.seriler||[]).map((s,si) => `
+                                    <div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:6px;margin-bottom:4px;">
+                                        <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;">${si+1}. seri · <b style="color:var(--text-main);">${s.puan||0}p</b></div>
+                                        <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px;">
+                                            ${(s.oklar||[]).map((ok,oi) => `<input id="ok-g-${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${ki}-${si}-${oi}" value="${ok}" style="width:32px;text-align:center;padding:3px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:4px;color:var(--text-main);font-size:11px;font-weight:700;">`).join('')}
+                                        </div>
+                                        <div style="display:flex;gap:4px;">
+                                            <button onclick="yoneticiGecmisSeriGuncelle('${g}','${adEsc}',${ki},${si})" style="flex:1;background:rgba(16,185,129,0.1);color:var(--neon-green);border:1px solid var(--neon-green);padding:4px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer;">💾 Güncelle</button>
+                                            <button onclick="yoneticiGecmisSeriSil('${g}','${adEsc}',${ki},${si})" style="background:rgba(239,68,68,0.1);color:var(--neon-red);border:1px solid var(--neon-red);padding:4px 8px;border-radius:5px;font-size:9px;cursor:pointer;">🗑️</button>
+                                        </div>
+                                    </div>`).join('')}
+                                    </div>
+                                </details>`;
+                            }).join('')}` : ''}
+                        </div>
+                    </details>`;
+                });
+            });
+            if(!herhangiVar && q) html += `<div style="text-align:center;color:var(--text-muted);padding:20px;">"${q}" için sonuç yok</div>`;
+            alan.innerHTML = html;
+            // Arama kutusuna odaklan
+            let ara = document.getElementById('skor-duz-ara'); if(ara) { ara.focus(); ara.setSelectionRange(ara.value.length,ara.value.length); }
+        }
+        function yoneticiSporcuBilgiGuncelle(g, ad) {
+            let key = `${g}_${ad.replace(/[^a-z0-9]/gi,'_')}`;
+            let yeniAd = (document.getElementById('duz-ad-'+key)||{}).value?.trim().toUpperCase();
+            let yeniYil = (document.getElementById('duz-yil-'+key)||{}).value?.trim();
+            if(!yeniAd) return showToast('İsim boş olamaz','error');
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            // Ad değişiyorsa
+            if(yeniAd !== ad) {
+                if(turnuvaDB[g][yeniAd]) return showToast('Bu isim zaten var!','error');
+                turnuvaDB[g][yeniAd] = {...sp};
+                delete turnuvaDB[g][ad];
+                ad = yeniAd; sp = turnuvaDB[g][ad];
+            }
+            if(yeniYil) sp.dogumYili = yeniYil;
+            sp.lastModified = Date.now();
+            yoneticiKaydet();
+            showToast('✅ Sporcu bilgileri güncellendi', 'success');
+            yoneticiSkorDuzeltCiz();
+        }
+
+        function yoneticiAktifSeriGuncelle(g, ad, seriIdx) {
+            _kilitKontrol(g, ad, (ok) => {
+                if(!ok) return;
+                _kilitKoy(g, ad);
+                let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+                let s = sp.seriler[seriIdx]; if(!s) return;
+                let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${seriIdx}`;
+                let yeniOklar = (s.oklar||[]).map((_,oi) => {
+                    let inp = document.getElementById(`ok-a-${key}-${oi}`);
+                    return inp ? inp.value.trim().toUpperCase() : _;
+                });
+                let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
+                let yeniPuan = yeniOklar.reduce((a,o) => a+(vMap[o]||0), 0);
+                s.oklar = yeniOklar; s.puan = yeniPuan;
+                sp.toplamSkor = (sp.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
+                sp.xAdet = (sp.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
+                sp.lastModified = Date.now();
+                yoneticiKaydet();
+                _kilitKaldir();
+                showToast('✅ Seri güncellendi', 'success');
+                yoneticiSkorDuzeltCiz();
+            });
+        }
+
+        function yoneticiGecmisSeriGuncelle(g, ad, kartIdx, seriIdx) {
+            _kilitKontrol(g, ad, (ok) => {
+                if(!ok) return;
+                _kilitKoy(g, ad);
+                let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+                let k = sp.kartGecmisi[kartIdx]; if(!k) return;
+                let s = k.seriler[seriIdx]; if(!s) return;
+                let key = `${g}-${ad.replace(/[^a-z0-9]/gi,'_')}-${kartIdx}-${seriIdx}`;
+                let yeniOklar = (s.oklar||[]).map((_,oi) => {
+                    let inp = document.getElementById(`ok-g-${key}-${oi}`);
+                    return inp ? inp.value.trim().toUpperCase() : _;
+                });
+                let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
+                s.oklar = yeniOklar; s.puan = yeniOklar.reduce((a,o)=>a+(vMap[o]||0),0);
+                k.toplamSkor = (k.seriler||[]).reduce((a,sr)=>a+(sr.puan||0),0);
+                k.xAdet = (k.seriler||[]).reduce((a,sr)=>a+((sr.oklar||[]).filter(o=>o==='X').length),0);
+                sp.lastModified = Date.now();
+                yoneticiKaydet();
+                _kilitKaldir();
+                showToast('✅ Geçmiş seri güncellendi', 'success');
+                yoneticiSkorDuzeltCiz();
+            });
+        }
+
+        function yoneticiSkorSil(g, ad, tip, idx) {
+            if(!confirm('Bu seriyi silmek istediğine emin misin?')) return;
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            sp.seriler.splice(idx, 1);
+            sp.toplamSkor = (sp.seriler||[]).reduce((a,s)=>a+(s.puan||0),0);
+            sp.xAdet = (sp.seriler||[]).reduce((a,s)=>a+((s.oklar||[]).filter(o=>o==='X').length),0);
+            sp.lastModified = Date.now();
+            yoneticiKaydet(); yoneticiSkorDuzeltCiz();
+            showToast('✅ Seri silindi', 'success');
+        }
+
+        function yoneticiGecmisKartSil(g, ad, kartIdx) {
+            if(!confirm('Bu geçmiş kartı tamamen silmek istediğine emin misin? Klasmandan da düşer.')) return;
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            sp.kartGecmisi.splice(kartIdx, 1);
+            sp.lastModified = Date.now();
+            yoneticiKaydet(); yoneticiSkorDuzeltCiz();
+            showToast('✅ Geçmiş kart silindi', 'success');
+        }
+
+        function yoneticiGecmisSeriSil(g, ad, kartIdx, seriIdx) {
+            if(!confirm('Bu geçmiş seriyi silmek istediğine emin misin?')) return;
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
+            let k = sp.kartGecmisi[kartIdx]; if(!k) return;
+            k.seriler.splice(seriIdx, 1);
+            k.toplamSkor = (k.seriler||[]).reduce((a,s)=>a+(s.puan||0),0);
+            k.xAdet = (k.seriler||[]).reduce((a,s)=>a+((s.oklar||[]).filter(o=>o==='X').length),0);
+            sp.lastModified = Date.now();
+            yoneticiKaydet(); yoneticiSkorDuzeltCiz();
+            showToast('✅ Geçmiş seri silindi', 'success');
+        }
+
         function yoneticiDondur(g, ad) {
             let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
             sp.donduruldu = !sp.donduruldu; sp.lastModified = Date.now();
@@ -3884,6 +4171,50 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(y <= 2016) return 'kucukler';
             if(y <= 2020) return 'minikler';
             return null;
+        }
+
+        function temizlikYap() {
+            // 30 dakika skor girilmemiş kartları arşivle
+            let simdi = Date.now();
+            let otuzDakika = 30 * 60 * 1000;
+            let degisti = false;
+            ['buyukler','yildizlar','kucukler','minikler'].forEach(g => {
+                let db = turnuvaDB[g] || {};
+                Object.keys(db).forEach(ad => {
+                    let sp = db[ad];
+                    if(!sp.seriler || sp.seriler.length === 0) return;
+                    let sonZaman = sp.sonSkorZamani || 0;
+                    if(!sonZaman) return;
+                    if(simdi - sonZaman < otuzDakika) return;
+                    let seriTarih = (sp.seriler[0] && sp.seriler[0].tarih) || bugunISO();
+                    let mevcutPuan = sp.toplamSkor || 0;
+                    // KLASMAN KORUMASI: Aynı tarihte aynı puan zaten arşivde varsa tekrar ekleme
+                    let zatenArsivde = (sp.kartGecmisi||[]).some(k =>
+                        k.tarih === seriTarih && k.toplamSkor === mevcutPuan
+                    );
+                    if(!zatenArsivde && mevcutPuan > 0) {
+                        if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi = [];
+                        sp.kartGecmisi.push({
+                            tarih: seriTarih,
+                            seriler: [...sp.seriler],
+                            detayliOklar: sp.detayliOklar ? [...sp.detayliOklar] : [],
+                            toplamSkor: mevcutPuan,
+                            xAdet: sp.xAdet || 0,
+                            otomatik: true
+                        });
+                    }
+                    sp.seriler = []; sp.detayliOklar = [];
+                    sp.toplamSkor = 0; sp.xAdet = 0;
+                    sp.sonSkorZamani = null; sp.lastModified = simdi;
+                    degisti = true;
+                });
+            });
+            if(degisti) {
+                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                try { bulutaGonderKontrol(); } catch(e) {}
+                try { siralamaListesiDoldur(); } catch(e) {}
+                try { klasmanDoldur(); } catch(e) {}
+            }
         }
         // Var olan sporcuları doğum yılına göre yeni gruplara taşı (tek seferlik migration)
         function sporcuMigrasyonu() {
@@ -4484,7 +4815,10 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
 
         function skorKaydet() {
-            if(!secilenSporcu) return; let okAdet = getMaksOk();
+            if(!secilenSporcu) return;
+            // Düzenleme kilidi kontrolü — yönetici bu sporcuyu düzenliyorsa dur
+            if(!skorKaydetKilitKontrol()) return;
+            let okAdet = getMaksOk();
             if(anlikAtilanOklar.length !== okAdet) { buyukHata(`EKSİK SKOR GİRDİN!\n\nBu seride ${okAdet} ok olmalı.\nŞu an sadece ${anlikAtilanOklar.length} ok var.\n\nLütfen tüm okları gir.`); return; }
             let grupData = turnuvaDB[aktifGrup][secilenSporcu]; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
             if(!grupData.devamModu && grupData.seriler && grupData.seriler.length >= limit) { showToast("Maksimum seriye ulaşıldı!", "error"); skorEkraniniKapat(); return; }
