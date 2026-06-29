@@ -335,6 +335,17 @@
         .profil-aksesuar { font-size: 18px; }
         .profil-kapak-btn { position: absolute; top: 8px; right: 8px; z-index: 3; background: rgba(0,0,0,0.55); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; }
         .vitrin-secili { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+        /* Kaydırılabilir nav barları — iOS touch scroll fix */
+        #yonetici-altnav, #hizli-gecis-bar, .sekme-bar {
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            touch-action: pan-x pan-y;
+        }
+        #yonetici-altnav button, #hizli-gecis-bar button {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         .vitrin-rozet { font-size: 30px; background: var(--bg-main); border: 2px solid var(--gold); border-radius: 12px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -356,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v81</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v90</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -364,8 +375,10 @@
             <button class="giris-secim-btn" onclick="platformSec('yonetici')">🛡️ YÖNETİCİ <span>Kullanıcı yönetimi · dondur · sil · kod sıfırla</span></button>
         </div>
         <div id="giris-lig" style="width:100%; display:none; flex-direction:column; align-items:center; gap:15px;">
-            <button class="giris-secim-btn" onclick="grupKurulumu('buyukler')">🎯 BÜYÜKLER LİGİ <span>18m / 50m / 70m Eleme</span></button>
-            <button class="giris-secim-btn" onclick="grupKurulumu('kucukler')">🏹 KÜÇÜKLER LİGİ <span>Kısa Mesafe Alıştırma</span></button>
+            <button class="giris-secim-btn" onclick="grupKurulumu('buyukler')">🔵 BÜYÜKLER <span>16+ yaş · 2010 ve öncesi · 18m/50m/70m</span></button>
+            <button class="giris-secim-btn" onclick="grupKurulumu('yildizlar')">⭐ YILDIZLAR <span>13-15 yaş · 2011-2013 doğumlu</span></button>
+            <button class="giris-secim-btn" onclick="grupKurulumu('kucukler')">🟢 KÜÇÜKLER <span>10-12 yaş · 2014-2016 doğumlu</span></button>
+            <button class="giris-secim-btn" onclick="grupKurulumu('minikler')">🌱 MİNİKLER <span>6-9 yaş · 2017-2020 doğumlu</span></button>
             <button onclick="platformGeri()" style="width:100%; max-width:350px; padding:10px; font-size:12px; font-weight:600; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); border-radius:10px; cursor:pointer;">← Platform Seçimine Dön</button>
         </div>
         <div id="giris-sifre" style="width:100%; max-width:300px; display:none; flex-direction:column; align-items:center; gap:14px;">
@@ -581,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v81</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v90</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -886,7 +899,10 @@
     </div>
 
     <!-- LİDERLİK VE TURNUVA MERKEZİ -->
-    <div id="icerik-klasman" class="sekme-icerik"></div>
+    <div id="icerik-klasman" class="sekme-icerik">
+        <div id="sezon-sayac-widget"></div>
+        <div id="klasman-icerik"></div>
+    </div>
     <div id="icerik-liderlik" class="sekme-icerik">
         <div class="glass-panel" id="liderlik-panel" style="border-radius: 12px; padding: 15px; flex: 1; display:flex; flex-direction:column; position:relative;">
             <button class="btn-tam-ekran-kapat" onclick="toggleFullscreen('liderlik-panel')">✖ Kapat</button>
@@ -1152,12 +1168,125 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pwaPrompt = e; try { document.getElementById('pwa-banner').style.display='flex'; } catch(_) {} });
         function pwaKur() { if(pwaPrompt) { pwaPrompt.prompt(); pwaPrompt.userChoice.then(() => { pwaPrompt=null; try { document.getElementById('pwa-banner').style.display='none'; } catch(_) {} }); } }
         const TEAM_COLORS = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#14b8a6', '#f43f5e', '#a855f7', '#0ea5e9'];
+        let aktifSezonAdi = localStorage.getItem('dag_sezon_adi') || 'Aktif Sezon';
+        let aktifSezonBaslangic = localStorage.getItem('dag_sezon_baslangic') || null;
+        let aktifSezonBitis = localStorage.getItem('dag_sezon_bitis') || null;
+
+        function sezonAyarla() {
+            // Yönetici sezon ayarları
+            girdiIste('📅 Sezon adı (örn: 2025 Bahar Sezonu):', aktifSezonAdi, (ad) => {
+                if(!ad) return;
+                aktifSezonAdi = ad.trim();
+                localStorage.setItem('dag_sezon_adi', aktifSezonAdi);
+                girdiIste('📅 Sezon başlangıç tarihi (YYYY-AA-GG):', aktifSezonBaslangic||bugunISO(), (bas) => {
+                    aktifSezonBaslangic = bas||bugunISO();
+                    localStorage.setItem('dag_sezon_baslangic', aktifSezonBaslangic);
+                    girdiIste('📅 Sezon bitiş tarihi (YYYY-AA-GG):', aktifSezonBitis||'', (bit) => {
+                        aktifSezonBitis = bit||null;
+                        if(aktifSezonBitis) localStorage.setItem('dag_sezon_bitis', aktifSezonBitis);
+                        else localStorage.removeItem('dag_sezon_bitis');
+                        showToast('✅ Sezon bilgileri güncellendi', 'success');
+                        sezonSayaciniGuncelle();
+                    });
+                });
+            });
+        }
+
+        function sezonWidgetHTML(kompakt) {
+            let simdi = new Date();
+            let basTarih = aktifSezonBaslangic ? new Date(aktifSezonBaslangic) : null;
+            let bitTarih = aktifSezonBitis ? new Date(aktifSezonBitis) : null;
+            let kalanGun = bitTarih ? Math.max(0, Math.ceil((bitTarih - simdi) / 86400000)) : null;
+            let gecenGun = basTarih ? Math.max(0, Math.floor((simdi - basTarih) / 86400000)) : null;
+            let yuzde = (basTarih && bitTarih) ? Math.min(100, Math.max(0, Math.round(((simdi-basTarih)/(bitTarih-basTarih))*100))) : null;
+            let renk = kalanGun === null ? 'var(--accent-orange)' : kalanGun > 30 ? 'var(--neon-green)' : kalanGun > 7 ? '#f59e0b' : 'var(--neon-red)';
+            let emoji = kalanGun === null ? '🏆' : kalanGun > 30 ? '🟢' : kalanGun > 7 ? '⚡' : '🔥';
+            let kalanTxt = kalanGun === null ? 'Devam ediyor' : kalanGun === 0 ? 'Bugün bitiyor!' : kalanGun + ' gün kaldı';
+            if(kompakt) {
+                return '<div onclick="sekmeAc(\'klasman\')" style="cursor:pointer;background:linear-gradient(135deg,rgba(255,98,0,0.1),rgba(59,130,246,0.06));border:1px solid rgba(255,98,0,0.25);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">'
+                    + '<div style="font-size:26px;">' + emoji + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:10px;font-weight:800;color:var(--text-muted);letter-spacing:1px;">AKTİF SEZON</div>'
+                    + '<div style="font-size:14px;font-weight:900;color:var(--accent-orange);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + aktifSezonAdi + '</div>'
+                    + (basTarih ? '<div style="font-size:11px;color:var(--text-muted);">' + basTarih.toLocaleDateString('tr-TR') + (bitTarih ? ' → ' + bitTarih.toLocaleDateString('tr-TR') : '') + '</div>' : '')
+                    + '</div>'
+                    + '<div style="text-align:right;flex-shrink:0;">'
+                    + '<div style="font-size:18px;font-weight:900;color:' + renk + ';">' + (kalanGun !== null ? kalanGun : '∞') + '</div>'
+                    + '<div style="font-size:9px;color:var(--text-muted);font-weight:700;">' + (kalanGun !== null ? 'GÜN KALDI' : 'AÇIK') + '</div>'
+                    + '</div></div>'
+                    + (yuzde !== null ? '<div style="background:rgba(0,0,0,0.25);border-radius:6px;height:4px;overflow:hidden;margin:-6px 0 12px;"><div style="height:100%;background:' + renk + ';border-radius:6px;width:' + yuzde + '%;"></div></div>' : '');
+            }
+            return '<div style="background:linear-gradient(135deg,rgba(255,98,0,0.1),rgba(0,0,0,0.15));border:1px solid rgba(255,98,0,0.3);border-radius:16px;padding:16px;margin-bottom:14px;">'
+                + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'
+                + '<div style="font-size:32px;">' + emoji + '</div>'
+                + '<div style="flex:1;"><div style="font-size:10px;font-weight:800;color:var(--text-muted);letter-spacing:1.5px;margin-bottom:2px;">AKTİF SEZON</div>'
+                + '<div style="font-size:18px;font-weight:900;color:var(--accent-orange);">' + aktifSezonAdi + '</div></div>'
+                + (kalanGun !== null
+                    ? '<div style="text-align:center;background:rgba(0,0,0,0.3);border-radius:12px;padding:8px 14px;flex-shrink:0;"><div style="font-size:28px;font-weight:900;color:' + renk + ';line-height:1;">' + kalanGun + '</div><div style="font-size:9px;color:var(--text-muted);font-weight:800;letter-spacing:1px;">GÜN KALDI</div></div>'
+                    : '<div style="text-align:center;background:rgba(255,98,0,0.1);border:1px solid rgba(255,98,0,0.3);border-radius:12px;padding:8px 14px;flex-shrink:0;"><div style="font-size:18px;">∞</div><div style="font-size:9px;color:var(--accent-orange);font-weight:800;">AÇIK SEZON</div></div>')
+                + '</div>'
+                + (basTarih ? '<div style="display:flex;gap:10px;margin-bottom:10px;">'
+                    + '<div style="text-align:center;flex:1;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px;">'
+                    + '<div style="font-size:10px;color:var(--text-muted);font-weight:700;margin-bottom:2px;">BAŞLANGIÇ</div>'
+                    + '<div style="font-size:13px;font-weight:800;">' + basTarih.toLocaleDateString('tr-TR') + '</div>'
+                    + (gecenGun !== null ? '<div style="font-size:10px;color:var(--neon-green);">' + gecenGun + '. gün</div>' : '')
+                    + '</div>'
+                    + (bitTarih ? '<div style="text-align:center;flex:1;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px;">'
+                        + '<div style="font-size:10px;color:var(--text-muted);font-weight:700;margin-bottom:2px;">BİTİŞ</div>'
+                        + '<div style="font-size:13px;font-weight:800;">' + bitTarih.toLocaleDateString('tr-TR') + '</div>'
+                        + '<div style="font-size:10px;color:' + renk + ';">' + kalanTxt + '</div></div>' : '')
+                    + '</div>' : '')
+                + (yuzde !== null ? (function() {
+                    // Eğlenceli emoji track: 10 segmentli yol
+                    let seg = Math.round(yuzde / 10);
+                    let okcu = '🏹';
+                    let hedef = '🎯';
+                    let yol = '';
+                    for(let i=0;i<10;i++) {
+                        if(i < seg) yol += '<span style="opacity:0.4;">·</span>';
+                        else if(i === seg) yol += '<span style="font-size:16px;">' + okcu + '</span>';
+                        else yol += '<span style="opacity:0.2;">·</span>';
+                    }
+                    let milestones = [{p:25,e:'⚡'},{p:50,e:'🔥'},{p:75,e:'💪'},{p:100,e:'🏆'}];
+                    let msHtml = milestones.map(m =>
+                        '<div style="position:absolute;left:'+m.p+'%;transform:translateX(-50%);top:-8px;font-size:'+(yuzde>=m.p?'14px':'11px')+';opacity:'+(yuzde>=m.p?'1':'0.3')+';">'+m.e+'</div>'
+                    ).join('');
+                    return '<div style="margin-top:4px;">'
+                        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+                        + '<span style="font-size:10px;color:var(--text-muted);font-weight:700;">SEZON İLERLEMESİ</span>'
+                        + '<span style="font-size:12px;font-weight:900;color:' + renk + ';">%' + yuzde + '</span>'
+                        + '</div>'
+                        + '<div style="position:relative;padding-top:18px;">'
+                        + '<div style="position:relative;">' + msHtml + '</div>'
+                        + '<div style="background:rgba(0,0,0,0.35);border-radius:10px;height:12px;overflow:hidden;">'
+                        + '<div style="height:100%;background:linear-gradient(90deg,#ff6200,' + renk + ');border-radius:10px;width:' + yuzde + '%;transition:width 0.8s;position:relative;">'
+                        + '<div style="position:absolute;right:-1px;top:50%;transform:translateY(-50%);font-size:14px;">🏹</div>'
+                        + '</div></div>'
+                        + '</div>'
+                        + '<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-muted);">'
+                        + '<span>🚀 Başladı</span><span style="color:' + renk + ';font-weight:700;">' + (yuzde>=100?'🏆 Bitti!':kalanTxt) + '</span><span>🎯 Bitiş</span>'
+                        + '</div></div>';
+                })() : '')
+                + (kalanGun !== null && kalanGun <= 14 ? '<div style="margin-top:10px;text-align:center;font-size:12px;font-weight:800;color:' + renk + ';padding:8px;background:rgba(0,0,0,0.2);border-radius:8px;">' + (kalanGun===0?'⚡ Bugün son gün!':kalanGun<=7?'🔥 Sadece '+kalanGun+' gün kaldı!':'⏳ '+kalanGun+' gün içinde bitiyor') + '</div>' : '')
+                + '</div>';
+        }
+        function sezonSayaciniGuncelle() {
+            let el = document.getElementById('sezon-sayac-widget');
+            if(el) el.innerHTML = sezonWidgetHTML(false);
+            let el2 = document.getElementById('sezon-sayac-ana');
+            if(el2) el2.innerHTML = sezonWidgetHTML(true);
+        }
+        function sezonSayaciBaslat() {
+            sezonSayaciniGuncelle();
+            setInterval(sezonSayaciniGuncelle, 60000);
+        }
+
         let aktifGrup = 'buyukler'; let grupSuresi = 180; let kalanSure = 180; let audioCtx = null;
         let aktifPlatform = 'sporcu';
         let loggedInSporcu = null; // null = eğitmen/tam yetki; isim = giriş yapan sporcu (sadece kendini görür)
         let detayKarneSporcu = '';
         let secilenSporcu = ""; let aktifCinsiyet = "K"; let aktifYay = "Klasik"; 
-        let turnuvaDB = { buyukler: {}, kucukler: {} }; let takimlarDB = [];
+        let turnuvaDB = { buyukler: {}, yildizlar: {}, kucukler: {}, minikler: {} }; let takimlarDB = [];
         let silinenlerDB = [];
         let timerId = null; let isTimerRunning = false; let timerPhase = 0;
         let elemeEslesmeleri = []; let takimElemeEslesmeleri = []; let orijinalSiraMap = {}; let aktifTur = 1; let aktifTakimTur = 1;
@@ -1281,7 +1410,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     let p = JSON.parse(e.target.result);
                     if(!p || !p.turnuvaDB) { showToast("Geçersiz yedek dosyası!", "error"); event.target.value = ""; return; }
                     if(!confirm("DİKKAT!\n\nMevcut TÜM veriler bu yedek dosyasındaki verilerle DEĞİŞTİRİLECEK.\n\nDevam edilsin mi?")) { event.target.value = ""; return; }
-                    turnuvaDB = p.turnuvaDB || { buyukler:{}, kucukler:{} };
+                    turnuvaDB = p.turnuvaDB || { buyukler:{}, yildizlar:{}, kucukler:{}, minikler:{} }; if(!turnuvaDB.yildizlar) turnuvaDB.yildizlar={}; if(!turnuvaDB.minikler) turnuvaDB.minikler={};
                     takimlarDB = p.takimlarDB || [];
                     elemeEslesmeleri = p.elemeEslesmeleri || [];
                     takimElemeEslesmeleri = p.takimElemeEslesmeleri || [];
@@ -2260,7 +2389,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 <div style="font-weight:800; color:var(--neon-green); font-size:15px; margin-bottom:4px;">⏱️ Bugün Salona Gelenler</div>
                 <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">📅 ${tarihYazi}</div>
                 <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">ℹ️ Salon Modu açıkken skor giren sporcu otomatik gelmiş sayılır.</div>`;
-            ['buyukler', 'kucukler'].forEach(g => {
+            ['buyukler', 'yildizlar', 'kucukler', 'minikler'].forEach(g => {
                 let satirlar = Object.keys(gun).filter(ad => gun[ad].grup === g && (!q || ad.toLocaleLowerCase('tr').includes(q)))
                     .map(ad => ({ ad, saat: gun[ad].saat || '--:--' }))
                     .sort((a, b) => a.saat.localeCompare(b.saat));
@@ -2726,7 +2855,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function silinenlerKaydet() { try { localStorage.setItem('okculuk_silinenler', JSON.stringify(silinenlerDB)); } catch(e) {} }
         function turnuvaDBMerge(yerel, uzak) {
             let sonuc = { buyukler: {}, kucukler: {} };
-            ['buyukler', 'kucukler'].forEach(g => {
+            ['buyukler', 'yildizlar', 'kucukler', 'minikler'].forEach(g => {
                 let a = (yerel && yerel[g]) || {};
                 let b = (uzak && uzak[g]) || {};
                 let adlar = new Set([...Object.keys(a), ...Object.keys(b)]);
@@ -2853,6 +2982,8 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                                 sonBulutJSON = uzakJSON;
                                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
                                 bulutDurum('☁️ senkron ✓', 'var(--neon-green)');
+                                // Sporcu yüklendi — bekleyen serileri uygula
+                                try { _bekleyenSerileriBosalt(); localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); } catch(e) {}
                             } else {
                                 bulutDurum('☁️ bağlı', 'var(--neon-green)');
                             }
@@ -2882,7 +3013,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                             if(uzakSayi > 0 && p.turnuvaDB) {
                                 // turnuvaDB: MERGE et — hiçbir sporcuyu silme
                                 // Yerel yeni eklenenler korunsun, buluttan gelenler eklensin
-                                ['buyukler','kucukler'].forEach(g => {
+                                ['buyukler','yildizlar','kucukler','minikler'].forEach(g => {
                                     if(!p.turnuvaDB[g]) return;
                                     if(!turnuvaDB[g]) turnuvaDB[g] = {};
                                     Object.keys(p.turnuvaDB[g]).forEach(ad => {
@@ -2903,6 +3034,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                                 if(p.antrenmanlarDB) antrenmanlarDB = p.antrenmanlarDB;
                                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
                                 bulutDurum('☁️ senkron ✓', 'var(--neon-green)');
+                                try { _bekleyenSerileriBosalt(); localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB)); } catch(e) {}
                                 try { siralamaListesiDoldur(); } catch(e) {}
                                 try { sporcuListesiniYenile(); } catch(e) {}
                             }
@@ -2967,24 +3099,35 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
         
         // Tek seri verisini turnuvaDB'ye uygula
+        let _bekleyenSeriler = []; // Sporcu henüz yüklenmemişse buraya al
+
         function _seriUygula(s) {
             if(!s || !s.g || !s.ad || !s.oklar) return;
             if(silindiMi(s.g, s.ad)) return;
             if(!turnuvaDB[s.g]) turnuvaDB[s.g] = {};
             if(!turnuvaDB[s.g][s.ad]) {
-                // Sporcu yoksa master'dan gelmiş olmalı — sadece seriyi ekle
-                return; // master sync zaten sporcuyu ekleyecek
+                // Sporcu henüz yüklenmemiş — kuyruğa al, master gelince tekrar dene
+                if(!_bekleyenSeriler.some(b => b.id === s.id)) _bekleyenSeriler.push(s);
+                return;
             }
             let sp = turnuvaDB[s.g][s.ad];
             if(!sp.seriler) sp.seriler = [];
-            // Aynı seri ID zaten var mı? (duplicate engellemek için)
-            if(sp.seriler.some(sr => sr.seriId === s.id)) return;
+            if(sp.seriler.some(sr => sr.seriId === s.id)) return; // duplicate
             sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
-            // Toplamı güncelle
-            let vMap = {'X':10,'10':10,'9':9,'8':8,'7':7,'6':6,'5':5,'4':4,'3':3,'2':2,'1':1,'M':0};
             sp.toplamSkor = (sp.seriler || []).reduce((a,sr) => a+(sr.puan||0), 0);
             sp.xAdet = (sp.seriler || []).reduce((a,sr) => a+((sr.oklar||[]).filter(o=>o==='X').length), 0);
+            sp.sonSkorZamani = Math.max(sp.sonSkorZamani||0, s.t||0) || sp.sonSkorZamani;
             sp.lastModified = Date.now();
+        }
+
+        function _bekleyenSerileriBosalt() {
+            if(!_bekleyenSeriler.length) return;
+            let kalan = [];
+            _bekleyenSeriler.forEach(s => {
+                if(turnuvaDB[s.g] && turnuvaDB[s.g][s.ad]) { _seriUygula(s); }
+                else kalan.push(s); // hâlâ sporcu yok, bekle
+            });
+            _bekleyenSeriler = kalan;
         }
         
         // Canlı dinleyici — yeni seri gelince anında uygula
@@ -3140,8 +3283,9 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let rkVeri = localStorage.getItem('okculuk_rekorlar_data');
             if(rkVeri) { try { rekorlarDB = JSON.parse(rkVeri) || {}; } catch(e){} }
             try { temaPaletUygula(localStorage.getItem('dag_sk_palette') || 'varsayilan'); } catch(e){}
-            guvenlikYedegiAl(); // açılışta mevcut dolu veriyi hemen yedekle
-            setInterval(guvenlikYedegiAl, 20000); // periyodik güvenlik yedeği
+            guvenlikYedegiAl();
+            setInterval(guvenlikYedegiAl, 20000);
+            try { sezonSayaciBaslat(); } catch(e) {}
             sporcuListesiniYenile(); siralamaListesiDoldur(); takimDropdownDoldur(); takimListesiCiz();
             hedefPanZoomKur();
             // VELİ QR / bağlantı: ?vs=AD&vk=KOD ile gelindiyse otomatik o sporcunun canlı karnesi
@@ -3213,7 +3357,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let kod = (document.getElementById('sporcu-giris-kod').value || '').trim();
             if(!ad || !kod) return showToast('Ad ve kod gir.', 'warning');
             let bulundu = null, bulunanGrup = null;
-            ['buyukler', 'kucukler'].forEach(g => {
+            ['buyukler', 'yildizlar', 'kucukler', 'minikler'].forEach(g => {
                 let db = turnuvaDB[g] || {};
                 Object.keys(db).forEach(isim => {
                     if(isim.trim().toUpperCase() === ad) {
@@ -3255,7 +3399,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function veliGiris(ad, kod) {
             ad = (ad || '').trim().toUpperCase();
             let bulundu = null, grup = null;
-            ['buyukler', 'kucukler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(isim => { if(isim.trim().toUpperCase() === ad) { let sp = db[isim]; let dk = String(sp.kod || sp.dogumYili || '').trim(); if(!kod || dk === String(kod).trim()) { bulundu = isim; grup = g; } } }); });
+            ['buyukler', 'yildizlar', 'kucukler', 'minikler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(isim => { if(isim.trim().toUpperCase() === ad) { let sp = db[isim]; let dk = String(sp.kod || sp.dogumYili || '').trim(); if(!kod || dk === String(kod).trim()) { bulundu = isim; grup = g; } } }); });
             if(!bulundu) { showToast('QR/bağlantı geçersiz — sporcu bulunamadı.', 'error'); return false; }
             if(turnuvaDB[grup][bulundu].donduruldu) { showToast('⛔ Bu hesap donduruldu. Antrenörle iletişime geçin.', 'error'); return false; }
             loggedInSporcu = bulundu; aktifGrup = grup; aktifPlatform = 'sporcu';
@@ -3314,6 +3458,65 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
         function sifreSil() { sifreBuffer = sifreBuffer.slice(0, -1); sifreDisplayGuncelle(); }
         function sifreGeri() { sifreBuffer = ''; document.getElementById('giris-sifre').style.display = 'none'; document.getElementById('giris-platform').style.display = 'flex'; document.getElementById('giris-baslik').innerText = 'Platform Seçin'; }
+        function sezonBitir() {
+            let sezonAdi = prompt('Bu sezona bir isim ver (örn: "2025 Bahar Sezonu"):','');
+            if(sezonAdi === null) return;
+            if(!sezonAdi.trim()) sezonAdi = bugunISO() + ' Sezonu';
+            if(!confirm(`"${sezonAdi}" sezonu kapatılsın mı?\n\n✅ Tüm puanlar geçmiş sezon olarak karnelere kaydedilir\n✅ Sıralama hesaplanır\n🔄 Liderlik tablosu sıfırlanır — yeni sezon başlar\n\nBu işlem geri alınamaz!`)) return;
+
+            let tarih = bugunISO();
+            let gruplar = ['buyukler','yildizlar','kucukler','minikler'];
+            gruplar.forEach(g => {
+                let db = turnuvaDB[g] || {};
+                let siraDizi = Object.keys(db)
+                    .filter(ad => !db[ad].pasif && !db[ad].donduruldu)
+                    .map(ad => {
+                        let sp = db[ad];
+                        let gecmisPuan = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.toplamSkor||0),0);
+                        return { ad, puan: (sp.toplamSkor||0) + gecmisPuan };
+                    })
+                    .filter(s => s.puan > 0)
+                    .sort((a,b) => b.puan - a.puan);
+
+                Object.keys(db).forEach(ad => {
+                    let sp = db[ad];
+                    let gecmisPuan = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.toplamSkor||0),0);
+                    let gecmisX = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.xAdet||0),0);
+                    let gecmisSeri = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.seriler||[]).length,0);
+                    let gecmisOk = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.seriler||[]).reduce((s2,sr)=>s2+(sr.oklar||[]).length,0),0);
+                    let toplamPuan = (sp.toplamSkor||0) + gecmisPuan;
+                    let toplamX = (sp.xAdet||0) + gecmisX;
+                    let toplamSeri = (sp.seriler||[]).length + gecmisSeri;
+                    let toplamOk = (sp.seriler||[]).reduce((a,s)=>a+(s.oklar||[]).length,0) + gecmisOk;
+                    let siralama = siraDizi.findIndex(s => s.ad === ad);
+
+                    if(toplamPuan > 0 || toplamSeri > 0) {
+                        if(!Array.isArray(sp.gecmisSezonlar)) sp.gecmisSezonlar = [];
+                        sp.gecmisSezonlar.push({
+                            sezonAdi, tarih, grup: g,
+                            toplamPuan, xAdet: toplamX,
+                            seriSayisi: toplamSeri, okSayisi: toplamOk,
+                            siralama: siralama >= 0 ? siralama + 1 : null
+                        });
+                    }
+                    // Sıfırla
+                    sp.toplamSkor = 0; sp.xAdet = 0; sp.seriler = [];
+                    sp.detayliOklar = []; sp.kartGecmisi = [];
+                    sp.sonSkorZamani = null; sp.lastModified = Date.now();
+                });
+            });
+
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            try { yoneticiKaydet(); } catch(e) {}
+            if(bulutHazir && dbBulut) {
+                dbBulut.collection('kulup').doc('reset_sinyali').set({
+                    yapan: _cihazId, grup: 'hepsi', zaman: Date.now(), tip: 'sezon_bitis', sezonAdi
+                }).catch(()=>{});
+            }
+            showToast(`🏆 "${sezonAdi}" kapatıldı! Yeni sezon başladı.`, 'success');
+            try { siralamaListesiDoldur(); klasmanDoldur(); sporcuListesiniYenile(); } catch(e) {}
+        }
+
         function yoneticiKaydet() {
             try {
                 localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
@@ -3333,7 +3536,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function yoneticiNavCiz() {
             let nav = document.getElementById('yonetici-altnav'); if(!nav) return;
             let sek = [['kullanicilar','👥 Kullanıcılar'],['yoklama','✅ Yoklama'],['aidat','💳 Aidat'],['personel','👔 Personel'],['silinenler','🗑️ Silinenler'],['yedek','💾 Yedek']];
-            nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:0 0 auto; white-space:nowrap; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'transparent'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:9px 14px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer;">${l}</button>`).join('');
+            nav.innerHTML = sek.map(([k, l]) => `<button onclick="yoneticiSekme('${k}')" style="flex:1 1 auto; min-width:70px; white-space:nowrap; touch-action:manipulation; background:${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--bg-panel)'}; color:${yoneticiSekmeAktif === k ? '#fff' : 'var(--text-main)'}; border:1px solid ${yoneticiSekmeAktif === k ? 'var(--neon-red)' : 'var(--border-color)'}; padding:8px 6px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer; text-align:center;">${l}</button>`).join('');
         }
         function yoneticiLigSec(g) { aktifGrup = g; yoneticiLigButonGuncelle(); yoneticiSekme(yoneticiSekmeAktif); }
         function yoneticiLigButonGuncelle() {
@@ -3367,6 +3570,21 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     <div style="font-size:13px; color:var(--text-main); line-height:1.5;">Tüm sporcu, skor, yoklama, aidat ve ayar verilerini tek dosyaya indir. Telefon değişince veya veri kaybına karşı güvence.</div>
                     <div style="font-size:12px; color:var(--text-muted); margin-top:10px;">📊 Kayıtlı sporcu: <b>${sporcuSayi}</b><br>🕒 Son yedek: <b>${sonYazi}</b></div>
                     <button onclick="yedekAl()" style="width:100%; margin-top:14px; background:var(--neon-green); color:#fff; border:none; padding:13px; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer;">⬇️ Yedek Dosyası İndir</button>
+                    <div style="margin-top:12px; padding:12px; background:rgba(245,158,11,0.1); border:1px solid #f59e0b; border-radius:10px;">
+                        <div style="font-weight:800; color:#f59e0b; margin-bottom:6px;">🔄 Yaş Kategorisi Migrasyonu</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Var olan sporcuları doğum yılına göre otomatik olarak Büyükler / Yıldızlar / Küçükler / Minikler gruplarına taşır.</div>
+                        <button onclick="sporcuMigrasyonu()" style="width:100%; background:#f59e0b; color:#000; border:none; padding:10px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer;">🔄 Sporcuları Yaşa Göre Sırala</button>
+                    </div>
+                    <div style="margin-top:12px; padding:12px; background:rgba(255,98,0,0.1); border:1px solid var(--accent-orange); border-radius:10px;">
+                        <div style="font-weight:800; color:var(--accent-orange); margin-bottom:6px;">📅 Sezon Ayarları</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Sezon adını, başlangıç ve bitiş tarihini belirle. Sporcular klasman ekranında sezon sayacını görür.</div>
+                        <button onclick="sezonAyarla()" style="width:100%; background:var(--accent-orange); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer;">📅 Sezon Tarihlerini Düzenle</button>
+                    </div>
+                    <div style="margin-top:12px; padding:12px; background:rgba(139,92,246,0.1); border:1px solid #8b5cf6; border-radius:10px;">
+                        <div style="font-weight:800; color:#8b5cf6; margin-bottom:6px;">🏆 Sezon Yönetimi</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Mevcut sezonu kapat, puanları karnelere arşivle ve yeni sezon başlat. Tüm gruplar aynı anda sıfırlanır.</div>
+                        <button onclick="sezonBitir()" style="width:100%; background:#8b5cf6; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer;">🏁 Sezonu Bitir ve Yenisini Başlat</button>
+                    </div>
                 </div>
                 <div style="background:var(--bg-panel); border:1px solid var(--neon-red); border-radius:12px; padding:16px; margin-top:12px;">
                     <div style="font-weight:800; color:var(--neon-red); margin-bottom:6px;">♻️ Geri Yükle</div>
@@ -3425,28 +3643,59 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let alan = document.getElementById('yonetici-liste'); if(!alan) return;
             let q = (document.getElementById('yonetici-arama').value || '').trim().toLocaleLowerCase('tr');
             let html = '';
-            [['buyukler','🔵 Büyükler'],['kucukler','🟢 Küçükler']].forEach(([g, baslik]) => {
+            [['buyukler','🔵 Büyükler'],['yildizlar','⭐ Yıldızlar'],['kucukler','🟢 Küçükler'],['minikler','🌱 Minikler']].forEach(([g, baslik]) => {
                 let db = turnuvaDB[g] || {};
                 let isimler = Object.keys(db).filter(ad => !q || ad.toLocaleLowerCase('tr').indexOf(q) >= 0).sort();
-                html += `<div style="font-weight:bold; color:var(--accent-orange); font-size:13px; margin:12px 2px 8px;">${baslik} <span style="color:var(--text-muted); font-size:11px;">(${isimler.length})</span></div>`;
-                if(isimler.length === 0) { html += `<div style="font-size:12px; color:var(--text-muted); padding:4px;">—</div>`; return; }
+                html += `<div style="font-weight:900;color:var(--accent-orange);font-size:13px;margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border-color);">${baslik} <span style="color:var(--text-muted);font-size:11px;font-weight:600;">${isimler.length} sporcu</span></div>`;
+                if(!isimler.length) { html += `<div style="font-size:12px;color:var(--text-muted);padding:4px 0 8px;">— Sporcu yok</div>`; return; }
                 isimler.forEach(ad => {
                     let sp = db[ad]; let don = sp.donduruldu;
-                    let adEsc = ad.replace(/'/g, "\\'");
-                    html += `<div style="background:var(--bg-panel); border:1px solid ${don ? 'var(--neon-red)' : 'var(--border-color)'}; border-radius:10px; padding:10px; margin-bottom:7px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span style="font-weight:bold; font-size:14px;">${don ? '🚫 ' : ''}${ad}</span>
-                            <span style="font-size:10px; font-weight:bold; color:${don ? 'var(--neon-red)' : 'var(--neon-green)'};">${don ? 'DONDURULDU' : 'Aktif'} · kod: ${sp.kod || sp.dogumYili || '-'}</span>
+                    let adEsc = ad.replace(/'/g,"\'");
+                    let bilgi = [sp.dogumYili, sp.yay, sp.sinif].filter(Boolean).join(' · ');
+                    html += `
+                    <div style="background:var(--bg-panel);border:1px solid ${don?'var(--neon-red)':'var(--border-color)'};border-radius:10px;padding:10px 12px;margin-bottom:6px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <div>
+                                <div style="font-weight:800;font-size:14px;">${don?'🚫 ':spEmoji(sp)}${ad}</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${bilgi||'—'} · kod: ${sp.kod||sp.dogumYili||'-'}</div>
+                            </div>
+                            <span style="font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;background:${don?'rgba(239,68,68,0.15)':'rgba(16,185,129,0.12)'};color:${don?'var(--neon-red)':'var(--neon-green)'};">${don?'DONDURULDU':'Aktif'}</span>
                         </div>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            <button onclick="yoneticiDondur('${g}','${adEsc}')" style="flex:1; min-width:96px; background:${don ? 'rgba(16,185,129,0.13)' : 'rgba(245,158,11,0.13)'}; color:var(--text-main); border:1px solid ${don ? 'var(--neon-green)' : 'var(--gold)'}; padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">${don ? '✅ Aktifleştir' : '⏸ Dondur'}</button>
-                            <button onclick="yoneticiKodSifirla('${g}','${adEsc}')" style="flex:1; min-width:80px; background:rgba(59,130,246,0.13); color:var(--text-main); border:1px solid var(--neon-blue); padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">🔑 Kod</button>
-                            <button onclick="yoneticiSil('${g}','${adEsc}')" style="flex:1; min-width:70px; background:rgba(239,68,68,0.13); color:var(--neon-red); border:1px solid var(--neon-red); padding:7px; border-radius:7px; font-size:11px; font-weight:bold; cursor:pointer;">🗑️ Sil</button>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+                            <button onclick="yoneticiDondur('${g}','${adEsc}')" style="background:${don?'rgba(16,185,129,0.1)':'rgba(245,158,11,0.1)'};color:var(--text-main);border:1px solid ${don?'var(--neon-green)':'var(--gold)'};padding:7px;border-radius:7px;font-size:11px;font-weight:bold;cursor:pointer;">${don?'✅ Aktifleştir':'⏸ Dondur'}</button>
+                            <button onclick="yoneticiKodSifirla('${g}','${adEsc}')" style="background:rgba(59,130,246,0.1);color:var(--text-main);border:1px solid var(--neon-blue);padding:7px;border-radius:7px;font-size:11px;font-weight:bold;cursor:pointer;">🔑 Kodu Değiştir</button>
+                            <button onclick="yoneticiKategoriTasi('${g}','${adEsc}')" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid #8b5cf6;padding:7px;border-radius:7px;font-size:11px;font-weight:bold;cursor:pointer;">📂 Kategori Taşı</button>
+                            <button onclick="yoneticiSil('${g}','${adEsc}')" style="background:rgba(239,68,68,0.1);color:var(--neon-red);border:1px solid var(--neon-red);padding:7px;border-radius:7px;font-size:11px;font-weight:bold;cursor:pointer;">🗑️ Sil</button>
                         </div>
                     </div>`;
                 });
             });
             alan.innerHTML = html;
+        }
+
+        function yoneticiKategoriTasi(eskiGrup, ad) {
+            let sp = turnuvaDB[eskiGrup] && turnuvaDB[eskiGrup][ad]; if(!sp) return;
+            let secenekler = [['buyukler','🔵 Büyükler'],['yildizlar','⭐ Yıldızlar'],['kucukler','🟢 Küçükler'],['minikler','🌱 Minikler']]
+                .filter(([g]) => g !== eskiGrup);
+            let mesaj = `📂 <b>${ad}</b> hangi kategoriye taşınsın?<br><div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">${
+                secenekler.map(([g,etiket]) =>
+                    `<button onclick="yoneticiKategoriOnayla('${eskiGrup}','${ad.replace(/'/g,"\\'")}','${g}');onayKapat();" style="background:var(--bg-panel);border:1px solid var(--border-color);color:var(--text-main);padding:10px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;">${etiket}</button>`
+                ).join('')
+            }</div>`;
+            onayIste(mesaj, null, null);
+            // Evet butonunu gizle — kendi butonlarımız var
+            setTimeout(() => { let b = document.getElementById('onay-evet-btn'); if(b) b.style.display='none'; }, 50);
+        }
+        function yoneticiKategoriOnayla(eskiGrup, ad, yeniGrup) {
+            let sp = turnuvaDB[eskiGrup] && turnuvaDB[eskiGrup][ad]; if(!sp) return;
+            if(!turnuvaDB[yeniGrup]) turnuvaDB[yeniGrup] = {};
+            if(turnuvaDB[yeniGrup][ad]) { showToast(`${ad} zaten ${LIG_ETIKET[yeniGrup]} grubunda!`,'warning'); return; }
+            turnuvaDB[yeniGrup][ad] = {...sp, lastModified: Date.now()};
+            delete turnuvaDB[eskiGrup][ad];
+            yoneticiKaydet();
+            showToast(`✅ ${ad} → ${LIG_ETIKET[yeniGrup]} taşındı`, 'success');
+            yoneticiPaneliCiz();
+            try { siralamaListesiDoldur(); } catch(e) {}
         }
         function yoneticiDondur(g, ad) {
             let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
@@ -3555,11 +3804,46 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             try { let bar = document.getElementById('alt-menu'); if(bar) bar.style.display = 'none'; } catch(e) {}
         }
         
-        function grupKurulumu(grup) { 
-            aktifGrup = grup; kronometreSureAyarla(); 
-            document.getElementById('aktif-grup-etiket').innerText = (grup === 'buyukler' ? "BÜYÜKLER" : "KÜÇÜKLER"); 
-            document.getElementById('giris-ekrani').style.display = 'none'; 
-            kronometreSifirla(); skorEkraniniKapat(); sporcuListesiniYenile(); takimDropdownDoldur(); takimListesiCiz(); 
+        const LIG_ETIKET = { buyukler: '🔵 BÜYÜKLER', yildizlar: '⭐ YILDIZLAR', kucukler: '🟢 KÜÇÜKLER', minikler: '🌱 MİNİKLER' };
+        function dogumYilindenGrup(yil) {
+            let y = parseInt(yil);
+            if(!y) return null;
+            if(y <= 2010) return 'buyukler';
+            if(y <= 2013) return 'yildizlar';
+            if(y <= 2016) return 'kucukler';
+            if(y <= 2020) return 'minikler';
+            return null;
+        }
+        // Var olan sporcuları doğum yılına göre yeni gruplara taşı (tek seferlik migration)
+        function sporcuMigrasyonu() {
+            let tasindi = 0;
+            ['buyukler','kucukler'].forEach(eskiGrup => {
+                let db = turnuvaDB[eskiGrup] || {};
+                Object.keys(db).forEach(ad => {
+                    let sp = db[ad];
+                    let yeniGrup = dogumYilindenGrup(sp.dogumYili);
+                    if(!yeniGrup || yeniGrup === eskiGrup) return;
+                    if(!turnuvaDB[yeniGrup]) turnuvaDB[yeniGrup] = {};
+                    if(!turnuvaDB[yeniGrup][ad]) {
+                        turnuvaDB[yeniGrup][ad] = {...sp, lastModified: Date.now()};
+                        delete turnuvaDB[eskiGrup][ad];
+                        tasindi++;
+                    }
+                });
+            });
+            if(tasindi > 0) {
+                localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+                bekleyenGonderim = true; try { bulutaGonderKontrol(); } catch(e) {}
+                showToast(`✅ ${tasindi} sporcu doğum yılına göre yeni gruba taşındı.`, 'success');
+                sporcuListesiniYenile();
+            }
+            return tasindi;
+        }
+        function grupKurulumu(grup) {
+            aktifGrup = grup; kronometreSureAyarla();
+            document.getElementById('aktif-grup-etiket').innerText = LIG_ETIKET[grup] || grup.toUpperCase();
+            document.getElementById('giris-ekrani').style.display = 'none';
+            kronometreSifirla(); skorEkraniniKapat(); sporcuListesiniYenile(); takimDropdownDoldur(); takimListesiCiz();
             tablariPlatformaGoreAyarla();
         }
         
@@ -3574,8 +3858,8 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 // VERİ SİLİNMEZ — sadece renk/etiket değişir
                 siralamaListesiDoldur();
             }
-            if(sekmeAd === 'klasman') klasmanDoldur();
-            if(sekmeAd === 'ana') try { sporcuAnaDoldur(); } catch(e) {}
+            if(sekmeAd === 'klasman') { try { sezonSayaciniGuncelle(); } catch(e) {} klasmanDoldur(); }
+            if(sekmeAd === 'ana') { try { sporcuAnaDoldur(); setTimeout(sezonSayaciniGuncelle, 100); } catch(e) {} }
             if(sekmeAd === 'gelisim') try { sporcuGelisimDoldur(); } catch(e) {}
             if(sekmeAd === 'egitmen') egitmenPaneliDoldur();
             if(sekmeAd === 'takimlar') { takimDropdownDoldur(); takimListesiCiz(); maclariCiz(); takimMaclariCiz(); }
@@ -3613,16 +3897,24 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
         /* SPORCU YÖNETİM SİSTEMİ & FİLTRELER */
         function sporcuKartEkle() {
-            let ad = document.getElementById('yeni-sporcu-ad').value.trim().toUpperCase(); let yil = document.getElementById('yeni-sporcu-yil').value || "2015";
+            let ad = document.getElementById('yeni-sporcu-ad').value.trim().toUpperCase();
+            let yil = document.getElementById('yeni-sporcu-yil').value || "2015";
             if(!ad) return showToast("Sporcu adı girin!", "error");
-            if (!turnuvaDB[aktifGrup]) turnuvaDB[aktifGrup] = {};
-            if(turnuvaDB[aktifGrup][ad]) return showToast("Zaten kayıtlı!", "warning");
-            turnuvaDB[aktifGrup][ad] = { toplamSkor: 0, xAdet: 0, dogumYili: yil, cinsiyet: aktifCinsiyet, yay: aktifYay, seriler: [], detayliOklar: [], lastModified: Date.now() };
+            // Doğum yılına göre otomatik grup öner
+            let onerilengrup = dogumYilindenGrup(yil);
+            let hedefGrup = aktifGrup;
+            if(onerilengrup && onerilengrup !== aktifGrup) {
+                let onay = confirm(`${ad} (${yil} doğumlu) için önerilen grup: ${LIG_ETIKET[onerilengrup]}\n\nŞu an ${LIG_ETIKET[aktifGrup]} ligindesiniz.\n\n"Tamam" = ${LIG_ETIKET[onerilengrup]} grubuna ekle\n"İptal" = Mevcut grupta kal`);
+                if(onay) hedefGrup = onerilengrup;
+            }
+            if(!turnuvaDB[hedefGrup]) turnuvaDB[hedefGrup] = {};
+            if(turnuvaDB[hedefGrup][ad]) return showToast("Zaten kayıtlı!", "warning");
+            turnuvaDB[hedefGrup][ad] = { toplamSkor: 0, xAdet: 0, dogumYili: yil, cinsiyet: aktifCinsiyet, yay: aktifYay, seriler: [], detayliOklar: [], lastModified: Date.now() };
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
-            // Hemen Firestore'a gönder — diğer cihazlar anında görsün
-            bekleyenGonderim = true;
-            try { bulutaGonderKontrol(); } catch(e) {}
-            document.getElementById('yeni-sporcu-ad').value = ""; showToast(`${ad} eklendi!`, "success"); sporcuListesiniYenile(); takimDropdownDoldur();
+            bekleyenGonderim = true; try { bulutaGonderKontrol(); } catch(e) {}
+            document.getElementById('yeni-sporcu-ad').value = "";
+            showToast(`${ad} → ${LIG_ETIKET[hedefGrup]} eklendi!`, "success");
+            sporcuListesiniYenile(); takimDropdownDoldur();
         }
 
         function duzenleModalAc(eskiAd) {
@@ -4012,13 +4304,41 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function hizliGecisBariCiz() {
             let bar = document.getElementById('hizli-gecis-bar'); if(!bar) return;
             if(loggedInSporcu) { bar.innerHTML = ''; return; }
-            let adlar = Object.keys(turnuvaDB[aktifGrup] || {});
-            bar.innerHTML = adlar.map((ad, i) => {
-                let parcalar = ad.trim().split(/\s+/);
-                let bas = parcalar.map((p, idx) => (idx === parcalar.length - 1) ? (p.slice(0, 3)) : (p[0] || '')).join('.').toLocaleUpperCase('tr');
-                let aktif = ad === secilenSporcu;
-                return `<button onclick="hizliGecis('${ad.replace(/'/g,"\\'")}')" title="${ad}" style="flex:0 0 auto; padding:7px 11px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; white-space:nowrap; border:1px solid ${aktif?'var(--accent-orange)':'var(--border-color)'}; background:${aktif?'var(--accent-orange)':'var(--bg-main)'}; color:${aktif?'#fff':'var(--text-main)'};">${i+1}-${bas}</button>`;
+            
+            // Lig geçiş butonları (üst satır)
+            const ligRenk = { buyukler:'var(--neon-blue)', yildizlar:'#f59e0b', kucukler:'var(--neon-green)', minikler:'#a78bfa' };
+            const ligIkon = { buyukler:'🔵', yildizlar:'⭐', kucukler:'🟢', minikler:'🌱' };
+            const ligAd = { buyukler:'Büyükler', yildizlar:'Yıldızlar', kucukler:'Küçükler', minikler:'Minikler' };
+            let ligHtml = Object.keys(LIG_ETIKET).map(g => {
+                let aktif = g === aktifGrup;
+                let spSay = Object.keys(turnuvaDB[g]||{}).filter(a=>!turnuvaDB[g][a].pasif).length;
+                return `<button onclick="ligHizliGecis('${g}')" style="flex:0 0 auto;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;border:2px solid ${aktif?ligRenk[g]:'var(--border-color)'};background:${aktif?`rgba(${g==='buyukler'?'59,130,246':g==='yildizlar'?'245,158,11':g==='kucukler'?'16,185,129':'167,139,250'},0.18)`:'var(--bg-panel)'};color:${aktif?ligRenk[g]:'var(--text-muted)'};">${ligIkon[g]} ${ligAd[g]}${spSay?` <span style="font-size:10px;opacity:0.7;">(${spSay})</span>`:''}</button>`;
             }).join('');
+            
+            // Sporcu geçiş butonları (alt satır)
+            let adlar = Object.keys(turnuvaDB[aktifGrup]||{}).filter(a=>!turnuvaDB[aktifGrup][a].pasif);
+            let spHtml = adlar.map((ad,i) => {
+                let parcalar = ad.trim().split(/\s+/);
+                let bas = parcalar.map((p,idx)=>(idx===parcalar.length-1)?p.slice(0,3):p[0]||'').join('.').toLocaleUpperCase('tr');
+                let aktif = ad === secilenSporcu;
+                return `<button onclick="hizliGecis('${ad.replace(/'/g,"\\'")}') " title="${ad}" style="flex:0 0 auto;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:bold;cursor:pointer;white-space:nowrap;border:1px solid ${aktif?'var(--accent-orange)':'var(--border-color)'};background:${aktif?'var(--accent-orange)':'var(--bg-main)'};color:${aktif?'#fff':'var(--text-main)'};">${i+1}-${bas}</button>`;
+            }).join('');
+            
+            bar.innerHTML = `
+                <div style="display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px 0;-webkit-overflow-scrolling:touch;">${ligHtml}</div>
+                ${spHtml ? `<div style="display:flex;gap:5px;overflow-x:auto;padding:2px 0 4px 0;-webkit-overflow-scrolling:touch;margin-top:4px;">${spHtml}</div>` : ''}
+            `;
+        }
+        function ligHizliGecis(g) {
+            if(g === aktifGrup) return;
+            if(anlikAtilanOklar && anlikAtilanOklar.length > 0) {
+                if(!confirm('Kaydedilmemiş oklar var. Lig değiştirince silinir. Devam?')) return;
+            }
+            aktifGrup = g;
+            document.getElementById('aktif-grup-etiket').innerText = LIG_ETIKET[g];
+            skorEkraniniKapat(); sporcuListesiniYenile(); takimDropdownDoldur();
+            hizliGecisBariCiz();
+            showToast(LIG_ETIKET[g] + ' ligine geçildi', 'success');
         }
         function isimFlashGoster(ad) {
             let f = document.getElementById('isim-flash'); if(!f) return;
@@ -4366,6 +4686,39 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     });
                 }
                 
+                // ===== GEÇMİŞ SEZONLAR =====
+                let gs = sp.gecmisSezonlar || [];
+                if(gs.length > 0) {
+                    let madalya = ['🥇','🥈','🥉'];
+                    let sezonHtml = gs.slice().reverse().map((s,i) => {
+                        let med = s.siralama && s.siralama <= 3 ? madalya[s.siralama-1] : '';
+                        let siraRenk = s.siralama===1?'#fbbf24':s.siralama===2?'#94a3b8':s.siralama===3?'#cd7f32':'var(--text-muted)';
+                        return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:${s.siralama<=3?'rgba(251,191,36,0.06)':'rgba(0,0,0,0.15)'};border:1px solid ${s.siralama===1?'#fbbf2440':s.siralama===2?'#94a3b840':s.siralama===3?'#cd7f3240':'var(--border-color)'};">
+                            <div style="font-size:22px;width:28px;text-align:center;">${med||`<span style="font-size:13px;color:var(--text-muted);font-weight:900;">${s.siralama||'?'}</span>`}</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:800;font-size:13px;">${s.sezonAdi||s.tarih||'Sezon'}</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
+                                    🏹 ${s.seriSayisi||0} seri &nbsp;·&nbsp; ✕ ${s.xAdet||0} &nbsp;·&nbsp; 📊 ${s.okSayisi||0} ok
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:20px;font-weight:900;color:${siraRenk};">${s.toplamPuan||0}</div>
+                                <div style="font-size:9px;color:var(--text-muted);font-weight:600;">PUAN</div>
+                            </div>
+                        </div>`;
+                    }).join('<div style="height:5px;"></div>');
+                    gsAlani.innerHTML += `
+                    <details style="margin-top:16px;" open>
+                        <summary style="cursor:pointer;font-weight:900;font-size:13px;color:var(--gold);list-style:none;display:flex;align-items:center;gap:6px;padding:10px 12px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:10px;">
+                            <span>🏆</span>
+                            <span>Geçmiş Sezon Başarıları</span>
+                            <span style="font-size:11px;color:var(--text-muted);font-weight:600;margin-left:4px;">${gs.length} sezon</span>
+                            <span style="margin-left:auto;font-size:11px;color:var(--text-muted);">▾ göster/gizle</span>
+                        </summary>
+                        <div style="display:flex;flex-direction:column;gap:0;margin-top:8px;">${sezonHtml}</div>
+                    </details>`;
+                }
+
                 karneModalDetayliOklar = sp.detayliOklar || [];
                 document.getElementById('karne-hedef-secici').value = '10ring';
                 karneHedefTipiDegisti();
@@ -4454,6 +4807,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 <div style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:12px; text-align:center;"><div style="font-size:20px; font-weight:900; color:var(--neon-blue);">${toplamOk}</div><div style="font-size:10px; color:var(--text-muted);">Bugün Ok</div></div>
             </div>
 
+            <div id="sezon-sayac-ana"></div>
             ${haftaOrt ? `<div style="background:var(--bg-panel); border:1px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:12px; color:var(--text-muted); font-weight:600;">7 ANTRENMAN ORTALAMASI</div><div style="font-size:22px; font-weight:900; color:var(--gold);">${haftaOrt} ${trend}</div></div><button onclick="sekmeAc('gelisim')" style="background:rgba(255,98,0,0.12); color:var(--accent-orange); border:1px solid var(--accent-orange); padding:8px 14px; border-radius:10px; font-weight:bold; font-size:12px; cursor:pointer;">Grafik →</button></div>` : ''}
 
             <div style="background:${gorevTamam ? 'rgba(16,185,129,0.1)' : 'rgba(251,191,36,0.08)'}; border:1px solid ${gorevTamam ? 'var(--neon-green)' : 'var(--gold)'}; border-radius:12px; padding:12px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
@@ -4482,44 +4836,45 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
 
         // ======= ATIŞI ÖNCESİ RUTİN =======
-        function rutinBaslat(ad) {
-            let el = document.getElementById('icerik-ana'); if(!el) return;
-            let adimlar = [
-                { ikon: '🫁', baslik: 'Nefes', aciklama: '3 derin nefes al. Burnundan yavaş iç, ağzından yavaş ver. Kalp atışını hisset.' },
-                { ikon: '💪', baslik: 'Omuz Isıtma', aciklama: 'Her iki omzunu 5\'er kez ileri-geri döndür. Sırt kaslarını esnet.' },
-                { ikon: '👁️', baslik: 'Odak', aciklama: 'Gözlerini kapat. Mükemmel atışını zihninde canlandır. Pini sarıda gör.' },
-                { ikon: '🎯', baslik: 'Niyet', aciklama: 'Bugünkü hedefini belirle. "Bugün X şeye odaklanıyorum" de.' },
-                { ikon: '✅', baslik: 'Hazır!', aciklama: 'Rutin tamamlandı. Zihnin ve bedenin hazır. Antrenman başlasın!' }
-            ];
-            let adim = 0;
-            function goster() {
-                let a = adimlar[adim], son = adim === adimlar.length - 1;
-                el.innerHTML = `
-                <div style="text-align:center; padding:10px 0 6px;">
-                    <div style="font-size:11px; font-weight:800; color:var(--text-muted); letter-spacing:1px;">${adim + 1}/${adimlar.length} · ATIŞ ÖNCESİ RUTİN</div>
-                    <div style="display:flex; justify-content:center; gap:6px; margin:8px 0;">
-                        ${adimlar.map((_, i) => `<div style="width:8px; height:8px; border-radius:50%; background:${i <= adim ? 'var(--neon-blue)' : 'var(--border-color)'}; transition:all .3s;"></div>`).join('')}
-                    </div>
-                </div>
-                <div style="background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(0,0,0,0.1)); border:1px solid var(--neon-blue); border-radius:18px; padding:28px 20px; text-align:center; margin:12px 0; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
-                    <div style="font-size:56px;">${a.ikon}</div>
-                    <div style="font-size:22px; font-weight:900; color:var(--neon-blue);">${a.baslik}</div>
-                    <div style="font-size:14px; color:var(--text-main); line-height:1.6; max-width:280px;">${a.aciklama}</div>
-                </div>
-                <button onclick="(${function() {
-                    adim++;
-                    if(adim < adimlar.length) { goster(); }
-                    else {
-                        let f2 = basariSporcuBul(ad);
-                        if(f2) { f2.sp.rutinTarih = bugunISO(); oyVeriKaydet(); }
-                        sporcuAnaDoldur();
-                    }
-                }.toString()})()" style="width:100%; background:var(--neon-blue); color:#fff; border:none; padding:16px; border-radius:14px; font-weight:900; font-size:17px; cursor:pointer; margin-top:8px;">${son ? '✅ Antrenman Başlasın!' : 'Devam →'}</button>`;
+        // Rutin global state
+        let _rutinAd = '', _rutinAdim = 0;
+        let _rutinAdimlar = [
+            { ikon: '\u{1F9EB}', baslik: 'Nefes', aciklama: '3 derin nefes al. Burnundan yavaşça iç, ağızdan ver.' },
+            { ikon: '\u{1F4AA}', baslik: 'Omuz Is\u0131tma', aciklama: "Her iki omzunu 5'er kez ileri-geri d\u00f6nd\u00fcr. S\u0131rt kaslar\u0131n\u0131 esnet." },
+            { ikon: '\u{1F441}', baslik: 'Odak', aciklama: 'G\u00f6zlerini kapat. M\u00fckemmel at\u0131\u015f\u0131n\u0131 zihninde canland\u0131r. Pini sar\u0131da g\u00f6r.' },
+            { ikon: '\u{1F3AF}', baslik: 'Niyet', aciklama: 'Bug\u00fcnk\u00fc hedefini belirle. Tek c\u00fcmle.' },
+            { ikon: '\u2705', baslik: 'Haz\u0131r!', aciklama: 'Rutin tamamland\u0131. Zihnin ve bedenin haz\u0131r. Antrenman ba\u015flasın!' }
+        ];
+        function rutinAdimIlerle() {
+            _rutinAdim++;
+            if(_rutinAdim < _rutinAdimlar.length) { _rutinGoster(); }
+            else {
+                let f2 = basariSporcuBul(_rutinAd);
+                if(f2) { f2.sp.rutinTarih = bugunISO(); oyVeriKaydet(); }
+                sporcuAnaDoldur();
             }
-            goster();
+        }
+        function _rutinGoster() {
+            let el = document.getElementById('icerik-ana'); if(!el) return;
+            let a = _rutinAdimlar[_rutinAdim], son = _rutinAdim === _rutinAdimlar.length - 1;
+            let noktalar = _rutinAdimlar.map(function(_,i) {
+                return '<div style="width:'+(i===_rutinAdim?'24px':'8px')+';height:8px;border-radius:4px;background:'+(i<_rutinAdim?'var(--neon-green)':i===_rutinAdim?'var(--neon-blue)':'var(--border-color)')+';transition:all .3s;"></div>';
+            }).join('');
+            el.innerHTML = '<div style="text-align:center;padding:10px 0 6px;">'
+                + '<div style="font-size:11px;font-weight:800;color:var(--text-muted);letter-spacing:1px;">'+(_rutinAdim+1)+'/'+_rutinAdimlar.length+' · ATIŞ ÖNCESİ RUTİN</div>'
+                + '<div style="display:flex;justify-content:center;align-items:center;gap:5px;margin:10px 0;">'+noktalar+'</div></div>'
+                + '<div style="background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(0,0,0,0.1));border:1px solid var(--neon-blue);border-radius:18px;padding:28px 20px;text-align:center;margin:12px 0;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">'
+                + '<div style="font-size:64px;filter:drop-shadow(0 0 12px rgba(59,130,246,0.4));">'+a.ikon+'</div>'
+                + '<div style="font-size:22px;font-weight:900;color:var(--neon-blue);">'+a.baslik+'</div>'
+                + '<div style="font-size:14px;color:var(--text-main);line-height:1.7;max-width:280px;">'+a.aciklama+'</div></div>'
+                + '<button onclick="rutinAdimIlerle()" style="width:100%;background:'+(son?'var(--neon-green)':'var(--neon-blue)')+';color:#fff;border:none;padding:16px;border-radius:14px;font-weight:900;font-size:17px;cursor:pointer;margin-top:8px;">'+(son?'✅ Antrenman Başlasın!':'Devam →')+'</button>'
+                + '<button onclick="sporcuAnaDoldur()" style="width:100%;background:transparent;color:var(--text-muted);border:none;padding:8px;font-size:12px;cursor:pointer;margin-top:4px;">← Ana Ekrana Dön</button>';
+        }
+        function rutinBaslat(ad) {
+            _rutinAd = ad; _rutinAdim = 0;
+            _rutinGoster();
         }
 
-        // ======= KİŞİSEL GELİŞİM EKRANI =======
         function sporcuGelisimDoldur() {
             let el = document.getElementById('icerik-gelisim'); if(!el) return;
             let ad = loggedInSporcu || oyunSeciliSporcu || '';
@@ -4546,7 +4901,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         let klasmanYay = 'hepsi';
         function klasmanYaySec(y) { klasmanYay = y; klasmanDoldur(); }
         function klasmanDoldur() {
-            let el = document.getElementById('icerik-klasman'); if(!el) return;
+            let el = document.getElementById('klasman-icerik'); if(!el) return;
             let fb = (y) => klasmanYay === y ? 'background:var(--accent-orange);color:#fff;border-color:var(--accent-orange);' : 'background:var(--bg-panel);color:var(--text-main);';
             let html = `
             <div style="font-weight:900;font-size:17px;margin-bottom:4px;">📊 Genel Klasman</div>
@@ -4557,7 +4912,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 <button onclick="klasmanYaySec('Makaralı')" style="flex:1;${fb('Makaralı')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">⚙️ Makaralı</button>
             </div>`;
 
-            [['buyukler','🔵 BÜYÜKLER'],['kucukler','🟢 KÜÇÜKLER']].forEach(([g, etiket]) => {
+            [['buyukler','🔵 BÜYÜKLER'],['yildizlar','⭐ YILDIZLAR'],['kucukler','🟢 KÜÇÜKLER'],['minikler','🌱 MİNİKLER']].forEach(([g, etiket]) => {
                 let db = turnuvaDB[g] || {};
                 let arr = Object.keys(db)
                     .filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay === 'hepsi' || db[ad].yay === klasmanYay))
@@ -4901,7 +5256,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             try { if(typeof bulutaGonderKontrol === 'function') bulutaGonderKontrol(); } catch(e) {}
             showToast('Yarışmalar sıfırlandı 🔄', 'warning');
         }
-        function veriSifirla() { if(confirm("EMİN MİSİNİZ?\n\nTüm veriler sıfırlanacaktır.")) { turnuvaDB = { buyukler: {}, kucukler: {} }; takimlarDB = []; elemeEslesmeleri = []; takimElemeEslesmeleri = []; antrenmanlarDB = []; ozelSiniflar = []; personelDB = []; personelYoklamaDB = []; atisLog = []; rekorlarDB = {}; aktifTur = 1; aktifTakimTur = 1; localStorage.removeItem('okculuk_premium_data'); localStorage.removeItem('okculuk_takimlar_data'); localStorage.removeItem('okculuk_bracket_data'); localStorage.removeItem('okculuk_antrenman_data'); localStorage.removeItem('okculuk_ozelsinif_data'); localStorage.removeItem('okculuk_personel_data'); localStorage.removeItem('okculuk_personel_yoklama'); localStorage.removeItem('okculuk_atislog_data'); localStorage.removeItem('okculuk_rekorlar_data'); skorEkraniniKapat(); siralamaListesiDoldur(); takimListesiCiz(); showToast("Tüm veriler sıfırlandı.", "warning"); } }
+        function veriSifirla() { if(confirm("EMİN MİSİNİZ?\n\nTüm veriler sıfırlanacaktır.")) { turnuvaDB = { buyukler: {}, yildizlar: {}, kucukler: {}, minikler: {} }; takimlarDB = []; elemeEslesmeleri = []; takimElemeEslesmeleri = []; antrenmanlarDB = []; ozelSiniflar = []; personelDB = []; personelYoklamaDB = []; atisLog = []; rekorlarDB = {}; aktifTur = 1; aktifTakimTur = 1; localStorage.removeItem('okculuk_premium_data'); localStorage.removeItem('okculuk_takimlar_data'); localStorage.removeItem('okculuk_bracket_data'); localStorage.removeItem('okculuk_antrenman_data'); localStorage.removeItem('okculuk_ozelsinif_data'); localStorage.removeItem('okculuk_personel_data'); localStorage.removeItem('okculuk_personel_yoklama'); localStorage.removeItem('okculuk_atislog_data'); localStorage.removeItem('okculuk_rekorlar_data'); skorEkraniniKapat(); siralamaListesiDoldur(); takimListesiCiz(); showToast("Tüm veriler sıfırlandı.", "warning"); } }
 
         /* =========================================================
            VİDEO ANALİZ MODÜLÜ (Yapay Zekâ Destekli Okçuluk Analizi)
@@ -5252,7 +5607,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         }
         function basariSporcuListesi() {
             let arr = [];
-            ['buyukler','kucukler'].forEach(g => Object.keys(turnuvaDB[g]||{}).forEach(ad => { if(arr.indexOf(ad)<0) arr.push(ad); }));
+            ['buyukler','yildizlar','kucukler','minikler'].forEach(g => Object.keys(turnuvaDB[g]||{}).forEach(ad => { if(arr.indexOf(ad)<0) arr.push(ad); }));
             return arr.sort((a,b) => a.localeCompare(b,'tr'));
         }
         function basariAntrenmanSayisi(ad) {
@@ -5343,7 +5698,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let el = document.getElementById('rekor-tahta'); if(!el) return;
             // Rekorları canlı turnuvaDB'den hesapla (test kullanıcısı kalıntısını önle)
             let livePuanSeri = null, liveSariSeri = null, liveXSeri = null;
-            ['buyukler','kucukler'].forEach(g => {
+            ['buyukler','yildizlar','kucukler','minikler'].forEach(g => {
                 let db = turnuvaDB[g] || {};
                 Object.keys(db).forEach(ad => {
                     let sp = db[ad]; if(sp.pasif || sp.donduruldu) return;
@@ -5952,7 +6307,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             { tip: 'sayim', esik: 8, metin: 'Skor Sayımı\'nda 8 doğru hesapla' }
         ];
         function rfxGunlukGorev() { let g = new Date(); let idx = (g.getFullYear() * 372 + g.getMonth() * 31 + g.getDate()) % RFX_GOREVLER.length; return RFX_GOREVLER[idx]; }
-        function rfxTumSporcular() { let arr = []; ['buyukler', 'kucukler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(ad => { if(!db[ad].pasif && !db[ad].donduruldu) arr.push({ ad: ad, sp: db[ad] }); }); }); return arr; }
+        function rfxTumSporcular() { let arr = []; ['buyukler', 'yildizlar', 'kucukler', 'minikler'].forEach(g => { let db = turnuvaDB[g] || {}; Object.keys(db).forEach(ad => { if(!db[ad].pasif && !db[ad].donduruldu) arr.push({ ad: ad, sp: db[ad] }); }); }); return arr; }
         function rfxRozetler(sp) {
             let st = rfxOyunStat(sp), sv = rfxSeviye(st.xp), r = [];
             r.push({ e: '🎮', ad: 'İlk Oyun', ok: st.oynanan >= 1 });
@@ -7229,12 +7584,12 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         </div>
     </div>
     <div id="yonetici-modal" class="modal-overlay" style="z-index:25000;">
-        <div class="modal-content glass-panel" style="max-width:600px; width:100%; max-height:92vh; display:flex; flex-direction:column; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="modal-content glass-panel" style="max-width:600px; width:100%; max-height:92vh; display:flex; flex-direction:column; padding:16px; overflow:hidden;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <span style="font-weight:800; color:var(--neon-red); font-size:17px;">🛡️ Yönetici Paneli</span>
                 <button onclick="location.reload()" style="background:var(--border-color); color:var(--text-main); border:none; padding:7px 13px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">✕ Çıkış</button>
             </div>
-            <div id="yonetici-altnav" style="display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0;"></div>
+            <div id="yonetici-altnav" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; flex-shrink:0;"></div>
             <div id="yon-lig-bar" style="display:none; gap:6px; margin-bottom:8px; flex-shrink:0;">
                 <button id="yon-lig-buyukler" onclick="yoneticiLigSec('buyukler')" style="flex:1; border:1px solid var(--border-color); padding:9px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; background:transparent; color:var(--text-main);">🔵 Büyükler</button>
                 <button id="yon-lig-kucukler" onclick="yoneticiLigSec('kucukler')" style="flex:1; border:1px solid var(--border-color); padding:9px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; background:transparent; color:var(--text-main);">🟢 Küçükler</button>
