@@ -19,6 +19,8 @@
         /* EVRENSEL MOBİL TAŞMA KORUMASI */
         *, *::before, *::after { box-sizing: border-box !important; }
         html, body { overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
+        img, video { max-width: 100%; }
         img, svg, canvas, video, iframe { max-width: 100%; }
 
         /* TEMA DEĞİŞKENLERİ */
@@ -99,8 +101,8 @@
 
         /* BÖLÜNMÜŞ SKOR PANELİ (SPLIT-VIEW) */
         .skor-split-layout { display: flex; width: 100%; gap: 15px; flex-wrap: wrap; height: 100%; }
-        .skor-left-panel { flex: 1; min-width: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .skor-right-panel { flex: 1; min-width: 290px; display: flex; flex-direction: column; justify-content: center; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .skor-left-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .skor-right-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
 
         .hedef-scroll-container { width: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 12px; background: rgba(0,0,0,0.2); max-height: 48vh; padding: 10px; box-sizing: border-box; touch-action: none; }
         .hedef-wrapper { transition: transform 0.15s ease-out; transform-origin: center center; display: flex; justify-content: center; align-items: center; cursor: grab; touch-action: none; }
@@ -5721,86 +5723,112 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function klasmanYaySec(y) { klasmanYay = y; klasmanDoldur(); }
         function klasmanDoldur() {
             let el = document.getElementById('klasman-icerik'); if(!el) return;
-            let fb = (y) => klasmanYay === y ? 'background:var(--accent-orange);color:#fff;border-color:var(--accent-orange);' : 'background:var(--bg-panel);color:var(--text-main);';
+            let fb = (y) => klasmanYay === y
+                ? 'background:var(--accent-orange);color:#fff;border-color:var(--accent-orange);'
+                : 'background:var(--bg-panel);color:var(--text-main);';
             let html = `
-            <div style="font-weight:900;font-size:17px;margin-bottom:4px;">📊 Genel Klasman</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Tüm antrenmanların birikimi · Sıralama kalıcı</div>
             <div style="display:flex;gap:6px;margin-bottom:12px;">
                 <button onclick="klasmanYaySec('hepsi')" style="flex:1;${fb('hepsi')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">Tümü</button>
                 <button onclick="klasmanYaySec('Klasik')" style="flex:1;${fb('Klasik')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">🏹 Klasik</button>
                 <button onclick="klasmanYaySec('Makaralı')" style="flex:1;${fb('Makaralı')}border:1px solid var(--border-color);padding:9px 4px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">⚙️ Makaralı</button>
             </div>`;
 
-            [['buyukler','🔵 BÜYÜKLER'],['yildizlar','⭐ YILDIZLAR'],['kucukler','🟢 KÜÇÜKLER'],['minikler','🌱 MİNİKLER']].forEach(([g, etiket]) => {
+            const GRUPLAR = [['buyukler','🔵 BÜYÜKLER'],['yildizlar','⭐ YILDIZLAR'],['kucukler','🟢 KÜÇÜKLER'],['minikler','🌱 MİNİKLER']];
+            let benimSira = null, benimGrup = null;
+
+            GRUPLAR.forEach(([g, etiket]) => {
                 let db = turnuvaDB[g] || {};
                 let arr = Object.keys(db)
-                    .filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay === 'hepsi' || db[ad].yay === klasmanYay))
+                    .filter(ad => !db[ad].pasif && !db[ad].donduruldu && (klasmanYay==='hepsi'||db[ad].yay===klasmanYay))
                     .map(ad => {
                         let sp = db[ad];
-                        let mevcutSeri = sp.seriler || [];
-                        let mevcutToplam = sp.toplamSkor || 0;
-                        let mevcutX = sp.xAdet || 0;
-                        let mevcutOk = mevcutSeri.reduce((a,s)=>a+(s.oklar||[]).length, 0);
-                        let gecmis = sp.kartGecmisi || [];
-                        let gecmisToplam = gecmis.reduce((a,k)=>a+(k.toplamSkor||0), 0);
-                        let gecmisX = gecmis.reduce((a,k)=>a+(k.xAdet||0), 0);
-                        let gecmisOk = gecmis.reduce((a,k)=>a+(k.seriler||[]).reduce((s2,sr)=>s2+(sr.oklar||[]).length,0), 0);
-                        let gecmisSeri = gecmis.reduce((a,k)=>a+(k.seriler||[]).length, 0);
-                        let toplamPuan = mevcutToplam + gecmisToplam;
-                        let toplamX = mevcutX + gecmisX;
-                        let toplamOk = mevcutOk + gecmisOk;
-                        let toplamSeri = mevcutSeri.length + gecmisSeri;
-                        let ort = toplamOk ? (toplamPuan / toplamOk) : 0;
-                        // Bugün gerçekten skor girildi mi? — sonSkorZamani bugün mü kontrol et
+                        let aktifPuan = sp.toplamSkor||0;
+                        let gecmisPuan = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.toplamSkor||0),0);
+                        let gecmisX = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.xAdet||0),0);
+                        let gecmisSeri = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.seriler||[]).length,0);
+                        let gecmisOk = (sp.kartGecmisi||[]).reduce((a,k)=>a+(k.seriler||[]).reduce((s2,sr)=>s2+(sr.oklar||[]).length,0),0);
+                        let aktifSeri = (sp.seriler||[]).length;
+                        let aktifOk = (sp.seriler||[]).reduce((a,s)=>a+(s.oklar||[]).length,0);
+                        let toplam = aktifPuan + gecmisPuan;
+                        let toplamX = (sp.xAdet||0) + gecmisX;
+                        let toplamSeri = aktifSeri + gecmisSeri;
+                        let toplamOk = aktifOk + gecmisOk;
+                        let ort = toplamOk ? (toplam/toplamOk) : 0;
+                        // Bugün skor girildi mi?
                         let bugunPuan = 0;
                         if(sp.sonSkorZamani) {
-                            let skorTarih = new Date(sp.sonSkorZamani).toISOString().slice(0,10);
-                            if(skorTarih === bugunISO()) bugunPuan = mevcutToplam;
+                            let t = new Date(sp.sonSkorZamani).toISOString().slice(0,10);
+                            if(t === bugunISO()) bugunPuan = aktifPuan;
                         }
-                        return { ad, toplam: toplamPuan, x: toplamX, seri: toplamSeri, okSay: toplamOk, ort, yay: sp.yay, sinif: sp.sinif, mevcutPuan: bugunPuan };
+                        return {ad, toplam, toplamX, toplamSeri, toplamOk, ort, bugunPuan, yay:sp.yay, sinif:sp.sinif};
                     })
-                    .sort((a, b) => b.toplam - a.toplam);
+                    .sort((a,b)=>b.toplam-a.toplam||b.toplamX-a.toplamX);
 
                 if(!arr.length) return;
-                let madalya = ['🥇','🥈','🥉'];
-                html += `<div style="font-weight:900;font-size:14px;color:var(--accent-orange);margin:14px 0 8px;">${etiket} <span style="font-size:11px;color:var(--text-muted);font-weight:600;">${arr.length} sporcu</span></div>`;
 
-                arr.forEach((s, i) => {
-                    let yE = s.yay === 'Makaralı' ? '⚙️' : '🏹';
-                    let benBu = loggedInSporcu && loggedInSporcu === s.ad;
-                    let madalyaEl = madalya[i] ? `<span style="font-size:22px;">${madalya[i]}</span>` : `<span style="font-size:13px;font-weight:900;color:${benBu?'var(--neon-blue)':'var(--text-muted)'};">${i+1}</span>`;
-                    let bgCard = benBu ? 'linear-gradient(135deg,rgba(59,130,246,0.2),rgba(59,130,246,0.05))' : i === 0 ? 'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.05))' : i === 1 ? 'linear-gradient(135deg,rgba(148,163,184,0.14),rgba(0,0,0,0.1))' : i === 2 ? 'linear-gradient(135deg,rgba(205,127,50,0.14),rgba(0,0,0,0.1))' : 'var(--bg-panel)';
-                    let borderLeft = benBu ? '3px solid var(--neon-blue)' : i === 0 ? '3px solid #fbbf24' : i === 1 ? '3px solid #94a3b8' : i === 2 ? '3px solid #cd7f32' : '1px solid var(--border-color)';
-                    // Motivasyon etiketi
-                    let motivasyon = '';
-                    if(benBu) motivasyon = `<span style="font-size:10px;background:rgba(59,130,246,0.2);color:var(--neon-blue);padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👤 SEN · ${i+1}. SIRA</span>`;
-                    else if(i === 0) motivasyon = '<span style="font-size:10px;background:#fbbf24;color:#000;padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👑 LİDER</span>';
-                    else if(i === 1) motivasyon = '<span style="font-size:10px;background:rgba(148,163,184,0.2);color:#94a3b8;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">🔥 YAKLAŞIYOR</span>';
-                    else if(i === 2) motivasyon = '<span style="font-size:10px;background:rgba(205,127,50,0.2);color:#cd7f32;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">⚡ PODİUM</span>';
-                    // Bugün aktif mi?
-                    let bugunBadge = s.mevcutPuan > 0 ? `<span style="font-size:10px;background:rgba(16,185,129,0.15);color:var(--neon-green);padding:2px 7px;border-radius:20px;font-weight:800;">+${s.mevcutPuan} bugün 🎯</span>` : '';
-                    // İstatistik satırı ikonlu
-                    let statlar = `<span style="color:var(--text-muted);">🏹 ${s.seri} seri</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">🎯 ${s.okSay} ok</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--neon-blue);">✕ ${s.x}</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">ort ${s.ort.toFixed(1)}</span>`;
-                    html += `
-                    <div id="${benBu?'klasman-ben-bu':''}" style="background:${bgCard};border-left:${borderLeft};border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;${benBu?'box-shadow:0 0 0 1px var(--neon-blue);':''}"">
-                        <div style="width:32px;text-align:center;flex-shrink:0;">${madalyaEl}</div>
+                // Bu sporcunun sırasını bul
+                if(loggedInSporcu) {
+                    let idx = arr.findIndex(s=>s.ad===loggedInSporcu);
+                    if(idx>=0){benimSira={g,i:idx,puan:arr[idx].toplam}; benimGrup=etiket;}
+                }
+
+                let madalya=['🥇','🥈','🥉'];
+                let grupId = 'kl-'+g;
+                html += `
+                <details open id="${grupId}" style="margin-bottom:10px;">
+                    <summary style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,98,0,0.08);border:1px solid rgba(255,98,0,0.2);border-radius:12px;list-style:none;user-select:none;">
+                        <span style="font-weight:900;font-size:14px;flex:1;">${etiket}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">${arr.length} sporcu</span>
+                        <span style="font-size:12px;color:var(--text-muted);">▾</span>
+                    </summary>
+                    <div style="padding:8px 0;">`;
+
+                arr.forEach((s,i)=>{
+                    let benBu = loggedInSporcu && loggedInSporcu===s.ad;
+                    let yE = s.yay==='Makaralı'?'⚙️':'🏹';
+                    let mEl = madalya[i]||`<span style="font-size:12px;font-weight:900;color:${benBu?'var(--neon-blue)':'var(--text-muted)'};">${i+1}</span>`;
+                    let bg = benBu
+                        ? 'linear-gradient(135deg,rgba(59,130,246,0.18),rgba(59,130,246,0.05))'
+                        : i===0?'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(0,0,0,0.05))'
+                        : i===1?'linear-gradient(135deg,rgba(148,163,184,0.1),rgba(0,0,0,0.05))'
+                        : i===2?'linear-gradient(135deg,rgba(205,127,50,0.1),rgba(0,0,0,0.05))'
+                        : 'var(--bg-panel)';
+                    let bl = benBu?'3px solid var(--neon-blue)':i===0?'3px solid #fbbf24':i===1?'3px solid #94a3b8':i===2?'3px solid #cd7f32':'1px solid var(--border-color)';
+                    let motivasyon = benBu
+                        ? `<span style="font-size:10px;background:var(--neon-blue);color:#fff;padding:2px 8px;border-radius:20px;font-weight:900;">👤 SEN · ${i+1}. SIRA</span>`
+                        : i===0?`<span style="font-size:10px;background:#fbbf24;color:#000;padding:2px 8px;border-radius:20px;font-weight:900;">👑 LİDER</span>`
+                        : i===1?`<span style="font-size:10px;background:rgba(148,163,184,0.2);color:#94a3b8;padding:2px 8px;border-radius:20px;font-weight:800;">🔥 YAKLAŞIYOR</span>`
+                        : i===2?`<span style="font-size:10px;background:rgba(205,127,50,0.2);color:#cd7f32;padding:2px 8px;border-radius:20px;font-weight:800;">⚡ PODİUM</span>`:'';
+                    let bugunBadge = s.bugunPuan>0?`<span style="font-size:10px;background:rgba(16,185,129,0.15);color:var(--neon-green);padding:2px 7px;border-radius:20px;font-weight:700;">+${s.bugunPuan} bugün</span>`:'';
+                    let puanRenk = benBu?'var(--neon-blue)':i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--text-main)';
+
+                    html += `<div id="${benBu?'klasman-ben-bu':''}" style="background:${bg};border-left:${bl};border-radius:12px;padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;${benBu?'box-shadow:0 0 0 1px var(--neon-blue);':''}">
+                        <div style="width:30px;text-align:center;flex-shrink:0;font-size:${i<3?'20':'12'}px;">${mEl}</div>
                         <div style="flex:1;min-width:0;">
-                            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
-                                <span style="font-weight:900;font-size:15px;">${yE} ${s.ad}</span>
-                                ${motivasyon}
-                                ${bugunBadge}
+                            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:3px;">
+                                <span style="font-weight:900;font-size:14px;">${yE} ${s.ad}</span>
+                                ${motivasyon} ${bugunBadge}
                             </div>
-                            <div style="font-size:11px;line-height:1.8;">${statlar}</div>
-                            ${s.sinif ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">📌 ${s.sinif}</div>` : ''}
+                            <div style="font-size:10px;color:var(--text-muted);">🏹${s.toplamSeri}seri · 🎯${s.toplamOk}ok · ✕${s.toplamX} · ort${s.ort.toFixed(1)}</div>
                         </div>
-                        <div style="text-align:right;flex-shrink:0;min-width:54px;">
-                            <div style="font-size:24px;font-weight:900;color:${i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--text-main)'};">${s.toplam}</div>
-                            <div style="font-size:9px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;">PUAN</div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div style="font-size:22px;font-weight:900;color:${puanRenk};">${s.toplam}</div>
+                            <div style="font-size:9px;color:var(--text-muted);font-weight:600;">PUAN</div>
                         </div>
                     </div>`;
                 });
+                html += '</div></details>';
             });
+
             el.innerHTML = html;
+
+            // Sporcu kendi kartına scroll et
+            if(loggedInSporcu) {
+                setTimeout(()=>{
+                    let el2 = document.getElementById('klasman-ben-bu');
+                    if(el2) el2.scrollIntoView({behavior:'smooth',block:'center'});
+                },300);
+            }
         }
         function siralamaListesiDoldur() {
             let tK = document.getElementById('sirali-tablo-klasik'); let tM = document.getElementById('sirali-tablo-makarali'); if(!tK || !tM) return;
