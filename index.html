@@ -6451,7 +6451,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function bsHaftaAnahtar(iso) { let d = new Date(iso + 'T00:00:00'); let gun = (d.getDay()+6)%7; d.setDate(d.getDate()-gun); return bsIsoTarih(d); }
 
         function basariSporcuBul(ad) {
-            for(let g of ['buyukler','kucukler']) { if(turnuvaDB[g] && turnuvaDB[g][ad]) return { sp: turnuvaDB[g][ad], grup: g }; }
+            for(let g of ['buyukler','yildizlar','kucukler','minikler']) { if(turnuvaDB[g] && turnuvaDB[g][ad]) return { sp: turnuvaDB[g][ad], grup: g }; }
             return null;
         }
         function basariSporcuListesi() {
