@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v90</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v91</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -594,7 +594,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v90</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v91</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -1443,9 +1443,13 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(arsivlenecek.length === 0) return showToast('Arşivlenecek dolu skor kartı yok.', 'warning');
             if(!confirm(`Bugünün antrenmanı arşivlenip herkese YENİ kart açılsın mı?\n\n${arsivlenecek.length} sporcunun mevcut kartı tarihiyle geçmişe taşınacak ve skorları sıfırlanacak. (Geçmiş kartlar karnede görünür.)`)) return;
             let bugun = bugunISO();
+            // Silinecek seri ID'lerini topla (Firestore'dan da silinecek)
+            let silinecekSeriIdler = [];
             isimler.forEach(ad => {
                 let sp = turnuvaDB[aktifGrup][ad];
                 if(sp.seriler && sp.seriler.length > 0) {
+                    // Seri ID'lerini topla
+                    sp.seriler.forEach(s => { if(s.seriId) silinecekSeriIdler.push(s.seriId); });
                     if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi = [];
                     sp.kartGecmisi.push({ tarih: bugun, seriler: sp.seriler, detayliOklar: sp.detayliOklar || [], toplamSkor: sp.toplamSkor || 0, xAdet: sp.xAdet || 0 });
                     sp.seriler = []; sp.detayliOklar = []; sp.toplamSkor = 0; sp.xAdet = 0;
@@ -1455,17 +1459,22 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
             showToast(`Yeni antrenman başladı! ${arsivlenecek.length} kart arşivlendi 🗂️`, 'success');
             sporcuListesiniYenile(); siralamaListesiDoldur();
-            // DİĞER CİHAZLARA ANLIK GÖNDER — Firestore master + özel reset eventi
+
             if(bulutHazir && dbBulut) {
                 let json = bulutVeriJSON();
-                // Master'a yaz (tam veri)
+                // 1. Master'a yaz (arşivlenmiş, sıfırlanmış veri)
                 dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
                     .then(() => { sonBulutJSON = json; bulutDurum('☁️ arşivlendi ✓', 'var(--neon-green)'); })
                     .catch(() => { bekleyenGonderim = true; });
-                // Özel reset sinyali — diğer cihazlar bunu görünce yenileyecek
+                // 2. KRİTİK: Firestore'daki seri belgelerini sil — yoksa onSnapshot eski veriyi geri getirir!
+                let col = dbBulut.collection('kulup').doc('seriler').collection('kayitlar');
+                silinecekSeriIdler.forEach(id => { col.doc(id).delete().catch(()=>{}); });
+                // 3. Reset sinyali — diğer cihazlar master'dan çeksin
                 dbBulut.collection('kulup').doc('reset_sinyali').set({
                     yapan: _cihazId, grup: aktifGrup, zaman: Date.now(), tip: 'yeni_antrenman'
                 }).catch(() => {});
+                if(silinecekSeriIdler.length > 0)
+                    bulutDurum(`☁️ ${silinecekSeriIdler.length} seri temizlendi ✓`, 'var(--neon-green)');
             }
         }
 
@@ -3106,11 +3115,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             if(silindiMi(s.g, s.ad)) return;
             if(!turnuvaDB[s.g]) turnuvaDB[s.g] = {};
             if(!turnuvaDB[s.g][s.ad]) {
-                // Sporcu henüz yüklenmemiş — kuyruğa al, master gelince tekrar dene
+                // Sporcu henüz yüklenmemiş — kuyruğa al
                 if(!_bekleyenSeriler.some(b => b.id === s.id)) _bekleyenSeriler.push(s);
                 return;
             }
             let sp = turnuvaDB[s.g][s.ad];
+            // KRİTİK: Bu seri zaten arşivlendiyse (kartGecmisi'nde varsa) tekrar uygulama!
+            let arsivde = (sp.kartGecmisi||[]).some(k => (k.seriler||[]).some(sr => sr.seriId === s.id));
+            if(arsivde) return;
             if(!sp.seriler) sp.seriler = [];
             if(sp.seriler.some(sr => sr.seriId === s.id)) return; // duplicate
             sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
@@ -3141,6 +3153,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         if(change.type !== 'added') return;
                         let s = change.doc.data();
                         if(!s || s.cihazId === _cihazId) return;
+                        // Bu seri zaten arşivlendiyse (kartGecmisi'nde varsa) tekrar uygulama
+                        if(turnuvaDB[s.g] && turnuvaDB[s.g][s.ad]) {
+                            let sp = turnuvaDB[s.g][s.ad];
+                            let arşivde = (sp.kartGecmisi||[]).some(k =>
+                                (k.seriler||[]).some(sr => sr.seriId === s.id)
+                            );
+                            if(arşivde) return; // Arşivlenmiş seri — tekrar uygulama!
+                        }
                         _seriUygula(s);
                         degisti = true;
                     });
