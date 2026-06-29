@@ -367,7 +367,7 @@
         <button id="btn-tema-degistir" onclick="toggleTheme()">☀️/🌙 Tema</button>
         <button id="kapat-giris-btn" onclick="kapatGirisEkrani()">✖ Kapat</button>
         <div class="kurumsal-logo">DAĞ S.K</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v97</b> · 22.06.2026</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Sürüm <b id="app-surum-yazi">v99</b> · 22.06.2026</div>
         <h2 id="giris-baslik">Platform Seçin</h2>
         <div id="giris-platform" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
             <button class="giris-secim-btn" onclick="platformSec('sporcu')">🎯 SPORCU KARTI PLATFORMU <span>Skor girişi · hedef puanlama · liderlik · yarışmalar</span></button>
@@ -379,6 +379,7 @@
             <button class="giris-secim-btn" onclick="grupKurulumu('yildizlar')">⭐ YILDIZLAR <span>13-15 yaş · 2011-2013 doğumlu</span></button>
             <button class="giris-secim-btn" onclick="grupKurulumu('kucukler')">🟢 KÜÇÜKLER <span>10-12 yaş · 2014-2016 doğumlu</span></button>
             <button class="giris-secim-btn" onclick="grupKurulumu('minikler')">🌱 MİNİKLER <span>6-9 yaş · 2017-2020 doğumlu</span></button>
+            <button class="giris-secim-btn" onclick="kmAc()" style="border-color:var(--gold);background:rgba(251,191,36,0.07);">🎯 KARIŞIK SINIF <span>Farklı gruplardan sporcu seç · toplu skor girişi</span></button>
             <button onclick="platformGeri()" style="width:100%; max-width:350px; padding:10px; font-size:12px; font-weight:600; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); border-radius:10px; cursor:pointer;">← Platform Seçimine Dön</button>
         </div>
         <div id="giris-sifre" style="width:100%; max-width:300px; display:none; flex-direction:column; align-items:center; gap:14px;">
@@ -409,6 +410,41 @@
             <button onclick="platformGeri()" style="width:100%; padding:9px; font-size:12px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); border-radius:8px;">← Geri</button>
         </div>
     </div>
+    <!-- KARIŞIK SINIF MODAL -->
+    <div id="karisik-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:rgba(0,0,0,0.88);z-index:25000;align-items:center;justify-content:center;padding:15px;box-sizing:border-box;">
+        <div style="background:var(--bg-main);border:1px solid var(--border-color);border-radius:16px;max-width:480px;width:100%;max-height:88vh;display:flex;flex-direction:column;padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <span style="font-weight:900;font-size:16px;">🎯 Karışık Sınıf</span>
+                <button onclick="document.getElementById('karisik-modal').style.display='none'" style="background:var(--border-color);color:var(--text-main);border:none;padding:6px 12px;border-radius:8px;font-weight:bold;cursor:pointer;">✕ Kapat</button>
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Bu dersteki sporcuları seç. Farklı gruplardan seçebilirsin.</div>
+            <input id="km-ara" type="text" placeholder="🔍 Sporcu ara..." oninput="kmModalDoldur()" style="width:100%;box-sizing:border-box;padding:9px 12px;background:var(--bg-panel);border:1px solid var(--border-color);border-radius:10px;color:var(--text-main);font-size:14px;margin-bottom:10px;">
+            <div id="km-liste" style="overflow-y:auto;flex:1;min-height:150px;"></div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+                <span id="km-sayac" style="font-size:12px;color:var(--text-muted);flex:1;">0 sporcu seçildi</span>
+                <button onclick="kmBaslat()" style="background:var(--accent-orange);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-weight:900;font-size:14px;cursor:pointer;">▶ Dersi Başlat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KARIŞIK SINIF PLATFORM -->
+    <div id="karisik-platform" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:var(--bg-main);z-index:20000;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-panel);border-bottom:1px solid var(--border-color);flex-shrink:0;">
+            <span style="font-size:15px;font-weight:900;">🎯 KARIŞIK SINIF</span>
+            <span id="km-ders-sayac" style="font-size:11px;color:var(--text-muted);flex:1;"></span>
+            <button onclick="kmSporcuEkle()" style="background:rgba(251,191,36,0.15);color:var(--gold);border:1px solid var(--gold);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;">➕ Sporcu Ekle</button>
+            <button onclick="kmDersiBitir()" style="background:var(--neon-red);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:900;font-size:12px;cursor:pointer;">🏁 Dersi Bitir</button>
+            <button onclick="kmGeri()" style="background:var(--border-color);color:var(--text-main);border:none;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:bold;cursor:pointer;">← Geri</button>
+        </div>
+        <!-- Sekmeler -->
+        <div style="display:flex;gap:4px;padding:8px 14px;background:var(--bg-panel);border-bottom:1px solid var(--border-color);flex-shrink:0;overflow-x:auto;">
+            <button onclick="kmSekme('skor')" id="kms-skor" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:var(--accent-orange);color:#fff;border:none;white-space:nowrap;">🎯 Skor</button>
+            <button onclick="kmSekme('lider')" id="kms-lider" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:var(--bg-main);color:var(--text-muted);border:1px solid var(--border-color);white-space:nowrap;">🏆 Liderlik</button>
+            <button onclick="kmSekme('klasman')" id="kms-klasman" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:var(--bg-main);color:var(--text-muted);border:1px solid var(--border-color);white-space:nowrap;">📊 Klasman</button>
+        </div>
+        <div id="km-icerik" style="flex:1;overflow-y:auto;padding:12px 14px;"></div>
+    </div>
+
     <div id="detay-modal" class="modal-overlay kolay-kapat">
         <div class="modal-content glass-panel" style="max-width:550px; padding:20px;">
             <div class="panel-header">
@@ -594,7 +630,7 @@
         <div class="grup-satir">
             <div style="display:flex; align-items:center; gap:8px;">
                 <div class="mini-logo">DAĞ S.K</div>
-                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v97</span>
+                <span style="font-size:9px; color:var(--text-muted); font-weight:bold;">v99</span>
                 <div id="aktif-grup-etiket" class="baslik" style="font-weight:bold;">SEÇİLMEDİ</div>
                 <span id="bulut-durum" onclick="bulutManuelYenile()" title="Bulut senkron" style="font-size:11px; font-weight:bold; color:var(--text-muted); cursor:pointer; white-space:nowrap;">☁️ —</span>
             </div>
@@ -660,18 +696,9 @@
                 <span style="font-weight:bold;">📦 Haftalık yedek zamanı geldi.</span> Verilerini güvene almak için indir.
                 <button onclick="tumVeriyiYedekle()" style="margin-top:7px; width:100%; background:var(--gold); color:#000; border:none; padding:8px; border-radius:8px; font-weight:bold; font-size:12px; cursor:pointer;">💾 Şimdi Yedekle</button>
             </div>
-            <div class="glass-panel sadece-egitmen" style="padding:15px; border-radius:12px; margin-bottom:15px;">
-                <div class="satir-inputs">
-                    <input type="text" id="yeni-sporcu-ad" placeholder="SPORCU ADI SOYADI">
-                    <input type="number" id="yeni-sporcu-yil" placeholder="YIL" value="2015">
-                </div>
-                <div class="satir-inputs">
-                    <button id="gender-kiz" class="cins-btn secili-kiz" onclick="cinsiyetSec('K')">KADIN</button>
-                    <button id="gender-erkek" class="cins-btn" onclick="cinsiyetSec('E')">ERKEK</button>
-                    <button id="bow-klasik" class="yay-btn secili-klasik" onclick="yaySec('Klasik')">KLASİK</button>
-                    <button id="bow-makarali" class="yay-btn" onclick="yaySec('Makaralı')">MAKARALI</button>
-                </div>
-                <button onclick="sporcuKartEkle()" style="background:var(--accent-orange); color:white; border:none; border-radius:8px; padding:12px; font-weight:bold; width:100%;">KAYIT EKLE ➕</button>
+            <div class="glass-panel sadece-egitmen" style="padding:12px; border-radius:12px; margin-bottom:15px; border:1px dashed var(--border-color); text-align:center;">
+                <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">➕ Yeni sporcu eklemek için</div>
+                <button onclick="yoneticiPaneliAc()" style="background:var(--accent-orange); color:white; border:none; border-radius:8px; padding:10px 20px; font-weight:bold; font-size:13px; cursor:pointer;">🛡️ Yönetici Paneli → Sporcu Ekle</button>
             </div>
 
             <button onclick="yeniDersBaslat()" class="sadece-egitmen" style="width:100%; background:rgba(59,130,246,0.15); border:1px solid var(--neon-blue); color:var(--text-main); border-radius:10px; padding:11px; font-weight:bold; font-size:13px; margin-bottom:12px;">🗂️ Yeni Antrenman Başlat (bugünün skorlarını arşivle, sıfırdan başla)</button>
@@ -3198,7 +3225,15 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let arsivde = (sp.kartGecmisi||[]).some(k => (k.seriler||[]).some(sr => sr.seriId === s.id));
             if(arsivde) return;
             if(!sp.seriler) sp.seriler = [];
-            if(sp.seriler.some(sr => sr.seriId === s.id)) return; // duplicate
+            if(sp.seriler.some(sr => sr.seriId === s.id)) return; // duplicate ID
+            // Yakın zamanda (60sn) aynı puan girilmiş mi? — çift kayıt koruması
+            let birDakika = 60 * 1000;
+            let yakinDuplicate = sp.seriler.some(sr =>
+                sr.puan === s.puan &&
+                Math.abs((sr.t||0) - (s.t||0)) < birDakika &&
+                JSON.stringify(sr.oklar||[]) === JSON.stringify(s.oklar||[])
+            );
+            if(yakinDuplicate) { console.log('Yakın duplicate engellendi:', s.ad, s.puan); return; }
             sp.seriler.push({ seriId: s.id, puan: s.puan, oklar: s.oklar, tarih: s.tarih, t: s.t });
             sp.toplamSkor = (sp.seriler||[]).reduce((a,sr) => a+(sr.puan||0), 0);
             sp.xAdet = (sp.seriler||[]).reduce((a,sr) => a+((sr.oklar||[]).filter(o=>o==='X').length), 0);
@@ -3395,6 +3430,8 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             setTimeout(() => { try { temizlikYap(); } catch(e) {} }, 5000);
             setInterval(() => { try { temizlikYap(); } catch(e) {} }, 30 * 60 * 1000);
             try { sezonSayaciBaslat(); } catch(e) {}
+            // Karışık ders devam sorusu — localStorage'da varsa sor
+
             sporcuListesiniYenile(); siralamaListesiDoldur(); takimDropdownDoldur(); takimListesiCiz();
             hedefPanZoomKur();
             // VELİ QR / bağlantı: ?vs=AD&vk=KOD ile gelindiyse otomatik o sporcunun canlı karnesi
@@ -3759,7 +3796,21 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
         function yoneticiPaneliCiz() {
             let alan = document.getElementById('yonetici-liste'); if(!alan) return;
             let q = (document.getElementById('yonetici-arama').value || '').trim().toLocaleLowerCase('tr');
-            let html = '';
+            let html = `
+            <div style="background:rgba(255,98,0,0.08);border:1px solid rgba(255,98,0,0.3);border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:900;font-size:13px;color:var(--accent-orange);margin-bottom:10px;">➕ Yeni Sporcu Ekle</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                    <input id="yon-sporcu-ad" type="text" placeholder="AD SOYAD" style="padding:9px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:8px;color:var(--text-main);font-size:13px;font-weight:700;">
+                    <input id="yon-sporcu-yil" type="number" placeholder="Doğum Yılı" value="2010" style="padding:9px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:8px;color:var(--text-main);font-size:13px;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+                    <button id="yon-kiz-btn" onclick="yonCinsiyetSec('K')" style="padding:8px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:rgba(236,72,153,0.15);color:#ec4899;border:1px solid #ec4899;">👧 KADIN</button>
+                    <button id="yon-erkek-btn" onclick="yonCinsiyetSec('E')" style="padding:8px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:var(--bg-panel);color:var(--text-muted);border:1px solid var(--border-color);">👦 ERKEK</button>
+                    <button id="yon-klasik-btn" onclick="yonYaySec('Klasik')" style="padding:8px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:rgba(59,130,246,0.15);color:var(--neon-blue);border:1px solid var(--neon-blue);">🏹 KLASİK</button>
+                    <button id="yon-makarali-btn" onclick="yonYaySec('Makaralı')" style="padding:8px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:var(--bg-panel);color:var(--text-muted);border:1px solid var(--border-color);">⚙️ MAKARALI</button>
+                </div>
+                <button onclick="yoneticiSporcuEkle()" style="width:100%;background:var(--accent-orange);color:#fff;border:none;padding:11px;border-radius:10px;font-weight:900;font-size:14px;cursor:pointer;">✅ Kalıcı Olarak Ekle → Buluta Yaz</button>
+            </div>`;
             [['buyukler','🔵 Büyükler'],['yildizlar','⭐ Yıldızlar'],['kucukler','🟢 Küçükler'],['minikler','🌱 Minikler']].forEach(([g, baslik]) => {
                 let db = turnuvaDB[g] || {};
                 let isimler = Object.keys(db).filter(ad => !q || ad.toLocaleLowerCase('tr').indexOf(q) >= 0).sort();
@@ -3908,9 +3959,12 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
                             <!-- Aktif Seriler -->
                             ${aktif.length ? `
-                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px;flex-wrap:wrap;">
                                 <div style="font-size:11px;font-weight:700;color:var(--neon-green);">▶ Aktif Seriler · ${sp.toplamSkor||0} puan</div>
-                                <button onclick="yoneticiTumAktifSilOnay('${g}','${adEsc}')" style="background:rgba(239,68,68,0.15);color:var(--neon-red);border:1px solid var(--neon-red);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">🗑️ Tümünü Sil (${aktif.length})</button>
+                                <div style="display:flex;gap:5px;">
+                                    <button onclick="yoneticiKaldigiYerdenDevam('${g}','${adEsc}')" style="background:rgba(16,185,129,0.15);color:var(--neon-green);border:1px solid var(--neon-green);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">▶ Kaldığı Yerden Devam Et</button>
+                                    <button onclick="yoneticiTumAktifSilOnay('${g}','${adEsc}')" style="background:rgba(239,68,68,0.15);color:var(--neon-red);border:1px solid var(--neon-red);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;">🗑️ Tümünü Sil (${aktif.length})</button>
+                                </div>
                             </div>
                             ${aktif.map((s,i) => `
                             <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;margin-bottom:5px;">
@@ -3989,18 +4043,25 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             let yeniYil = (document.getElementById('duz-yil-'+key)||{}).value?.trim();
             if(!yeniAd) return showToast('İsim boş olamaz','error');
             let sp = turnuvaDB[g] && turnuvaDB[g][ad]; if(!sp) return;
-            // Ad değişiyorsa
             if(yeniAd !== ad) {
                 if(turnuvaDB[g][yeniAd]) return showToast('Bu isim zaten var!','error');
-                turnuvaDB[g][yeniAd] = {...sp};
+                turnuvaDB[g][yeniAd] = {...sp, lastModified: Date.now()};
                 delete turnuvaDB[g][ad];
                 ad = yeniAd; sp = turnuvaDB[g][ad];
             }
             if(yeniYil) sp.dogumYili = yeniYil;
             sp.lastModified = Date.now();
-            yoneticiKaydet();
+            // Firestore'a direkt yaz — master güncelle
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            if(bulutHazir && dbBulut) {
+                let json = bulutVeriJSON();
+                dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                    .then(() => { sonBulutJSON = json; bulutDurum('☁️ isim güncellendi ✓','var(--neon-green)'); })
+                    .catch(() => { bekleyenGonderim = true; });
+            }
             showToast('✅ Sporcu bilgileri güncellendi', 'success');
             yoneticiSkorDuzeltCiz();
+            try { sporcuListesiniYenile(); } catch(e) {}
         }
 
         function yoneticiAktifSeriGuncelle(g, ad, seriIdx) {
@@ -4071,6 +4132,64 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             sp.lastModified = Date.now();
             yoneticiKaydet(); yoneticiSkorDuzeltCiz();
             showToast('✅ Geçmiş seri silindi', 'success');
+        }
+
+        let _yonCinsiyet = 'K', _yonYay = 'Klasik';
+        function yonCinsiyetSec(c) {
+            _yonCinsiyet = c;
+            document.getElementById('yon-kiz-btn').style.background = c==='K'?'rgba(236,72,153,0.15)':'var(--bg-panel)';
+            document.getElementById('yon-kiz-btn').style.color = c==='K'?'#ec4899':'var(--text-muted)';
+            document.getElementById('yon-kiz-btn').style.borderColor = c==='K'?'#ec4899':'var(--border-color)';
+            document.getElementById('yon-erkek-btn').style.background = c==='E'?'rgba(59,130,246,0.15)':'var(--bg-panel)';
+            document.getElementById('yon-erkek-btn').style.color = c==='E'?'var(--neon-blue)':'var(--text-muted)';
+            document.getElementById('yon-erkek-btn').style.borderColor = c==='E'?'var(--neon-blue)':'var(--border-color)';
+        }
+        function yonYaySec(y) {
+            _yonYay = y;
+            document.getElementById('yon-klasik-btn').style.background = y==='Klasik'?'rgba(59,130,246,0.15)':'var(--bg-panel)';
+            document.getElementById('yon-klasik-btn').style.color = y==='Klasik'?'var(--neon-blue)':'var(--text-muted)';
+            document.getElementById('yon-klasik-btn').style.borderColor = y==='Klasik'?'var(--neon-blue)':'var(--border-color)';
+            document.getElementById('yon-makarali-btn').style.background = y==='Makaralı'?'rgba(16,185,129,0.15)':'var(--bg-panel)';
+            document.getElementById('yon-makarali-btn').style.color = y==='Makaralı'?'var(--neon-green)':'var(--text-muted)';
+            document.getElementById('yon-makarali-btn').style.borderColor = y==='Makaralı'?'var(--neon-green)':'var(--border-color)';
+        }
+        function yoneticiSporcuEkle() {
+            let adInput = document.getElementById('yon-sporcu-ad');
+            let yilInput = document.getElementById('yon-sporcu-yil');
+            let ad = adInput ? adInput.value.trim().toUpperCase() : '';
+            let yil = yilInput ? yilInput.value.trim() : '2010';
+            if(!ad) return showToast('Sporcu adı girin!','error');
+            let hedefGrup = dogumYilindenGrup(yil) || 'buyukler';
+            if(!turnuvaDB[hedefGrup]) turnuvaDB[hedefGrup] = {};
+            if(turnuvaDB[hedefGrup][ad]) return showToast(`${ad} zaten ${LIG_ETIKET[hedefGrup]} grubunda kayıtlı!`,'warning');
+            turnuvaDB[hedefGrup][ad] = { toplamSkor:0, xAdet:0, dogumYili:yil, cinsiyet:_yonCinsiyet, yay:_yonYay, seriler:[], detayliOklar:[], lastModified:Date.now() };
+            // KALICI FIRESTORE YAZIMI — overwrite değil, merge mantığı ile
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            if(bulutHazir && dbBulut) {
+                let json = bulutVeriJSON();
+                dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                    .then(() => { sonBulutJSON = json; bulutDurum('☁️ sporcu eklendi ✓','var(--neon-green)'); })
+                    .catch(() => { bekleyenGonderim = true; });
+            }
+            if(adInput) adInput.value = '';
+            showToast(`✅ ${ad} → ${LIG_ETIKET[hedefGrup]} kalıcı olarak eklendi!`,'success');
+            yoneticiPaneliCiz();
+        }
+        function yoneticiKaldigiYerdenDevam(g, ad) {
+            let sp = turnuvaDB[g] && turnuvaDB[g][ad];
+            if(!sp || !sp.seriler || !sp.seriler.length) return showToast('Bu sporcunun aktif serisi yok.','warning');
+            // Yönetici panelini kapat
+            let modal = document.getElementById('yonetici-modal'); if(modal) modal.style.display='none';
+            // Grubu ve sporcuyu ayarla
+            aktifGrup = g;
+            document.getElementById('aktif-grup-etiket').innerText = LIG_ETIKET[g] || g.toUpperCase();
+            document.getElementById('giris-ekrani').style.display = 'none';
+            sporcuListesiniYenile();
+            // Skor ekranını aç
+            setTimeout(() => {
+                skorEkraniniAc(ad);
+                showToast(`▶ ${ad} — ${sp.seriler.length} seriden devam ediliyor`, 'success');
+            }, 200);
         }
 
         function yoneticiDondur(g, ad) {
@@ -4259,6 +4378,253 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             }
             return tasindi;
         }
+        let karisikSecimler = {}; // { 'buyukler_Emir': true, 'kucukler_Ahmet': true }
+
+
+        // ===== KARIŞIK SINIF PLATFORMU =====
+        let _kmSecimler = {}; // { 'buyukler_Emir': {g,ad} }
+        let _kmListe = []; // Aktif ders listesi
+        let _kmAktifSekme = 'skor';
+
+        function kmAc() {
+            // Kayıtlı ders var mı?
+            try {
+                let saved = localStorage.getItem('dag_km_liste');
+                if(saved) {
+                    let liste = JSON.parse(saved);
+                    if(liste && liste.length > 0) {
+                        _kmListe = liste;
+                        _kmSecimler = {};
+                        liste.forEach(function(s){ _kmSecimler[s.g+'_'+s.ad] = s; });
+                        kmPlatformGoster();
+                        return;
+                    }
+                }
+            } catch(e) {}
+            // Yeni ders — seçim ekranı
+            _kmSecimler = {};
+            kmModalDoldur();
+            document.getElementById('karisik-modal').style.display = 'flex';
+        }
+
+        function kmModalDoldur() {
+            let el = document.getElementById('km-liste'); if(!el) return;
+            let q = (document.getElementById('km-ara')||{value:''}).value.trim().toLocaleLowerCase('tr');
+            let html = '';
+            ['buyukler','yildizlar','kucukler','minikler'].forEach(function(g) {
+                let db = turnuvaDB[g] || {};
+                let adlar = Object.keys(db).filter(function(ad){ return !db[ad].pasif && !db[ad].donduruldu && (!q || ad.toLocaleLowerCase('tr').includes(q)); }).sort();
+                if(!adlar.length) return;
+                html += '<div style="font-weight:900;font-size:11px;color:var(--accent-orange);margin:10px 0 5px;letter-spacing:1px;">'+LIG_ETIKET[g]+'</div>';
+                adlar.forEach(function(ad) {
+                    let key = g+'_'+ad;
+                    let secili = !!_kmSecimler[key];
+                    html += '<div onclick="kmToggle(\''+g+'\',\''+ad.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:4px;border-radius:9px;border:2px solid '+(secili?'var(--accent-orange)':'var(--border-color)')+';background:'+(secili?'rgba(255,98,0,0.1)':'var(--bg-panel)')+';cursor:pointer;">'
+                        + '<div style="width:18px;height:18px;border-radius:4px;background:'+(secili?'var(--accent-orange)':'transparent')+';border:2px solid '+(secili?'var(--accent-orange)':'var(--border-color)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;">'+(secili?'✓':'')+'</div>'
+                        + '<div style="flex:1;"><div style="font-weight:800;font-size:13px;">'+ad+'</div><div style="font-size:10px;color:var(--text-muted);">'+LIG_ETIKET[g]+' · '+(db[ad].yay||'')+'</div></div>'
+                        + '</div>';
+                });
+            });
+            el.innerHTML = html || '<div style="color:var(--text-muted);text-align:center;padding:20px;">Sporcu bulunamadı</div>';
+            let s = document.getElementById('km-sayac');
+            if(s) s.textContent = Object.keys(_kmSecimler).length + ' sporcu seçildi';
+        }
+
+        function kmToggle(g, ad) {
+            let key = g+'_'+ad;
+            if(_kmSecimler[key]) delete _kmSecimler[key];
+            else _kmSecimler[key] = {g:g, ad:ad};
+            kmModalDoldur();
+        }
+
+        function kmBaslat() {
+            let secilen = Object.values(_kmSecimler);
+            if(!secilen.length) return showToast('En az bir sporcu seç!','error');
+            _kmListe = secilen;
+            try { localStorage.setItem('dag_km_liste', JSON.stringify(_kmListe)); } catch(e) {}
+            document.getElementById('karisik-modal').style.display = 'none';
+            kmPlatformGoster();
+        }
+
+        function kmPlatformGoster() {
+            document.getElementById('karisik-platform').style.display = 'flex';
+            kmSekme('skor');
+        }
+
+        function kmGeri() {
+            // Ders bitmedi — platfomu kapat, ana ekrana dön (ders devam ediyor)
+            document.getElementById('karisik-platform').style.display = 'none';
+        }
+
+        function kmSekme(s) {
+            _kmAktifSekme = s;
+            ['skor','lider','klasman'].forEach(function(k){
+                let btn = document.getElementById('kms-'+k);
+                if(btn) { btn.style.background = k===s?'var(--accent-orange)':'var(--bg-main)'; btn.style.color = k===s?'#fff':'var(--text-muted)'; btn.style.border = k===s?'none':'1px solid var(--border-color)'; }
+            });
+            if(s==='skor') kmSkorCiz();
+            else if(s==='lider') kmLiderCiz();
+            else if(s==='klasman') kmKlasmanCiz();
+        }
+
+        function kmSkorCiz() {
+            let el = document.getElementById('km-icerik'); if(!el) return;
+            let html = '';
+            _kmListe.forEach(function(item) {
+                let sp = turnuvaDB[item.g] && turnuvaDB[item.g][item.ad]; if(!sp) return;
+                let sLen = (sp.seriler||[]).length;
+                let limit = parseInt((document.getElementById('toplam-seri-ayar')||{value:'12'}).value)||12;
+                let puan = sp.toplamSkor||0;
+                let doldu = !sp.devamModu && sLen>=limit;
+                html += '<div style="background:var(--bg-panel);border:1px solid '+(doldu?'var(--neon-green)':'var(--border-color)')+';border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-weight:800;font-size:14px;">'+item.ad+'</div>'
+                    + '<div style="font-size:11px;color:var(--text-muted);">'+LIG_ETIKET[item.g]+' · '+sLen+' seri · '+puan+'p</div>'
+                    + '</div>'
+                    + '<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;">'
+                    + '<button data-km-skor-g="'+item.g+'" data-km-skor-ad="'+item.ad+'" style="background:var(--accent-orange);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">Hedef 🎯</button>'
+                    + (sLen>0?'<button data-km-bitir-g="'+item.g+'" data-km-bitir-ad="'+item.ad+'" style="background:rgba(16,185,129,0.12);color:var(--neon-green);border:1px solid var(--neon-green);padding:4px 10px;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;">✅ Seriyi Bitir</button>':'')
+                    + '</div></div>';
+            });
+            el.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:30px;">Liste boş</div>';
+            let sayac = document.getElementById('km-ders-sayac');
+            if(sayac) sayac.textContent = _kmListe.length+' sporcu · '+_kmListe.reduce(function(a,s){let sp=turnuvaDB[s.g]&&turnuvaDB[s.g][s.ad];return a+(sp?sp.toplamSkor||0:0);},0)+' toplam puan';
+        }
+
+        function kmLiderCiz() {
+            let el = document.getElementById('km-icerik'); if(!el) return;
+            let madalya = ['🥇','🥈','🥉'];
+            let arr = _kmListe.map(function(item){
+                let sp = turnuvaDB[item.g]&&turnuvaDB[item.g][item.ad]; if(!sp) return null;
+                return {ad:item.ad,g:item.g,puan:sp.toplamSkor||0,x:sp.xAdet||0,seri:(sp.seriler||[]).length};
+            }).filter(Boolean).sort(function(a,b){return b.puan-a.puan||b.x-a.x;});
+            let html = '<div style="font-weight:900;font-size:14px;margin-bottom:10px;">🏆 Bu Ders Liderlik</div>';
+            if(!arr.length){el.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:30px;">Henüz skor girilmedi</div>';return;}
+            arr.forEach(function(s,i){
+                html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:7px;border-radius:12px;background:'+(i<3?'rgba(251,191,36,0.08)':'var(--bg-panel)')+';border:1px solid '+(i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--border-color)')+';">'
+                    + '<div style="width:32px;text-align:center;font-size:'+(i<3?'22':'13')+'px;font-weight:900;color:'+(i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--text-muted)')+';">'+(madalya[i]||i+1)+'</div>'
+                    + '<div style="flex:1;"><div style="font-weight:800;font-size:14px;">'+s.ad+'</div><div style="font-size:11px;color:var(--text-muted);">'+LIG_ETIKET[s.g]+' · '+s.seri+' seri · X:'+s.x+'</div></div>'
+                    + '<div style="font-size:22px;font-weight:900;color:'+(i===0?'#fbbf24':'var(--text-main)')+';">'+s.puan+'</div>'
+                    + '</div>';
+            });
+            el.innerHTML = html;
+        }
+
+        function kmKlasmanCiz() {
+            let el = document.getElementById('km-icerik'); if(!el) return;
+            let madalya = ['🥇','🥈','🥉'];
+            // Toplam puan (aktif + geçmiş)
+            let arr = _kmListe.map(function(item){
+                let sp = turnuvaDB[item.g]&&turnuvaDB[item.g][item.ad]; if(!sp) return null;
+                let gecmisPuan = (sp.kartGecmisi||[]).reduce(function(a,k){return a+(k.toplamSkor||0);},0);
+                let toplam = (sp.toplamSkor||0)+gecmisPuan;
+                return {ad:item.ad,g:item.g,toplam:toplam,puan:sp.toplamSkor||0,x:sp.xAdet||0};
+            }).filter(Boolean).sort(function(a,b){return b.toplam-a.toplam;});
+            let html = '<div style="font-weight:900;font-size:14px;margin-bottom:10px;">📊 Genel Klasman (Bu Grup)</div>';
+            arr.forEach(function(s,i){
+                html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:7px;border-radius:12px;background:var(--bg-panel);border-left:3px solid '+(i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--border-color)')+';">'
+                    + '<div style="width:32px;text-align:center;font-size:'+(i<3?'22':'13')+'px;font-weight:900;">'+(madalya[i]||i+1)+'</div>'
+                    + '<div style="flex:1;"><div style="font-weight:800;font-size:14px;">'+s.ad+'</div><div style="font-size:11px;color:var(--text-muted);">'+LIG_ETIKET[s.g]+(s.puan>0?' · +'+s.puan+' bugün':'')+'</div></div>'
+                    + '<div style="font-size:22px;font-weight:900;color:var(--gold);">'+s.toplam+'</div>'
+                    + '</div>';
+            });
+            el.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:30px;">Veri yok</div>';
+        }
+
+        function kmSporcuEkle() {
+            // Mevcut seçimi koru, modal aç
+            document.getElementById('karisik-platform').style.display = 'none';
+            if(document.getElementById('km-ara')) document.getElementById('km-ara').value = '';
+            kmModalDoldur();
+            document.getElementById('karisik-modal').style.display = 'flex';
+        }
+
+        function kmDersiBitir() {
+            if(!confirm('Karışık dersi bitirmek istiyor musun?\n\nTüm sporcuların skorları arşivlenir ve sıfırlanır.')) return;
+            let bugun = bugunISO();
+            _kmListe.forEach(function(item){
+                let sp = turnuvaDB[item.g]&&turnuvaDB[item.g][item.ad]; if(!sp) return;
+                if(!sp.seriler||!sp.seriler.length) return;
+                let mevcutPuan = sp.toplamSkor||0;
+                let zaten = (sp.kartGecmisi||[]).some(function(k){return k.tarih===bugun&&k.toplamSkor===mevcutPuan;});
+                if(!zaten && mevcutPuan>0){
+                    if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi=[];
+                    sp.kartGecmisi.push({tarih:bugun,seriler:sp.seriler.slice(),detayliOklar:(sp.detayliOklar||[]).slice(),toplamSkor:mevcutPuan,xAdet:sp.xAdet||0});
+                }
+                sp.seriler=[]; sp.detayliOklar=[]; sp.toplamSkor=0; sp.xAdet=0; sp.sonSkorZamani=null; sp.lastModified=Date.now();
+            });
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            localStorage.removeItem('dag_km_liste');
+            _kmListe=[]; _kmSecimler={};
+            if(bulutHazir&&dbBulut){
+                let json=bulutVeriJSON();
+                dbBulut.collection('kulup').doc('master').set({veri:json,guncelleme:Date.now()}).then(function(){sonBulutJSON=json;}).catch(function(){bekleyenGonderim=true;});
+            }
+            document.getElementById('karisik-platform').style.display='none';
+            showToast('✅ Ders bitti! Tüm skorlar kaydedildi.','success');
+        }
+
+        // Event delegation — karışık platform butonları
+        document.addEventListener('click', function(e){
+            // Karışık skor aç
+            let sb = e.target.closest('[data-km-skor-g]');
+            if(sb){
+                let g=sb.getAttribute('data-km-skor-g'), ad=sb.getAttribute('data-km-skor-ad');
+                // Skor ekranını overlay olarak aç — platforma dönmek için
+                window._kmSkorAktif={g:g,ad:ad};
+                aktifGrup=g;
+                document.getElementById('karisik-platform').style.display='none';
+                document.getElementById('giris-ekrani').style.display='none';
+                skorEkraniniAc(ad);
+                return;
+            }
+            // Karışık seri bitir
+            let bb = e.target.closest('[data-km-bitir-g]');
+            if(bb){
+                let g=bb.getAttribute('data-km-bitir-g'), ad=bb.getAttribute('data-km-bitir-ad');
+                sporcuDersiBitirGrup(g, ad);
+                return;
+            }
+            // data-dersbitir (normal liste)
+            let db = e.target.closest('[data-dersbitir]');
+            if(db){ sporcuDersiBitir(db.getAttribute('data-dersbitir')); }
+        });
+
+        // Skor kaydedince karışık platforma geri dön
+        function kmSkorSonrasiGeriDon(){
+            if(!window._kmSkorAktif) return;
+            let item = window._kmSkorAktif; window._kmSkorAktif=null;
+            aktifGrup='karisik';
+            skorEkraniniKapat();
+            document.getElementById('karisik-platform').style.display='flex';
+            kmSekme('skor');
+        }
+
+        function sporcuDersiBitirGrup(g, ad) {
+            let sp = turnuvaDB[g]&&turnuvaDB[g][ad];
+            if(!sp||!sp.seriler||!sp.seriler.length) return showToast('Seri yok.','warning');
+            if(!confirm(ad+' için seriyi bitir?\n\n'+sp.seriler.length+' seri - '+(sp.toplamSkor||0)+' puan kaydedilecek.')) return;
+            let bugun=bugunISO(), mevcutPuan=sp.toplamSkor||0;
+            let zaten=(sp.kartGecmisi||[]).some(function(k){return k.tarih===bugun&&k.toplamSkor===mevcutPuan;});
+            if(!zaten&&mevcutPuan>0){
+                if(!Array.isArray(sp.kartGecmisi)) sp.kartGecmisi=[];
+                sp.kartGecmisi.push({tarih:bugun,seriler:sp.seriler.slice(),detayliOklar:(sp.detayliOklar||[]).slice(),toplamSkor:mevcutPuan,xAdet:sp.xAdet||0});
+            }
+            sp.seriler=[]; sp.detayliOklar=[]; sp.toplamSkor=0; sp.xAdet=0; sp.sonSkorZamani=null; sp.lastModified=Date.now();
+            localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
+            if(bulutHazir&&dbBulut){
+                let json=bulutVeriJSON();
+                dbBulut.collection('kulup').doc('master').set({veri:json,guncelleme:Date.now()}).then(function(){sonBulutJSON=json;}).catch(function(){bekleyenGonderim=true;});
+                dbBulut.collection('kulup').doc('seriler').collection('kayitlar').get().then(function(snap){
+                    let col=dbBulut.collection('kulup').doc('seriler').collection('kayitlar');
+                    snap.forEach(function(d){let s=d.data();if(s&&s.g===g&&s.ad===ad)col.doc(d.id).delete().catch(function(){});});
+                }).catch(function(){});
+            }
+            showToast('✅ '+ad+' - '+(mevcutPuan)+' puan kaydedildi','success');
+            if(document.getElementById('karisik-platform').style.display==='flex') kmSkorCiz();
+            else sporcuListesiniYenile();
+        }
+
         function grupKurulumu(grup) {
             aktifGrup = grup; kronometreSureAyarla();
             document.getElementById('aktif-grup-etiket').innerText = LIG_ETIKET[grup] || grup.toUpperCase();
@@ -4273,12 +4639,10 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             document.getElementById('tab-' + sekmeAd).classList.add('aktif'); 
             document.getElementById('icerik-' + sekmeAd).classList.add('aktif'); 
             if(sekmeAd === 'skor') skorEkraniniKapat(); 
-            if(sekmeAd === 'liderlik') {
-                // Sadece görsel ayrım: son 3 saatte skor girenler "bu ders", diğerleri "önceki ders"
-                // VERİ SİLİNMEZ — sadece renk/etiket değişir
-                siralamaListesiDoldur();
+            if(sekmeAd === 'liderlik') { siralamaListesiDoldur(); }
+            if(sekmeAd === 'klasman') { try { sezonSayaciniGuncelle(); } catch(e) {} klasmanDoldur();
+                if(loggedInSporcu) setTimeout(()=>{ let el=document.getElementById('klasman-ben-bu'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); },300);
             }
-            if(sekmeAd === 'klasman') { try { sezonSayaciniGuncelle(); } catch(e) {} klasmanDoldur(); }
             if(sekmeAd === 'ana') { try { sporcuAnaDoldur(); setTimeout(sezonSayaciniGuncelle, 100); } catch(e) {} }
             if(sekmeAd === 'gelisim') try { sporcuGelisimDoldur(); } catch(e) {}
             if(sekmeAd === 'egitmen') egitmenPaneliDoldur();
@@ -4317,10 +4681,9 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
         /* SPORCU YÖNETİM SİSTEMİ & FİLTRELER */
         function sporcuKartEkle() {
-            let ad = document.getElementById('yeni-sporcu-ad').value.trim().toUpperCase();
-            let yil = document.getElementById('yeni-sporcu-yil').value || "2015";
-            if(!ad) return showToast("Sporcu adı girin!", "error");
-            // Doğum yılına göre otomatik grup öner
+            let ad = document.getElementById('yeni-sporcu-ad') && document.getElementById('yeni-sporcu-ad').value.trim().toUpperCase();
+            let yil = document.getElementById('yeni-sporcu-yil') && document.getElementById('yeni-sporcu-yil').value || '2015';
+            if(!ad) return showToast('Sporcu adı girin!', 'error');
             let onerilengrup = dogumYilindenGrup(yil);
             let hedefGrup = aktifGrup;
             if(onerilengrup && onerilengrup !== aktifGrup) {
@@ -4328,13 +4691,20 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                 if(onay) hedefGrup = onerilengrup;
             }
             if(!turnuvaDB[hedefGrup]) turnuvaDB[hedefGrup] = {};
-            if(turnuvaDB[hedefGrup][ad]) return showToast("Zaten kayıtlı!", "warning");
-            turnuvaDB[hedefGrup][ad] = { toplamSkor: 0, xAdet: 0, dogumYili: yil, cinsiyet: aktifCinsiyet, yay: aktifYay, seriler: [], detayliOklar: [], lastModified: Date.now() };
+            if(turnuvaDB[hedefGrup][ad]) return showToast('Zaten kayıtlı!', 'warning');
+            let yeniSporcu = { toplamSkor:0, xAdet:0, dogumYili:yil, cinsiyet: aktifCinsiyet||'K', yay: aktifYay||'Klasik', seriler:[], detayliOklar:[], lastModified: Date.now() };
+            turnuvaDB[hedefGrup][ad] = yeniSporcu;
             localStorage.setItem('okculuk_premium_data', JSON.stringify(turnuvaDB));
-            bekleyenGonderim = true; try { bulutaGonderKontrol(); } catch(e) {}
-            document.getElementById('yeni-sporcu-ad').value = "";
-            showToast(`${ad} → ${LIG_ETIKET[hedefGrup]} eklendi!`, "success");
+            if(document.getElementById('yeni-sporcu-ad')) document.getElementById('yeni-sporcu-ad').value = '';
+            showToast(`${ad} → ${LIG_ETIKET[hedefGrup]} eklendi!`, 'success');
             sporcuListesiniYenile(); takimDropdownDoldur();
+            // Firestore'a yaz — master güncelleniyor, onSnapshot merge ile korur
+            if(bulutHazir && dbBulut) {
+                let json = bulutVeriJSON();
+                dbBulut.collection('kulup').doc('master').set({ veri: json, guncelleme: Date.now() })
+                    .then(() => { sonBulutJSON = json; bulutDurum('☁️ sporcu eklendi ✓', 'var(--neon-green)'); })
+                    .catch(() => { bekleyenGonderim = true; });
+            }
         }
 
         function duzenleModalAc(eskiAd) {
@@ -4412,10 +4782,26 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                         <div class="sporcu-detay">${yIcon} ${sp.yay} | Atış: ${sLen}/${limit}</div>
                         ${grupSelect}
                     </div>
-                    <button class="skor-gir-btn" onclick="skorEkraniniAc('${sp.ad}')">Hedef 🎯</button>
+                    <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;">
+                        <button class="skor-gir-btn" onclick="skorEkraniniAc('${sp.ad}')">Hedef 🎯</button>
+                        ${sLen > 0 ? `<button data-dersbitir="${sp.ad}" style="background:rgba(16,185,129,0.12);color:var(--neon-green);border:1px solid var(--neon-green);padding:4px 10px;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;">✅ Seriyi Bitir</button>` : ''}
+                    </div>
                 </div>`;
             });
         }
+        function sporcuDersiBitir(ad) {
+            sporcuDersiBitirGrup(aktifGrup, ad);
+        }
+
+
+        // Event delegation — Türkçe ve özel karakterli isimler için güvenli tıklama
+        document.addEventListener('click', function(e) {
+            let btn = e.target.closest('[data-dersbitir]');
+            if(!btn) return;
+            e.stopPropagation();
+            sporcuDersiBitir(btn.getAttribute('data-dersbitir'), e);
+        });
+
         function sporcuGrupAta(ad, grup) {
             let sp = turnuvaDB[aktifGrup][ad]; if(!sp) return;
             sp.sinif = grup; sp.siniflar = grup ? [grup] : []; sp.lastModified = Date.now();
@@ -4750,10 +5136,15 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             `;
         }
         function ligHizliGecis(g) {
-            if(g === aktifGrup) return;
+            if(g === aktifGrup && aktifGrup !== 'karisik') return;
             if(anlikAtilanOklar && anlikAtilanOklar.length > 0) {
                 if(!confirm('Kaydedilmemiş oklar var. Lig değiştirince silinir. Devam?')) return;
             }
+            // Karışık modu temizle
+            window._karisikListe = null;
+            localStorage.removeItem('dag_karisik_liste');
+            let bitirBtn = document.getElementById('karisik-bitir-btn'); if(bitirBtn) bitirBtn.remove();
+            document.querySelectorAll('.sekme-btn').forEach(btn => btn.style.display='');
             aktifGrup = g;
             document.getElementById('aktif-grup-etiket').innerText = LIG_ETIKET[g];
             skorEkraniniKapat(); sporcuListesiniYenile(); takimDropdownDoldur();
@@ -4834,11 +5225,13 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
         function skorKaydet() {
             if(!secilenSporcu) return;
-            // Düzenleme kilidi kontrolü — yönetici bu sporcuyu düzenliyorsa dur
             if(!skorKaydetKilitKontrol()) return;
             let okAdet = getMaksOk();
             if(anlikAtilanOklar.length !== okAdet) { buyukHata(`EKSİK SKOR GİRDİN!\n\nBu seride ${okAdet} ok olmalı.\nŞu an sadece ${anlikAtilanOklar.length} ok var.\n\nLütfen tüm okları gir.`); return; }
-            let grupData = turnuvaDB[aktifGrup][secilenSporcu]; let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
+            let gercekGrup = aktifGrup;
+            let grupData = turnuvaDB[gercekGrup] && turnuvaDB[gercekGrup][secilenSporcu];
+            if(!grupData) return showToast('Sporcu bulunamadı!','error');
+            let limit = parseInt(document.getElementById('toplam-seri-ayar').value) || 12;
             if(!grupData.devamModu && grupData.seriler && grupData.seriler.length >= limit) { showToast("Maksimum seriye ulaşıldı!", "error"); skorEkraniniKapat(); return; }
             
             let seriPuan = 0; let okDegerleri = []; if(grupData.xAdet === undefined) grupData.xAdet = 0; if(grupData.toplamSkor === undefined) grupData.toplamSkor = 0;
@@ -4862,7 +5255,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             // SERİ BAZLI ATOMIC WRITE — race condition yok
             let seriDoc = {
                 id: _cihazId + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-                g: aktifGrup, ad: secilenSporcu,
+                g: gercekGrup, ad: secilenSporcu,
                 oklar: okDegerleri, puan: seriPuan,
                 tarih: bugunISO(), t: Date.now(), cihazId: _cihazId
             };
@@ -4871,6 +5264,9 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
             else { showToast(`Seri Kaydedildi! (+${seriPuan})`, "success"); }
             // Klasman anlık güncelle
             try { klasmanDoldur(); } catch(e) {}
+            // Karışık platforma geri dön
+            try { kmSkorSonrasiGeriDon(); } catch(e) {}
+
             try { otomatikYoklamaIsaretle(secilenSporcu); } catch(e) {}
 
             // --- BAŞARI & REKOR SİSTEMİ ENTEGRASYONU ---
@@ -5371,12 +5767,14 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
 
                 arr.forEach((s, i) => {
                     let yE = s.yay === 'Makaralı' ? '⚙️' : '🏹';
-                    let madalyaEl = madalya[i] ? `<span style="font-size:22px;">${madalya[i]}</span>` : `<span style="font-size:13px;font-weight:900;color:var(--text-muted);">${i+1}</span>`;
-                    let bgCard = i === 0 ? 'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.05))' : i === 1 ? 'linear-gradient(135deg,rgba(148,163,184,0.14),rgba(0,0,0,0.1))' : i === 2 ? 'linear-gradient(135deg,rgba(205,127,50,0.14),rgba(0,0,0,0.1))' : 'var(--bg-panel)';
-                    let borderLeft = i === 0 ? '3px solid #fbbf24' : i === 1 ? '3px solid #94a3b8' : i === 2 ? '3px solid #cd7f32' : '1px solid var(--border-color)';
+                    let benBu = loggedInSporcu && loggedInSporcu === s.ad;
+                    let madalyaEl = madalya[i] ? `<span style="font-size:22px;">${madalya[i]}</span>` : `<span style="font-size:13px;font-weight:900;color:${benBu?'var(--neon-blue)':'var(--text-muted)'};">${i+1}</span>`;
+                    let bgCard = benBu ? 'linear-gradient(135deg,rgba(59,130,246,0.2),rgba(59,130,246,0.05))' : i === 0 ? 'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.05))' : i === 1 ? 'linear-gradient(135deg,rgba(148,163,184,0.14),rgba(0,0,0,0.1))' : i === 2 ? 'linear-gradient(135deg,rgba(205,127,50,0.14),rgba(0,0,0,0.1))' : 'var(--bg-panel)';
+                    let borderLeft = benBu ? '3px solid var(--neon-blue)' : i === 0 ? '3px solid #fbbf24' : i === 1 ? '3px solid #94a3b8' : i === 2 ? '3px solid #cd7f32' : '1px solid var(--border-color)';
                     // Motivasyon etiketi
                     let motivasyon = '';
-                    if(i === 0) motivasyon = '<span style="font-size:10px;background:#fbbf24;color:#000;padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👑 LİDER</span>';
+                    if(benBu) motivasyon = `<span style="font-size:10px;background:rgba(59,130,246,0.2);color:var(--neon-blue);padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👤 SEN · ${i+1}. SIRA</span>`;
+                    else if(i === 0) motivasyon = '<span style="font-size:10px;background:#fbbf24;color:#000;padding:2px 7px;border-radius:20px;font-weight:900;margin-left:6px;">👑 LİDER</span>';
                     else if(i === 1) motivasyon = '<span style="font-size:10px;background:rgba(148,163,184,0.2);color:#94a3b8;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">🔥 YAKLAŞIYOR</span>';
                     else if(i === 2) motivasyon = '<span style="font-size:10px;background:rgba(205,127,50,0.2);color:#cd7f32;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:6px;">⚡ PODİUM</span>';
                     // Bugün aktif mi?
@@ -5384,7 +5782,7 @@ self.addEventListener('fetch',e=>{ if(e.request.method!=='GET') return; e.respon
                     // İstatistik satırı ikonlu
                     let statlar = `<span style="color:var(--text-muted);">🏹 ${s.seri} seri</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">🎯 ${s.okSay} ok</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--neon-blue);">✕ ${s.x}</span> <span style="color:var(--text-muted);">·</span> <span style="color:var(--text-muted);">ort ${s.ort.toFixed(1)}</span>`;
                     html += `
-                    <div style="background:${bgCard};border-left:${borderLeft};border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+                    <div id="${benBu?'klasman-ben-bu':''}" style="background:${bgCard};border-left:${borderLeft};border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;${benBu?'box-shadow:0 0 0 1px var(--neon-blue);':''}"">
                         <div style="width:32px;text-align:center;flex-shrink:0;">${madalyaEl}</div>
                         <div style="flex:1;min-width:0;">
                             <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:4px;">
